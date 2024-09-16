@@ -31,6 +31,10 @@ def sample_signal(sample_rate = 1000, duration = 1):
     
     #convert samples to numpy array
     samples = np.array(samples)
+
+    #remove DC offset by subtracting mean
+    samples -= np.mean(samples)
+    
     return samples
 
 def normalize_signal(samples):
