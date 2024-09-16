@@ -33,6 +33,9 @@ def find_frequency(sample_rate = 1000, duration = 1):
     #convert samples to numpy array
     samples = np.array(samples)
 
+    #remove DC offset by subtracting mean
+    samples -= np.mean(samples)
+
     #perform fft
     fft_result = np.fft.fft(samples)
     freqs = np.fft.fftfreq(len(fft_result), 1/sample_rate)
