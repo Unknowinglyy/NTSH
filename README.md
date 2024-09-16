@@ -1,2 +1,2 @@
 # CSCE-462
-For labs
+For labs!
