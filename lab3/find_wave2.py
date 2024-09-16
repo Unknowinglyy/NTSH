@@ -36,12 +36,11 @@ def find_waveform_shape(sample_rate=1000, duration=1):
 
     # Calculate slopes between consecutive samples
     slopes = np.diff(samples)
+    print(f"Slopes: {slopes}")
 
     # Compute the standard deviation of slopes
     std_dev_slopes = np.std(slopes)
     print(f"Slope Std Dev: {std_dev_slopes}")
-
-    
 
     # Check periodicity and symmetry for triangle waves
     peaks = np.where((samples[:-2] < samples[1:-1]) & (samples[1:-1] > samples[2:]))[0]
@@ -60,7 +59,7 @@ def find_waveform_shape(sample_rate=1000, duration=1):
             return "Triangle", None
 
     # Else
-    return "Unknown", None
+    return "Sine", None
 
 def main():
     while True:
