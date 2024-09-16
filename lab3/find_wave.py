@@ -37,7 +37,7 @@ def normalize_signal(samples):
     return (samples - np.min(samples)) / (np.max(samples) - np.min(samples))
 
 def identify_wave(samples, sample_rate):
-    normalized_samples - normalize_signal(samples)
+    normalized_samples = normalize_signal(samples)
     derivative = np.diff(normalized_samples)
 
     #check if square wave (sharp edges)
@@ -51,3 +51,13 @@ def identify_wave(samples, sample_rate):
     #check if sine wave (smooth curve)
     if np.all(np.abs(derivative) < 0.8) and np.any(np.abs(derivative) > 0.2):
         return "Sine Wave"
+    
+def main():
+    while True:
+        samples = sample_signal()
+        wave = identify_wave(samples, 1000)
+        print(f"Wave: {wave}\n")
+        time.sleep(0.1)
+
+if __name__ == "__main__":
+    main()
