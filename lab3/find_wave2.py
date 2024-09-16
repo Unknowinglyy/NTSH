@@ -18,7 +18,7 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
-def find_waveform_shape(sample_rate=1000, duration=1):
+def find_waveform_shape(sample_rate=500, duration=1):
     num_samples = sample_rate * duration
     samples = []
 
@@ -34,9 +34,9 @@ def find_waveform_shape(sample_rate=1000, duration=1):
     # Normalize samples to range [0, 1] for positive-only waveforms
     samples = (samples - np.min(samples)) / (np.max(samples) - np.min(samples))
 
-    # Calculate slopes between consecutive samples
+    # Calculate change in voltage between consecutive samples
     slopes = np.diff(samples)
-    print(f"Slopes: {slopes}")
+    print(f"Change in voltage: {slopes}")
 
     # Compute the standard deviation of slopes
     std_dev_slopes = np.std(slopes)
