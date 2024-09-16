@@ -31,31 +31,34 @@ def find_waveform_shape(sample_rate=1000, duration=1):
     # Convert samples to numpy array
     samples = np.array(samples)
 
-    # Normalize samples to range [0, 1] and shift to [-0.5, 0.5]
+    # Normalize samples to range [0, 1]
     samples = (samples - np.min(samples)) / (np.max(samples) - np.min(samples))
-    samples = samples - 0.5  # Shift to [-0.5, 0.5]
 
-    # Calculate the difference between successive samples
-    diffs = np.diff(samples)
-
-    # Detect peaks and troughs
+    # Find peaks and troughs
     peaks = np.where((samples[:-2] < samples[1:-1]) & (samples[1:-1] > samples[2:]))[0]
     troughs = np.where((samples[:-2] > samples[1:-1]) & (samples[1:-1] < samples[2:]))[0]
 
     num_peaks = len(peaks)
     num_troughs = len(troughs)
 
-    # Classify based on shape characteristics
+    # Determine if the waveform is a square wave
     if num_peaks > 2 and num_troughs > 2:
-        # Check for square wave: many rapid transitions with nearly equal peaks and troughs
-        if abs(num_peaks - num_troughs) < 2 and num_peaks > 5:
+        peak_to_peak_ratio = (np.max(samples) - np.min(samples)) / (np.max(samples) - np.mean(samples))
+        if abs(num_peaks - num_troughs) <= 2 and peak_to_peak_ratio > 0.8:
             return "Square", None
-        # Check for triangle wave: periodic linear rise and fall with fewer peaks and troughs
-        elif abs(num_peaks - num_troughs) < 2 and num_peaks <= 5:
+
+    # Determine if the waveform is a triangle wave
+    if num_peaks > 2 and num_troughs > 2:
+        period_length = num_peaks + num_troughs
+        peak_to_trough_ratio = (np.max(samples) - np.mean(samples)) / (np.mean(samples) - np.min(samples))
+        if abs(num_peaks - num_troughs) <= 2 and period_length > 5 and peak_to_trough_ratio < 1.2:
             return "Triangle", None
-    # Otherwise, consider it as sine wave if it's smooth and has few peaks and troughs
-    if np.all(np.abs(diffs) < 0.1):
-        return "Sine", None
+
+    # Determine if the waveform is a sine wave
+    if num_peaks > 2 and num_troughs < 3:
+        smoothness = np.mean(np.abs(np.diff(samples)))
+        if smoothness < 0.1:
+            return "Sine", None
 
     return "Unknown", None
 
