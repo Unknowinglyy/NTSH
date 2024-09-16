@@ -26,7 +26,7 @@ def find_frequency(sample_rate = 1000, duration = 1):
     #collect samples
     start_time = time.time()
     while len(samples) < num_samples:
-        samples.append(chan0.value)
+        samples.append(chan0.voltage)
         time.sleep(1/sample_rate)
 
     #convert samples to numpy array
@@ -46,3 +46,6 @@ def main():
         freq = find_frequency()
         print(f"Frequency: {freq} Hz")
         time.sleep(0.1)
+        
+if __name__ == "__main__":
+    main()
