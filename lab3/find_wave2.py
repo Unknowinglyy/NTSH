@@ -17,7 +17,7 @@ mcp = MCP.MCP3008(spi, cs)
 
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
-
+# ---------------------------------------------------------------------------------
 def find_waveform_shape(sample_rate=1000, duration=1):
     num_samples = sample_rate * duration
     samples = []
@@ -39,7 +39,7 @@ def find_waveform_shape(sample_rate=1000, duration=1):
 
     # Compute the standard deviation of slopes
     std_dev_slopes = np.std(slopes)
-
+    print(std_dev_slopes)
     # Determine if the waveform is a triangle wave
     if std_dev_slopes < 0.1:  # Adjust the threshold based on your data
         return "Triangle", None
