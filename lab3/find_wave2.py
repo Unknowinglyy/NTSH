@@ -34,32 +34,18 @@ def find_waveform_shape(sample_rate=1000, duration=1):
     # Normalize samples to range [0, 1]
     samples = (samples - np.min(samples)) / (np.max(samples) - np.min(samples))
 
-    # Find peaks and troughs
-    peaks = np.where((samples[:-2] < samples[1:-1]) & (samples[1:-1] > samples[2:]))[0]
-    troughs = np.where((samples[:-2] > samples[1:-1]) & (samples[1:-1] < samples[2:]))[0]
+    # Calculate slopes between consecutive samples
+    slopes = np.diff(samples)
 
-    num_peaks = len(peaks)
-    num_troughs = len(troughs)
-
-    # Determine if the waveform is a square wave
-    if num_peaks > 2 and num_troughs > 2:
-        peak_to_peak_ratio = (np.max(samples) - np.min(samples)) / (np.max(samples) - np.mean(samples))
-        if abs(num_peaks - num_troughs) <= 2 and peak_to_peak_ratio > 0.8:
-            return "Square", None
+    # Compute the standard deviation of slopes
+    std_dev_slopes = np.std(slopes)
 
     # Determine if the waveform is a triangle wave
-    if num_peaks > 2 and num_troughs > 2:
-        period_length = num_peaks + num_troughs
-        peak_to_trough_ratio = (np.max(samples) - np.mean(samples)) / (np.mean(samples) - np.min(samples))
-        if abs(num_peaks - num_troughs) <= 2 and period_length > 5 and peak_to_trough_ratio < 1.2:
-            return "Triangle", None
+    if std_dev_slopes < 0.1:  # Adjust the threshold based on your data
+        return "Triangle", None
 
-    # Determine if the waveform is a sine wave
-    if num_peaks > 2 and num_troughs < 3:
-        smoothness = np.mean(np.abs(np.diff(samples)))
-        if smoothness < 0.1:
-            return "Sine", None
-
+    # Additional checks for other waveform types can be added here
+    # For simplicity, we assume unknown if not a triangle wave in this example
     return "Unknown", None
 
 def main():
