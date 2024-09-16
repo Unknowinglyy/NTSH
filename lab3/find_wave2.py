@@ -18,7 +18,7 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
-def find_waveform_shape(sample_rate=500, duration=1):
+def find_waveform_shape(sample_rate=1000, duration=1):
     num_samples = sample_rate * duration
     samples = []
 
@@ -35,12 +35,12 @@ def find_waveform_shape(sample_rate=500, duration=1):
     samples = (samples - np.min(samples)) / (np.max(samples) - np.min(samples))
 
     # Calculate change in voltage between consecutive samples
-    slopes = np.diff(samples)
-    print(f"Change in voltage: {slopes}")
+    change_in_voltage = np.diff(samples)
+    print(f"Change in voltage: {change_in_voltage}")
 
-    # Compute the standard deviation of slopes
-    std_dev_slopes = np.std(slopes)
-    print(f"Slope Std Dev: {std_dev_slopes}")
+    # Compute the standard deviation of change_in_voltage
+    std_dev_change_in_voltage = np.std(change_in_voltage)
+    print(f"Change in voltage Std Dev: {std_dev_change_in_voltage}")
 
     # Check periodicity and symmetry for triangle waves
     peaks = np.where((samples[:-2] < samples[1:-1]) & (samples[1:-1] > samples[2:]))[0]
@@ -49,7 +49,7 @@ def find_waveform_shape(sample_rate=500, duration=1):
     if len(np.unique(samples)) <= 10:
         return "Square", None
     # Check if the waveform is a triangle wave
-    elif std_dev_slopes < 0.1:  # This threshold is for illustration; adjust as needed
+    elif std_dev_change_in_voltage < 0.1:  # This threshold is for illustration; adjust as needed
         return "Triangle", None
     elif len(peaks) >= 2 and len(troughs) >= 2:
         peak_to_peak_distances = np.diff(peaks)
