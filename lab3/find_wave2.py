@@ -55,7 +55,8 @@ def find_waveform_shape(sample_rate=1000, duration=1):
         # Check if the distances between peaks and troughs are consistent
         if np.std(peak_to_peak_distances) < 0.1 and np.std(trough_to_trough_distances) < 0.1:
             return "Triangle", None
-
+    elif len(np.unique(samples)) <= 10:
+        return "Square", None
     # If not a triangle wave, classify based on other criteria
     return "Unknown", None
 
