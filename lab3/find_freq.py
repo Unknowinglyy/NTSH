@@ -24,10 +24,11 @@ def find_frequency(sample_rate = 1000, duration = 1):
     samples = []
 
     #collect samples
-    start_time = time.time()
-    while len(samples) < num_samples:
+    start_time = time.perf_counter()
+    for _ in range(num_samples):
         samples.append(chan0.voltage)
-        time.sleep(1/sample_rate)
+        while(time.perf_counter() - start_time) < (len(samples) / sample_rate): 
+            pass
 
     #convert samples to numpy array
     samples = np.array(samples)
