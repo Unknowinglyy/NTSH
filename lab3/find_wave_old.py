@@ -51,6 +51,8 @@ def identify_wave(samples, sample_rate):
         return "Square Wave"
     
     frequency = find_frequency(sample_rate)
+    print(f"Frequency: {frequency}\n")
+    print(f"Derivative Range: {derivative_range}\n")
 
     if frequency >= 1 and frequency <= 10:
         if(derivative_range >= 0.003 and derivative_range <= 0.016):
