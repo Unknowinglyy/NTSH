@@ -18,7 +18,7 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
-def find_frequency(sample_rate=1000, duration=2):
+def find_frequency(sample_rate=1000, duration=4):
     num_samples = sample_rate * duration
     samples = []
 
@@ -44,12 +44,16 @@ def find_frequency(sample_rate=1000, duration=2):
 
     # Perform FFT
     fft_result = np.fft.fft(padded_samples)
-    print(f"fft_result = {fft_result}\n")
     freqs = np.fft.fftfreq(len(fft_result), 1/sample_rate)
-    print(f"freqs = {freqs}\n")
 
     # Find the peak frequency
-    peak_freq = freqs[np.argmax(np.abs(fft_result))]
+    peak_freq_index = np.argmax(np.abs(fft_result))
+    peak_freq = freqs[peak_freq_index]
+
+    # Print debug information
+    print(f"fft_result = {fft_result}\n")
+    print(f"freqs = {freqs}\n")
+    print(f"peak_freq_index = {peak_freq_index}\n")
     print(f"peak_freq = {peak_freq}\n")
 
     return abs(peak_freq)
