@@ -34,28 +34,32 @@ def find_waveform_shape(sample_rate=1000, duration=1):
     # Normalize samples to range [0, 1] for positive-only waveforms
     samples = (samples - np.min(samples)) / (np.max(samples) - np.min(samples))
 
-    # Calculate the change in voltage between consecutive samples
+    # Calculate change in voltage between consecutive samples
     change_in_voltage = np.diff(samples)
+    print(f"Change in voltage: {change_in_voltage}")
+
+    # Compute the standard deviation of change_in_voltage
     std_dev_change_in_voltage = np.std(change_in_voltage)
+    print(f"Change in voltage Std: {std_dev_change_in_voltage}")
 
-    # Check for square wave: distinct high and low levels
-    unique_vals = np.unique(samples)
-    if len(unique_vals) <= 3:
+    # Check periodicity and symmetry for triangle waves
+    peaks = np.where((samples[:-2] < samples[1:-1]) & (samples[1:-1] > samples[2:]))[0]
+    troughs = np.where((samples[:-2] > samples[1:-1]) & (samples[1:-1] < samples[2:]))[0]
+    
+    if len(np.unique(samples)) <= 10:
         return "Square", None
-
     # Check if the waveform is a triangle wave
-    if std_dev_change_in_voltage < 0.1:  # Threshold for slope consistency
-        rising_edge_count = np.sum(np.diff(samples) > 0)
-        falling_edge_count = np.sum(np.diff(samples) < 0)
-        if abs(rising_edge_count - falling_edge_count) < 0.1 * num_samples:
+    elif std_dev_change_in_voltage < 0.1:  # This threshold is for illustration; adjust as needed
+        return "Triangle", None
+    elif len(peaks) >= 2 and len(troughs) >= 2:
+        peak_to_peak_distances = np.diff(peaks)
+        trough_to_trough_distances = np.diff(troughs)
+        # Check if the distances between peaks and troughs are consistent
+        if np.std(peak_to_peak_distances) < 0.1 and np.std(trough_to_trough_distances) < 0.1:
             return "Triangle", None
 
-    # For sine wave, check smoothness and oscillation pattern
-    mean_change = np.mean(np.abs(np.diff(samples)))
-    if mean_change < 0.2:  # Adjust threshold based on waveform characteristics
-        return "Sine", None
-
-    return "Unknown", None
+    # Else
+    return "Sine", None
 
 def main():
     while True:
