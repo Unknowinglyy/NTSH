@@ -45,32 +45,22 @@ def identify_wave(samples, sample_rate):
     normalized_samples = normalize_signal(samples)
     derivative = np.diff(normalized_samples)
     frequency = find_frequency(sample_rate)
-    derivative_range = np.max(np.abs(derivative)) - np.min(np.abs(derivative))
+
+    print(f"Derivative: {derivative}\n")
 
     print(f"Frequency: {frequency}\n")
-    print(f"Derivative Range: {derivative_range}\n")
 
     #check if square wave (sharp edges)
     if np.any(np.abs(derivative) > 0.99):
         return "Square Wave"
     
-    if frequency >= 1 and frequency <= 16:
-        if(derivative_range >= 0.02 and derivative_range <= 0.1):
-            return "Triangle Wave"
-        elif(derivative_range >= 0.03 and derivative_range <= 0.125):
-            return "Sine Wave"
-        
-    if frequency >= 16 and frequency >= 20:
-        if(derivative_range >= 0.075 and derivative_range >= 0.12):
-            return "Triangle Wave"
-        elif(derivative_range >= 0.12 and derivative_range >= 0.18):
-            return "Sine Wave"
-        
-    if frequency >= 20 and frequency <= 50:
-        if(derivative_range >= 0.1 and derivative_range <= 0.3):
-            return "Triangle Wave"
-        elif(derivative_range >= 0.17 and derivative_range <= 0.35):
-            return "Sine Wave"
+    # Check if triangle wave (linear segments)
+    if np.all(np.abs(derivative) < 0.55):
+        return "Triangle Wave"
+    
+    # Check if sine wave (smooth curve)
+    if np.all(np.abs(derivative) < 0.6) and np.any(np.abs(derivative) > 0.01):
+        return "Sine Wave"
     
     return "Unknown Wave"
     
