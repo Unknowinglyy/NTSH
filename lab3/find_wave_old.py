@@ -46,6 +46,8 @@ def identify_wave(samples, sample_rate):
     derivative = np.diff(normalized_samples)
     frequency = find_frequency(sample_rate)
 
+    print(f"Derivative: {derivative}\n")
+
     print(f"Frequency: {frequency}\n")
 
     #check if square wave (sharp edges)
