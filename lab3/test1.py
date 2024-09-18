@@ -33,12 +33,15 @@ def find_waveform_shape(sample_rate=1000, duration=1):
         samples.append(sample_value)
         timestamps.append(current_time)
 
-        # Print the sample value, timestamp, and change in voltage (if applicable)
+        # Print the sample value, timestamp, change in voltage, and change in time
         if i > 0:
             change_in_voltage = samples[i] - samples[i - 1]
-            print(f"Sample {i}: Value = {sample_value}, Time = {current_time:.6f}s, Change = {change_in_voltage}")
+            change_in_time = timestamps[i] - timestamps[i - 1]  # Change in time between consecutive samples
+            print(f"Sample {i}: Value = {sample_value}, Time = {current_time:.6f}s, "
+                  f"Change in Voltage = {change_in_voltage}, Change in Time = {change_in_time:.6f}s")
         else:
-            print(f"Sample {i}: Value = {sample_value}, Time = {current_time:.6f}s, Change = N/A")
+            print(f"Sample {i}: Value = {sample_value}, Time = {current_time:.6f}s, "
+                  f"Change in Voltage = N/A, Change in Time = N/A")
 
         time.sleep(1 / sample_rate)
 
