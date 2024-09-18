@@ -23,27 +23,32 @@ def find_waveform_shape(sample_rate=1000, duration=1):
     samples = []
     timestamps = []
 
-    # Collect samples
+    # Calculate time between samples
+    sample_interval = 1 / sample_rate
     start_time = time.time()
+    
     for i in range(num_samples):
         sample_value = chan0.value
         current_time = time.time() - start_time
         
-        # Append the sample value and its corresponding time
         samples.append(sample_value)
         timestamps.append(current_time)
 
         # Print the sample value, timestamp, change in voltage, and change in time
         if i > 0:
             change_in_voltage = samples[i] - samples[i - 1]
-            change_in_time = timestamps[i] - timestamps[i - 1]  # Change in time between consecutive samples
+            change_in_time = timestamps[i] - timestamps[i - 1]
             print(f"Sample {i}: Value = {sample_value}, Time = {current_time:.6f}s, "
                   f"Change in Voltage = {change_in_voltage}, Change in Time = {change_in_time:.6f}s")
         else:
             print(f"Sample {i}: Value = {sample_value}, Time = {current_time:.6f}s, "
                   f"Change in Voltage = N/A, Change in Time = N/A")
 
-        time.sleep(1 / sample_rate)
+        # Calculate elapsed time and adjust sleep duration
+        elapsed_time = time.time() - start_time
+        sleep_time = sample_interval - (elapsed_time - (i * sample_interval))
+        if sleep_time > 0:
+            time.sleep(sleep_time)
 
     # Convert samples to numpy array for analysis
     samples = np.array(samples)
@@ -57,9 +62,7 @@ def find_waveform_shape(sample_rate=1000, duration=1):
     # Compute the standard deviation of slopes
     std_dev_slopes = np.std(slopes)
 
-    print(f"Slope Std Dev: {std_dev_slopes}")
-    # For triangle waves, the standard deviation of slopes should be low
-    if std_dev_slopes < 0.1:  # Adjust the threshold based on empirical testing
+    if std_dev_slopes < 0.1:
         return "Triangle", None
 
     return "Unknown", None
@@ -68,7 +71,7 @@ def main():
     while True:
         wave_type, _ = find_waveform_shape()
         print(f"Waveform Type: {wave_type}")
-        time.sleep(1)  # Adjust the sleep time if necessary
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()
