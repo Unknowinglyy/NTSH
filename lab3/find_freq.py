@@ -18,7 +18,7 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
-def find_frequency(sample_rate=1000, duration=4):
+def find_frequency(sample_rate=1000, duration=2):
     num_samples = sample_rate * duration
     samples = []
 
