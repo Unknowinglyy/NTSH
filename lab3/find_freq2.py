@@ -9,7 +9,17 @@ from adafruit_mcp3xxx.analog_in import AnalogIn
 # Set print options for higher precision
 np.set_printoptions(precision=10, suppress=True)
 
-# (rest of your code)
+# Create SPI bus
+spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
+
+# Create CS (chip select)
+cs = digitalio.DigitalInOut(board.D25)
+
+# Create MCP object
+mcp = MCP.MCP3008(spi, cs)
+
+# Create an analog input channel on pin 0
+chan0 = AnalogIn(mcp, MCP.P0)
 
 def find_frequency(sample_rate=1000, duration=4):
     num_samples = sample_rate * duration
