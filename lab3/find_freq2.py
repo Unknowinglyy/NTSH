@@ -22,27 +22,29 @@ def find_frequency(sample_rate=1000, duration=2):
     num_samples = sample_rate * duration
     samples = []
 
-    # Collect samples
+    # Collect samples with precise timing
     start_time = time.perf_counter()
     for _ in range(num_samples):
         samples.append(chan0.voltage)
         while (time.perf_counter() - start_time) < (len(samples) / sample_rate):
             pass
 
-    # Convert samples to numpy array (ensure float type)
+    # Convert samples to numpy array
     samples = np.array(samples, dtype=np.float64)
 
     # Remove DC offset by subtracting mean
     samples -= np.mean(samples)
 
-    # Pad samples with zeros
-    padded_samples = np.pad(samples, (0, num_samples), 'constant')
+    # Apply a window function to reduce spectral leakage
+    window = np.hanning(len(samples))
+    windowed_samples = samples * window
+    print(f"Windowed Samples: {windowed_samples}")
+    # Zero padding to increase FFT resolution
+    padded_samples = np.pad(windowed_samples, (0, num_samples), 'constant')
 
     # Perform FFT
     fft_result = np.fft.fft(padded_samples)
     print(f"fft_result = {fft_result}\n")
-    
-    # Calculate frequencies
     freqs = np.fft.fftfreq(len(fft_result), 1/sample_rate)
     print(f"freqs = {freqs}\n")
 
