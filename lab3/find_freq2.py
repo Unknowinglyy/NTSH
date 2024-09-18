@@ -18,41 +18,45 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
-def find_frequency(sample_rate=1000, duration=1):
+def find_frequency(sample_rate=1000, duration=2):
     num_samples = sample_rate * duration
     samples = []
 
     # Collect samples
-    start_time = time.time()
-    while len(samples) < num_samples:
-        samples.append(chan0.value)
-        time.sleep(1 / sample_rate)
+    start_time = time.perf_counter()
+    for _ in range(num_samples):
+        samples.append(chan0.voltage)
+        while (time.perf_counter() - start_time) < (len(samples) / sample_rate):
+            pass
 
-    # Convert samples to numpy array
-    samples = np.array(samples)
+    # Convert samples to numpy array (ensure float type)
+    samples = np.array(samples, dtype=np.float64)
 
-    # Normalize samples: scale to the range [0, 1] and then shift to [-0.5, 0.5]
-    samples = (samples - np.min(samples)) / (np.max(samples) - np.min(samples))
-    samples = samples - 0.5  # Shift to [-0.5, 0.5]
+    # Remove DC offset by subtracting mean
+    samples -= np.mean(samples)
+
+    # Pad samples with zeros
+    padded_samples = np.pad(samples, (0, num_samples), 'constant')
 
     # Perform FFT
-    fft_result = np.fft.fft(samples)
-    freqs = np.fft.fftfreq(len(fft_result), 1 / sample_rate)
+    fft_result = np.fft.fft(padded_samples)
+    print(f"fft_result = {fft_result}\n")
+    
+    # Calculate frequencies
+    freqs = np.fft.fftfreq(len(fft_result), 1/sample_rate)
+    print(f"freqs = {freqs}\n")
 
-    # Compute magnitude spectrum
-    magnitude = np.abs(fft_result)
-
-    # Find the peak frequency in the positive half of the spectrum
-    half_range = len(freqs) // 2
-    peak_freq = freqs[:half_range][np.argmax(magnitude[:half_range])]
+    # Find the peak frequency
+    peak_freq = freqs[np.argmax(np.abs(fft_result))]
+    print(f"peak_freq = {peak_freq}\n")
 
     return abs(peak_freq)
 
 def main():
     while True:
         freq = find_frequency()
-        print(f"Frequency: {freq} Hz")
-        time.sleep(1)  # Adjust the sleep time if necessary
+        print(f"Frequency: {freq:.6f} Hz\n")
+        time.sleep(0.1)
 
 if __name__ == "__main__":
     main()
