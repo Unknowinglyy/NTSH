@@ -6,6 +6,7 @@ import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 import numpy as np
 import keyboard
+from find_freq import find_frequency
 
 # Create SPI bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -43,18 +44,33 @@ def normalize_signal(samples):
 def identify_wave(samples, sample_rate):
     normalized_samples = normalize_signal(samples)
     derivative = np.diff(normalized_samples)
+    derivative_range = np.max(np.abs(derivative)) - np.min(np.abs(derivative))
 
     #check if square wave (sharp edges)
     if np.any(np.abs(derivative) > 0.99):
         return "Square Wave"
     
-    #check if triangle wave (linear segments)
-    if np.all(np.abs(derivative) < 0.62):
-        return "Triangle Wave"
+    frequency = find_frequency(sample_rate)
+
+    if frequency >= 1 and frequency <= 10:
+        if(derivative_range >= 0.003 and derivative_range <= 0.016):
+            return "Triangle Wave"
+        elif(derivative_range >= 0 and derivative_range <= 0.004):
+            return "Sine Wave"
     
-    #check if sine wave (smooth curve)
-    if np.all(np.abs(derivative) < 0.99) and np.any(np.abs(derivative) >  0.01):
-        return "Sine Wave"
+    if frequency >= 10 and frequency <= 20:
+        if(derivative_range >= 0.003 and derivative_range <= 0.016):
+            return "Triangle Wave"
+        elif(derivative_range >= 0 and derivative_range <= 0.019):
+            return "Sine Wave"
+        
+    if frequency >= 20 and frequency <= 50:
+        if(derivative_range >= 0.003 and derivative_range <= 0.16):
+            return "Triangle Wave"
+        elif(derivative_range >= 0.018 and derivative_range <= 0.21):
+            return "Sine Wave"
+    
+    return "Unknown Wave"
     
 def main():
     while True:
