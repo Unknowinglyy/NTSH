@@ -53,7 +53,7 @@ def identify_wave(samples, sample_rate):
         return "Square Wave"
     
     # Check if triangle wave (linear segments)
-    if np.all(np.abs(derivative) < 0.48):
+    if np.all(np.abs(derivative) < 0.49999):
         return "Triangle Wave"
     
     # Check if sine wave (smooth curve)
