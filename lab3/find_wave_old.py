@@ -45,15 +45,15 @@ def identify_wave(samples, sample_rate):
     derivative = np.diff(normalized_samples)
 
     #check if square wave (sharp edges)
-    if np.any(np.abs(derivative) > 0.8):
+    if np.any(np.abs(derivative) > 0.99):
         return "Square Wave"
     
     #check if triangle wave (linear segments)
-    if np.all(np.abs(derivative) < 0.2):
+    if np.all(np.abs(derivative) < 0.26):
         return "Triangle Wave"
     
     #check if sine wave (smooth curve)
-    if np.all(np.abs(derivative) < 0.8) and np.any(np.abs(derivative) > 0.2):
+    if np.all(np.abs(derivative) < 0.99) and np.any(np.abs(derivative) > 0.26):
         return "Sine Wave"
     
 def main():
