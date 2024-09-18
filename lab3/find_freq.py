@@ -19,7 +19,7 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
-def find_frequency(sample_rate = 1000, duration = 1):
+def find_frequency(sample_rate = 1000, duration = 2):
     num_samples = sample_rate * duration
     samples = []
 
@@ -36,8 +36,10 @@ def find_frequency(sample_rate = 1000, duration = 1):
     #remove DC offset by subtracting mean
     samples -= np.mean(samples)
 
+    padded_samples = np.pad(samples, (0, num_samples), 'constant')
+
     #perform fft
-    fft_result = np.fft.fft(samples)
+    fft_result = np.fft.fft(padded_samples)
     print(f"fft_result = {fft_result}\n")
     freqs = np.fft.fftfreq(len(fft_result), 1/sample_rate)
     print(f"freqs = {freqs}\n")
