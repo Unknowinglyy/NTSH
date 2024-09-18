@@ -38,12 +38,13 @@ def find_frequency(sample_rate=1000, duration=2):
     # Apply a window function to reduce spectral leakage
     window = np.hanning(len(samples))
     windowed_samples = samples * window
-    print(f"Windowed Samples: {windowed_samples}")
+    #print(f"Windowed Samples: {windowed_samples}")
+
     # Zero padding to increase FFT resolution
     padded_samples = np.pad(windowed_samples, (0, num_samples), 'constant')
-
+    
     # Perform FFT
-    fft_result = np.fft.fft(padded_samples)
+    fft_result = np.fft.fft(padded_samples, 3)
     print(f"fft_result = {fft_result}\n")
     freqs = np.fft.fftfreq(len(fft_result), 1/sample_rate)
     print(f"freqs = {freqs}\n")
