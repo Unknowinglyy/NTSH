@@ -38,15 +38,8 @@ def find_frequency(sample_rate=1000, duration=4):
     # Remove DC offset by subtracting mean
     samples -= np.mean(samples)
 
-    # Apply a window function to reduce spectral leakage
-    window = np.hanning(len(samples))
-    windowed_samples = samples * window
-
-    # Zero padding to increase FFT resolution
-    padded_samples = np.pad(windowed_samples, (0, num_samples), 'constant')
-
-    # Perform FFT
-    fft_result = np.fft.fft(padded_samples)
+    # Perform FFT without windowing
+    fft_result = np.fft.fft(samples)
     freqs = np.fft.fftfreq(len(fft_result), 1/sample_rate)
 
     # Find the peak frequency index
@@ -63,7 +56,7 @@ def find_frequency(sample_rate=1000, duration=4):
 
 def main():
     while True:
-        freq = find_frequency()
+        freq = find_frequency(sample_rate=2000)  # Try a higher sample rate
         print(f"Frequency: {freq:.10f} Hz\n")
         time.sleep(0.1)
 
