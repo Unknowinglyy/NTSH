@@ -15,57 +15,55 @@ cs = digitalio.DigitalInOut(board.D25)
 # Create MCP object
 mcp = MCP.MCP3008(spi, cs)
 
-# Create an analog input channel on pin 0
-chan0 = AnalogIn(mcp, MCP.P0)
+# Create an analog input channel on pin 1
+chan1 = AnalogIn(mcp, MCP.P1)
 
-def find_waveform_shape(sample_rate=1000, duration=1):
+def sample_signal(sample_rate=1000, duration=1):
     num_samples = sample_rate * duration
     samples = []
 
     # Collect samples
     start_time = time.time()
     while len(samples) < num_samples:
-        samples.append(chan0.value)
+        # Read the value from channel 1
+        samples.append(chan1.value)  # Read raw value
         time.sleep(1 / sample_rate)
-
-    # Convert samples to numpy array
-    samples = np.array(samples)
-
-    # Normalize samples to range [0, 1] for positive-only waveforms
-    samples = (samples - np.min(samples)) / (np.max(samples) - np.min(samples))
-
-    # Calculate change in voltage between consecutive samples
-    change_in_voltage = np.diff(samples)
-    print(f"Change in voltage: {change_in_voltage}")
-
-    # Compute the standard deviation of change_in_voltage
-    std_dev_change_in_voltage = np.std(change_in_voltage)
-    print(f"Change in voltage Std: {std_dev_change_in_voltage}")
-
-    # Check periodicity and symmetry for triangle waves
-    peaks = np.where((samples[:-2] < samples[1:-1]) & (samples[1:-1] > samples[2:]))[0]
-    troughs = np.where((samples[:-2] > samples[1:-1]) & (samples[1:-1] < samples[2:]))[0]
     
-    if len(np.unique(samples)) <= 10:
-        return "Square", None
-    # Check if the waveform is a triangle wave
-    elif std_dev_change_in_voltage < 0.1:  # This threshold is for illustration; adjust as needed
-        return "Triangle", None
-    elif len(peaks) >= 2 and len(troughs) >= 2:
-        peak_to_peak_distances = np.diff(peaks)
-        trough_to_trough_distances = np.diff(troughs)
-        # Check if the distances between peaks and troughs are consistent
-        if np.std(peak_to_peak_distances) < 0.1 and np.std(trough_to_trough_distances) < 0.1:
-            return "Triangle", None
+    # Convert samples to numpy array
+    samples = np.array(samples, dtype=np.float64)
 
-    # Else
-    return "Sine", None
+    # Normalize to the MCP3008 range (0-1023)
+    samples = (samples / 1023.0) * 3.3  # Assuming a 3.3V reference
+
+    return samples
+
+def normalize_signal(samples):
+    return (samples - np.min(samples)) / (np.max(samples) - np.min(samples))
+
+def identify_wave(samples):
+    normalized_samples = normalize_signal(samples)
+    derivative = np.diff(normalized_samples)
+
+    # Check if square wave (sharp edges)
+    if np.any(np.abs(derivative) > 0.99):
+        return "Square Wave"
+    
+    # Check if triangle wave (linear segments)
+    if np.all(np.abs(derivative) < 0.62):
+        return "Triangle Wave"
+    
+    # Check if sine wave (smooth curve)
+    if np.all(np.abs(derivative) < 0.99) and np.any(np.abs(derivative) > 0.01):
+        return "Sine Wave"
+    
+    return "Unknown Wave"
 
 def main():
     while True:
-        wave_type, _ = find_waveform_shape()
-        print(f"Waveform Type: {wave_type}")
-        time.sleep(1)  # Adjust the sleep time if necessary
+        samples = sample_signal()
+        wave = identify_wave(samples)
+        print(f"Wave: {wave}\n")
+        time.sleep(0.1)
 
 if __name__ == "__main__":
     main()
