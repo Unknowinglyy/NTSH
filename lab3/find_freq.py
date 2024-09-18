@@ -38,10 +38,13 @@ def find_frequency(sample_rate = 1000, duration = 1):
 
     #perform fft
     fft_result = np.fft.fft(samples)
+    print(f"fft_result = {fft_result}\n")
     freqs = np.fft.fftfreq(len(fft_result), 1/sample_rate)
+    print(f"freqs = {freqs}\n")
 
     #find the peak frequency
     peak_freq = freqs[np.argmax(np.abs(fft_result))]
+    print(f"peak_freq = {peak_freq}\n")
 
     return abs(peak_freq)
 
