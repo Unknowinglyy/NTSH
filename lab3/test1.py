@@ -62,6 +62,7 @@ def find_waveform_shape(sample_rate=1000, duration=1):
     # Compute the standard deviation of slopes
     std_dev_slopes = np.std(slopes)
 
+    print(f"Slope std dev: {std_dev_slopes}")
     if std_dev_slopes < 0.1:
         return "Triangle", None
 
