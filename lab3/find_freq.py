@@ -48,7 +48,7 @@ def find_frequency(sample_rate = 1000, duration = 1):
 def main():
     while True:
         freq = find_frequency()
-        print(f"Frequency: {freq} Hz\n")
+        print(f"Frequency: {freq:.6f} Hz\n")
         time.sleep(0.1)
         
 if __name__ == "__main__":
