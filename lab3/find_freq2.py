@@ -53,30 +53,18 @@ def find_frequency(sample_rate=1000, duration=4):
     peak_freq_index = np.argmax(np.abs(fft_result))
     peak_freq = freqs[peak_freq_index]
 
-    # Interpolation to get a more accurate frequency
-    if peak_freq_index > 0 and peak_freq_index < len(fft_result) - 1:
-        # Quadratic interpolation around the peak
-        y0 = np.abs(fft_result[peak_freq_index - 1])
-        y1 = np.abs(fft_result[peak_freq_index])
-        y2 = np.abs(fft_result[peak_freq_index + 1])
-        numerator = (y2 - y0) * 0.5
-        denominator = (y2 - 2 * y1 + y0)
-        if denominator != 0:
-            offset = numerator / denominator
-            peak_freq += offset * (freqs[1] - freqs[0])  # Adjust by the frequency spacing
-
     # Print debug information
     print(f"fft_result = {fft_result}\n")
     print(f"freqs = {freqs}\n")
     print(f"peak_freq_index = {peak_freq_index}\n")
-    print(f"peak_freq = {peak_freq:.10f}\n")  # Adjusted for higher precision
+    print(f"peak_freq = {peak_freq:.10f}\n")
 
     return abs(peak_freq)
 
 def main():
     while True:
         freq = find_frequency()
-        print(f"Frequency: {freq:.10f} Hz\n")  # Adjusted for higher precision
+        print(f"Frequency: {freq:.10f} Hz\n")
         time.sleep(0.1)
 
 if __name__ == "__main__":
