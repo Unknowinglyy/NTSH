@@ -48,6 +48,14 @@ def measure_voltage(sample_rate=1000):
         # Print the results
         print(f"Standard Deviation of Voltage Changes: {std_dev_changes:.4f} V")
         print(f"RMS Voltage: {rms_value:.4f} V")
+        if np.any(np.abs(np.diff(voltage_changes)) > 0.99):
+            return "Square Wave", None
+        elif rms_value <= 1.2:
+            return "Triangle Wave", None
+        elif rms_value > 1.2:
+            return "Sine Wave", None
+        else:
+            return "Unknown Wave", None
         print("-" * 40)  # Separator for clarity
 
         # Clear the lists for the next batch of samples
