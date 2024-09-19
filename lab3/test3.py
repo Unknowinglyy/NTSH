@@ -43,12 +43,16 @@ def measure_voltage(sample_rate=1000):
         max_voltage = np.max(voltages) if voltages else 0
 
         # Calculate expected RMS value based on max voltage
-        expected_rms = max_voltage / np.sqrt(2) if max_voltage > 0 else 0
+        expected_rms_max = max_voltage / np.sqrt(2) if max_voltage > 0 else 0
+        
+        # Calculate actual RMS value from the sample voltages
+        actual_rms = np.sqrt(np.mean(np.square(voltages))) if voltages else 0
 
         # Print the results
         print(f"Standard Deviation of Slopes: {std_dev_slopes:.4f} V/s")
         print(f"Maximum Voltage: {max_voltage:.4f} V")
-        print(f"Expected RMS Voltage: {expected_rms:.4f} V")
+        print(f"Expected RMS Voltage (based on max): {expected_rms_max:.4f} V")
+        print(f"Actual RMS Voltage (based on samples): {actual_rms:.4f} V")
         print("-" * 40)  # Separator for clarity
 
         # Clear the lists for the next batch of samples
