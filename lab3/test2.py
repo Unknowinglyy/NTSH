@@ -63,7 +63,7 @@ def measure_voltage(sample_rate=1000):
 
         print(f"Standard Deviation of Voltage Changes: {std_dev_changes:.4f} V")
         print(f"RMS Voltage: {rms_value:.4f} V")
-        print(f"Diff Voltage: {np.diff(voltage)} V")
+        print(f"Diff Voltage: {np.diff(voltages)} V")
         print("-" * 40)  # Separator for clarity
 
         # Clear the lists for the next batch of samples
