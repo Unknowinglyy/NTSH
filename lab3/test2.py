@@ -17,31 +17,36 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
-def measure_voltage(sample_rate=1):
+def measure_voltage(sample_rate=10, duration=1):
+    num_samples = sample_rate * duration
     previous_voltage = None
 
     while True:
-        # Measure the voltage
-        voltage = chan0.voltage
-        current_time = time.time()
+        for _ in range(num_samples):
+            # Measure the voltage
+            voltage = chan0.voltage
+            current_time = time.time()
+            
+            # Calculate the change in voltage
+            if previous_voltage is not None:
+                voltage_change = voltage - previous_voltage
+            else:
+                voltage_change = 0  # No change for the first sample
+            
+            # Print the measured voltage alongside the time it was measured
+            print(f"Time: {current_time:.2f}, Voltage: {voltage:.2f} V (Change: {voltage_change:.2f} V)")
+            
+            # Update the previous voltage
+            previous_voltage = voltage
+            
+            # Wait for the next sample
+            time.sleep(1 / sample_rate)
         
-        # Calculate the change in voltage
-        if previous_voltage is not None:
-            voltage_change = voltage - previous_voltage
-        else:
-            voltage_change = 0  # No change for the first sample
-        
-        # Print the measured voltage alongside the time it was measured
-        print(f"Time: {current_time:.2f}, Voltage: {voltage:.2f} V (Change: {voltage_change:.2f} V)")
-        
-        # Update the previous voltage
-        previous_voltage = voltage
-        
-        # Wait for the next sample
-        time.sleep(1 / sample_rate)
-    print("-------------------------------------------------------------------")
+        # Print a dashed line to separate batches
+        print("-" * 40)
+
 def main():
-    measure_voltage(sample_rate=10)  # 10 samples per second
+    measure_voltage(sample_rate=10, duration=1)  # 10 samples in 1 second
 
 if __name__ == "__main__":
     main()
