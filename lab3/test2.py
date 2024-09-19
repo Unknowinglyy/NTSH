@@ -17,9 +17,9 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
-def measure_voltage(sample_rate=20):
+def measure_voltage(sample_rate=100):
     previous_voltage = None
-    samples_per_batch = 20  # Number of samples after which to print a line
+    samples_per_batch = 100  # Number of samples after which to print a line
 
     while True:
         for sample_number in range(sample_rate):  # Loop for the number of samples per second
