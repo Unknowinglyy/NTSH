@@ -24,7 +24,7 @@ def measure_voltage(sample_rate=1000):
     voltages = []  # List to store raw voltage readings
 
     while True:
-        for _ in range(sample_rate):  # Collect 1000 samples
+        for _ in range(sample_rate):  # Collect samples
             voltage = chan0.voltage
             current_time = time.time()
             
@@ -41,21 +41,23 @@ def measure_voltage(sample_rate=1000):
             # Wait for the next sample
             time.sleep(1 / sample_rate)
 
-        # After collecting 1000 samples, calculate stats
+        # After collecting samples, calculate stats
         std_dev_changes = np.std(voltage_changes) if len(voltage_changes) > 1 else 0
         rms_value = np.sqrt(np.mean(np.square(voltages)))  # Calculate RMS
 
         # Print the results
         print(f"Standard Deviation of Voltage Changes: {std_dev_changes:.4f} V")
         print(f"RMS Voltage: {rms_value:.4f} V")
+
+        # Determine the wave type
         if np.any(np.abs(np.diff(voltage_changes)) > 0.99):
-            return "Square Wave", None
+            wave_type = "Square Wave"
         elif rms_value <= 1.2:
-            return "Triangle Wave", None
-        elif rms_value > 1.2:
-            return "Sine Wave", None
+            wave_type = "Triangle Wave"
         else:
-            return "Unknown Wave", None
+            wave_type = "Sine Wave"
+
+        print(f"Detected Wave Type: {wave_type}")
         print("-" * 40)  # Separator for clarity
 
         # Clear the lists for the next batch of samples
