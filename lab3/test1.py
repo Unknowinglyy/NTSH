@@ -64,6 +64,8 @@ def find_waveform_shape(sample_rate=1000, duration=1):
     std_dev_slopes = np.std(slopes)
 
     print(f"Slope std dev: {std_dev_slopes}")
+    if np.any(np.abs(slopes) > 0.99):
+        return "Square Wave"
     if std_dev_slopes < 0.1:
         return "Triangle", None
 
