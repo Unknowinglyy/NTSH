@@ -44,26 +44,30 @@ def find_waveform_shape(sample_rate=1000, duration=1):
 
     # Calculate slopes between consecutive normalized samples
     slopes = np.diff(samples_normalized)
-
-    # Compute the standard deviation and mean of slopes
     std_dev_slopes = np.std(slopes)
-    mean_slopes = np.mean(np.abs(slopes))
 
-    print(f"Slope std dev: {std_dev_slopes}, Mean slopes: {mean_slopes}")
+    print(f"Slope std dev: {std_dev_slopes}")
 
     # Square Wave Detection
     if np.any(np.abs(slopes) > 0.99):
         return "Square Wave", None
 
+    # Harmonics Analysis
+    fft_values = np.fft.fft(samples_normalized)
+    magnitudes = np.abs(fft_values)
+    
+    # Determine number of significant harmonics
+    fundamental_freq_index = np.argmax(magnitudes[1:]) + 1
+    harmonics_count = np.count_nonzero(magnitudes[2:] > (0.1 * np.max(magnitudes)))
+
+    print(f"Fundamental Frequency Index: {fundamental_freq_index}, Number of Significant Harmonics: {harmonics_count}")
+
     # Triangle Wave Detection
-    if std_dev_slopes < 0.1:
+    if std_dev_slopes < 0.1 and harmonics_count > 2:  # Triangle waves have harmonics
         return "Triangle Wave", None
 
-    # Sine Wave Detection: Check curvature
-    second_derivative = np.diff(slopes)
-    std_dev_curvature = np.std(second_derivative)
-
-    if std_dev_curvature > 0.05:  # Adjust this threshold as needed
+    # Sine Wave Detection
+    if harmonics_count <= 2:  # Sine waves have only the fundamental frequency
         return "Sine Wave", None
 
     return "Unknown", None
