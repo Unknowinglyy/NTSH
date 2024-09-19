@@ -53,6 +53,7 @@ def measure_voltage(sample_rate=1000):
         print(f"Maximum Voltage: {max_voltage:.4f} V")
         print(f"Expected RMS Voltage (based on max): {expected_rms_max:.4f} V")
         print(f"Actual RMS Voltage (based on samples): {actual_rms:.4f} V")
+        print(f"Expected RMS - Actual RMS: {expected_rms_max - actual_rms} V")
         print("-" * 40)  # Separator for clarity
 
         # Clear the lists for the next batch of samples
