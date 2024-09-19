@@ -24,40 +24,38 @@ def measure_voltage(sample_rate=1000):
     voltages = []  # List to store raw voltage readings
 
     while True:
-        # Measure the voltage
-        voltage = chan0.voltage
-        current_time = time.time()
-        
-        # Calculate the change in voltage
-        if previous_voltage is not None:
-            voltage_change = voltage - previous_voltage
-            voltage_changes.append(voltage_change)  # Store the change
-        else:
-            voltage_change = 0
-        
-        voltages.append(voltage)  # Store the voltage reading
-        previous_voltage = voltage
-        
-        # Print the measured voltage alongside the time it was measured
-        print(f"Time: {current_time:.2f}, Voltage: {voltage:.2f} V (Change: {voltage_change:.2f} V)")
+        for _ in range(sample_rate):  # Collect 1000 samples
+            voltage = chan0.voltage
+            current_time = time.time()
+            
+            # Calculate the change in voltage
+            if previous_voltage is not None:
+                voltage_change = voltage - previous_voltage
+                voltage_changes.append(voltage_change)
+            else:
+                voltage_change = 0
+            
+            voltages.append(voltage)
+            previous_voltage = voltage
+            
+            # Wait for the next sample
+            time.sleep(1 / sample_rate)
 
-        # Wait for the next sample
-        time.sleep(1 / sample_rate)
+        # After collecting 1000 samples, calculate stats
+        std_dev_changes = np.std(voltage_changes) if len(voltage_changes) > 1 else 0
+        rms_value = np.sqrt(np.mean(np.square(voltages)))  # Calculate RMS
 
-        # Print a dashed line after every 20 samples
-        if len(voltages) % 20 == 0:
-            print("-" * 40)
+        # Print the results
+        print(f"Standard Deviation of Voltage Changes: {std_dev_changes:.4f} V")
+        print(f"RMS Voltage: {rms_value:.4f} V")
+        print("-" * 40)  # Separator for clarity
 
-        # Calculate RMS and standard deviation every 100 samples
-        if len(voltages) % 100 == 0:
-            std_dev_changes = np.std(voltage_changes) if len(voltage_changes) > 1 else 0
-            rms_value = np.sqrt(np.mean(np.square(voltages)))  # Calculate RMS
-
-            print(f"Standard Deviation of Voltage Changes: {std_dev_changes:.4f} V")
-            print(f"RMS Voltage: {rms_value:.4f} V")
+        # Clear the lists for the next batch of samples
+        voltage_changes.clear()
+        voltages.clear()
 
 def main():
-    measure_voltage(sample_rate=2000)  # 2000 samples per second
+    measure_voltage(sample_rate=1000)  # 1000 samples per second
 
 if __name__ == "__main__":
     main()
