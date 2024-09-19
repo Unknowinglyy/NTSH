@@ -45,7 +45,7 @@ def identify_wave(samples):
     derivative = np.diff(normalized_samples)
 
     # Check if square wave (sharp edges)
-    if len(np.unique(samples)) <= 10:
+    if np.any(np.abs(derivative) > 0.99):
         return "Square Wave"
     
     # Check if triangle wave (linear segments)
