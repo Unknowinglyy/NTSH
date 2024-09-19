@@ -22,6 +22,7 @@ def measure_voltage(sample_rate=1000):
     previous_voltage = None
     voltage_changes = []  # List to store changes in voltage
     voltages = []  # List to store raw voltage readings
+    last_wave_type = None  # Variable to track the last detected wave type
 
     while True:
         for _ in range(sample_rate):  # Collect samples
@@ -45,19 +46,21 @@ def measure_voltage(sample_rate=1000):
         std_dev_changes = np.std(voltage_changes) if len(voltage_changes) > 1 else 0
         rms_value = np.sqrt(np.mean(np.square(voltages)))  # Calculate RMS
 
-        # Print the results
-        print(f"Standard Deviation of Voltage Changes: {std_dev_changes:.4f} V")
-        print(f"RMS Voltage: {rms_value:.4f} V")
-
         # Determine the wave type
-        if len(np.unique(voltages)) <= 10:
+        if np.any(np.abs(np.diff(voltage_changes)) > 0.99):
             wave_type = "Square Wave"
         elif rms_value <= 1.2:
             wave_type = "Triangle Wave"
         else:
             wave_type = "Sine Wave"
 
-        print(f"Detected Wave Type: {wave_type}")
+        # Print the detected wave type only if it has changed
+        if wave_type != last_wave_type:
+            print(f"Detected Wave Type: {wave_type}")
+            last_wave_type = wave_type  # Update last_wave_type
+
+        print(f"Standard Deviation of Voltage Changes: {std_dev_changes:.4f} V")
+        print(f"RMS Voltage: {rms_value:.4f} V")
         print("-" * 40)  # Separator for clarity
 
         # Clear the lists for the next batch of samples
