@@ -17,11 +17,10 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
-def measure_voltage(sample_rate=1, duration=10):
-    num_samples = sample_rate * duration
+def measure_voltage(sample_rate=1):
     previous_voltage = None
 
-    for _ in range(num_samples):
+    while True:
         # Measure the voltage
         voltage = chan0.voltage
         current_time = time.time()
@@ -42,7 +41,7 @@ def measure_voltage(sample_rate=1, duration=10):
         time.sleep(1 / sample_rate)
 
 def main():
-    measure_voltage(sample_rate=10, duration=1)  # 10 samples in 1 second
+    measure_voltage(sample_rate=10)  # 10 samples per second
 
 if __name__ == "__main__":
     main()
