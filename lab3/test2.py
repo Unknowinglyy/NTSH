@@ -47,7 +47,7 @@ def measure_voltage(sample_rate=100):
                 print("-" * 40)
 
 def main():
-    measure_voltage(sample_rate=500)  # 100 samples per second
+    measure_voltage(sample_rate=1000)  # 100 samples per second
 
 if __name__ == "__main__":
     main()
