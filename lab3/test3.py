@@ -4,7 +4,7 @@ import digitalio
 import board
 import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
-import numpy as np
+import numpy as np  # Import numpy for calculations
 
 # Create SPI bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -18,52 +18,45 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
-def measure_voltage(sample_rate=1000, duration=5):
+def measure_voltage(sample_rate=1000):
     previous_voltage = None
-    voltage_changes = []
-    voltages = []
+    voltages = []  # List to store raw voltage readings
+    slopes = []    # List to store slopes between samples
 
-    start_time = time.time()
+    while True:
+        for _ in range(sample_rate):  # Collect 1000 samples
+            voltage = chan0.voltage
+            voltages.append(voltage)
 
-    while time.time() - start_time < duration:
-        voltage = chan0.voltage
-        if previous_voltage is not None:
-            voltage_change = voltage - previous_voltage
-            voltage_changes.append(voltage_change)
-        else:
-            voltage_change = 0
-        
-        voltages.append(voltage)
-        previous_voltage = voltage
+            # Calculate the slope
+            if previous_voltage is not None:
+                slope = voltage - previous_voltage
+                slopes.append(slope)
+            
+            previous_voltage = voltage
+            
+            # Wait for the next sample
+            time.sleep(1 / sample_rate)
 
-        time.sleep(1 / sample_rate)
+        # After collecting samples, calculate stats
+        std_dev_slopes = np.std(slopes) if len(slopes) > 1 else 0
+        max_voltage = np.max(voltages) if voltages else 0
 
-    return np.array(voltages), np.array(voltage_changes)
+        # Calculate expected RMS value based on max voltage
+        expected_rms = max_voltage / np.sqrt(2) if max_voltage > 0 else 0
 
-def analyze_waveform(voltages, voltage_changes):
-    std_dev_changes = np.std(voltage_changes)
-    peak_to_peak = np.max(voltages) - np.min(voltages)
-    rms_value = np.sqrt(np.mean(voltages**2))  # Calculate RMS
+        # Print the results
+        print(f"Standard Deviation of Slopes: {std_dev_slopes:.4f} V/s")
+        print(f"Maximum Voltage: {max_voltage:.4f} V")
+        print(f"Expected RMS Voltage: {expected_rms:.4f} V")
+        print("-" * 40)  # Separator for clarity
 
-    zero_crossings = np.where(np.diff(np.sign(voltages)))[0].size
-
-    print(f"Standard Deviation of Voltage Changes: {std_dev_changes:.4f} V")
-    print(f"Peak-to-Peak Voltage: {peak_to_peak:.4f} V")
-    print(f"RMS Voltage: {rms_value:.4f} V")
-    print(f"Zero Crossings Count: {zero_crossings}")
-
-    # Heuristic for classification
-    if zero_crossings > 10:
-        return "Sine Wave"
-    elif std_dev_changes < 0.02 and peak_to_peak < 1:
-        return "Triangle Wave"
-    else:
-        return "Square Wave"
+        # Clear the lists for the next batch of samples
+        slopes.clear()
+        voltages.clear()
 
 def main():
-    voltages, voltage_changes = measure_voltage(sample_rate=2000, duration=5)
-    wave_type = analyze_waveform(voltages, voltage_changes)
-    print(f"Identified Waveform Type: {wave_type}")
+    measure_voltage(sample_rate=1000)  # 1000 samples per second
 
 if __name__ == "__main__":
     main()
