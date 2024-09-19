@@ -4,6 +4,7 @@ import digitalio
 import board
 import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
+import numpy as np  # Import numpy for standard deviation calculation
 
 # Create SPI bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -19,6 +20,7 @@ chan0 = AnalogIn(mcp, MCP.P0)
 
 def measure_voltage(sample_rate=100):
     previous_voltage = None
+    voltage_changes = []  # List to store changes in voltage
     samples_per_batch = sample_rate  # Number of samples after which to print a line
 
     while True:
@@ -30,6 +32,7 @@ def measure_voltage(sample_rate=100):
             # Calculate the change in voltage
             if previous_voltage is not None:
                 voltage_change = voltage - previous_voltage
+                voltage_changes.append(voltage_change)  # Store the change
             else:
                 voltage_change = 0
             
@@ -46,7 +49,13 @@ def measure_voltage(sample_rate=100):
             if (sample_number + 1) % samples_per_batch == 0:
                 print("-" * 40)
 
+        # Calculate the standard deviation of the voltage changes after each batch
+        if len(voltage_changes) > 1:  # Ensure there's enough data to compute std deviation
+            std_dev_changes = np.std(voltage_changes)
+            print(f"Standard Deviation of Voltage Changes: {std_dev_changes:.4f} V")
+
 def main():
-    measure_voltage(sample_rate=2000)  # 100 samples per second
+    measure_voltage(sample_rate=2000)  # 2000 samples per second
+
 if __name__ == "__main__":
     main()
