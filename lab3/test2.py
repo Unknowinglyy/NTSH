@@ -19,7 +19,7 @@ chan0 = AnalogIn(mcp, MCP.P0)
 
 def measure_voltage(sample_rate=100):
     previous_voltage = None
-    samples_per_batch = 100  # Number of samples after which to print a line
+    samples_per_batch = sample_rate  # Number of samples after which to print a line
 
     while True:
         for sample_number in range(sample_rate):  # Loop for the number of samples per second
@@ -47,7 +47,7 @@ def measure_voltage(sample_rate=100):
                 print("-" * 40)
 
 def main():
-    measure_voltage(sample_rate=100)  # 100 samples per second
+    measure_voltage(sample_rate=200)  # 100 samples per second
 
 if __name__ == "__main__":
     main()
