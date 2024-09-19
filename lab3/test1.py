@@ -43,6 +43,7 @@ def find_waveform_shape(sample_rate=1000, duration=1):
         else:
             #print(f"Sample {i}: Value = {sample_value}, Time = {current_time:.6f}s, "
             #      f"Change in Voltage = N/A, Change in Time = N/A")
+            pass
 
         # Calculate elapsed time and adjust sleep duration
         elapsed_time = time.time() - start_time
