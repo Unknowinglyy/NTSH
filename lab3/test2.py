@@ -50,7 +50,7 @@ def measure_voltage(sample_rate=1000):
         print(f"RMS Voltage: {rms_value:.4f} V")
 
         # Determine the wave type
-        if np.any(np.abs(np.diff(voltage_changes)) > 0.99):
+        if np. > 0.99):
             wave_type = "Square Wave"
         elif rms_value <= 1.2:
             wave_type = "Triangle Wave"
