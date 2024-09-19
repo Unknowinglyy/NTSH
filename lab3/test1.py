@@ -56,9 +56,13 @@ def find_waveform_shape(sample_rate=1000, duration=1):
     fft_values = np.fft.fft(samples_normalized)
     magnitudes = np.abs(fft_values)
     
+    # Determine number of significant harmonics with stricter threshold
+    harmonic_threshold = 0.2 * np.max(magnitudes)  # Adjust this as needed
+    
+    
     # Determine number of significant harmonics
     fundamental_freq_index = np.argmax(magnitudes[1:]) + 1
-    harmonics_count = np.count_nonzero(magnitudes[2:] > (0.1 * np.max(magnitudes)))
+    harmonics_count = np.count_nonzero(magnitudes[2:] > harmonic_threshold)
 
     print(f"Fundamental Frequency Index: {fundamental_freq_index}, Number of Significant Harmonics: {harmonics_count}")
 
