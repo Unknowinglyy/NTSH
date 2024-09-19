@@ -21,7 +21,6 @@ chan0 = AnalogIn(mcp, MCP.P0)
 def find_waveform_shape(sample_rate=1000, duration=1):
     num_samples = sample_rate * duration
     samples = []
-    timestamps = []
 
     # Calculate time between samples
     sample_interval = 1 / sample_rate
@@ -29,45 +28,43 @@ def find_waveform_shape(sample_rate=1000, duration=1):
     
     for i in range(num_samples):
         sample_value = chan0.value
-        current_time = time.time() - start_time
-        
         samples.append(sample_value)
-        timestamps.append(current_time)
-
-        # Print the sample value, timestamp, change in voltage, and change in time
-        if i > 0:
-            change_in_voltage = samples[i] - samples[i - 1]
-            change_in_time = timestamps[i] - timestamps[i - 1]
-            print(f"Sample {i}: Value = {sample_value}, Time = {current_time:.6f}s, "
-                  f"Change in Voltage = {change_in_voltage}, Change in Time = {change_in_time:.6f}s")
-        else:
-            print(f"Sample {i}: Value = {sample_value}, Time = {current_time:.6f}s, "
-                  f"Change in Voltage = N/A, Change in Time = N/A")
-            pass
 
         # Calculate elapsed time and adjust sleep duration
         elapsed_time = time.time() - start_time
-        sleep_time = sample_interval - (elapsed_time - (i * sample_interval))
+        sleep_time = sample_interval - elapsed_time + (i * sample_interval)
         if sleep_time > 0:
             time.sleep(sleep_time)
 
     # Convert samples to numpy array for analysis
     samples = np.array(samples)
 
-    # Normalize samples to range [0, 1] for positive-only waveforms
+    # Normalize samples to range [0, 1]
     samples_normalized = (samples - np.min(samples)) / (np.max(samples) - np.min(samples))
 
     # Calculate slopes between consecutive normalized samples
     slopes = np.diff(samples_normalized)
 
-    # Compute the standard deviation of slopes
+    # Compute the standard deviation and mean of slopes
     std_dev_slopes = np.std(slopes)
+    mean_slopes = np.mean(np.abs(slopes))
 
-    print(f"Slope std dev: {std_dev_slopes}")
+    print(f"Slope std dev: {std_dev_slopes}, Mean slopes: {mean_slopes}")
+
+    # Square Wave Detection
     if np.any(np.abs(slopes) > 0.99):
         return "Square Wave", None
+
+    # Triangle Wave Detection
     if std_dev_slopes < 0.1:
-        return "Triangle", None
+        return "Triangle Wave", None
+
+    # Sine Wave Detection: Check curvature
+    second_derivative = np.diff(slopes)
+    std_dev_curvature = np.std(second_derivative)
+
+    if std_dev_curvature > 0.05:  # Adjust this threshold as needed
+        return "Sine Wave", None
 
     return "Unknown", None
 
