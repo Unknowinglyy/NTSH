@@ -39,7 +39,7 @@ def measure_voltage(sample_rate=1):
         
         # Wait for the next sample
         time.sleep(1 / sample_rate)
-
+    print("-------------------------------------------------------------------")
 def main():
     measure_voltage(sample_rate=10)  # 10 samples per second
 
