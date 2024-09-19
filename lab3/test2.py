@@ -17,12 +17,12 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
-def measure_voltage(sample_rate=10, duration=1):
-    num_samples = sample_rate * duration
+def measure_voltage(sample_rate=20):
     previous_voltage = None
+    samples_per_batch = 20  # Number of samples after which to print a line
 
     while True:
-        for _ in range(num_samples):
+        for sample_number in range(sample_rate):  # Loop for the number of samples per second
             # Measure the voltage
             voltage = chan0.voltage
             current_time = time.time()
@@ -31,7 +31,7 @@ def measure_voltage(sample_rate=10, duration=1):
             if previous_voltage is not None:
                 voltage_change = voltage - previous_voltage
             else:
-                voltage_change = 0  # No change for the first sample
+                voltage_change = 0
             
             # Print the measured voltage alongside the time it was measured
             print(f"Time: {current_time:.2f}, Voltage: {voltage:.2f} V (Change: {voltage_change:.2f} V)")
@@ -41,12 +41,13 @@ def measure_voltage(sample_rate=10, duration=1):
             
             # Wait for the next sample
             time.sleep(1 / sample_rate)
-        
-        # Print a dashed line to separate batches
-        print("-" * 40)
+
+            # Print a dashed line after every 20 samples
+            if (sample_number + 1) % samples_per_batch == 0:
+                print("-" * 40)
 
 def main():
-    measure_voltage(sample_rate=10, duration=1)  # 10 samples in 1 second
+    measure_voltage(sample_rate=20)  # 20 samples per second
 
 if __name__ == "__main__":
     main()
