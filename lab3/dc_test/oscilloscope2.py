@@ -34,6 +34,8 @@ def measure_voltage(sample_rate=10):
 
         # Store |change|
         voltageChangeArr.append(np.round(change_mag, 2))
+        voltageChangeArr = np.array(voltageChangeArr)
+        
         voltageChangeArr_B.append(np.round(change_mag, 0))
 
         # Add |change| to total change
@@ -59,7 +61,7 @@ def measure_voltage(sample_rate=10):
 
             if (np.round(average_change, 2) == 0) and (mode_value == 0) and (np.round((np.sum(np.unique(voltageChangeArr))), 0) == 0):
                 print("NO WAVE")
-            if (len(np.unique(voltageChangeArr)) > 2) and (average_change > 0) and np.any(voltageChangeArr > 1.0):
+            if (len(np.unique(voltageChangeArr)) > 2) and (average_change > 0) and np.any(voltageChangeArr > 1):
                 print("SQUARE WAVE")
             if (average_change > 0 and mode_count >= 5) and (len(np.unique(voltageChangeArr)) > 3):
                 print("TRIANGLE WAVE")
