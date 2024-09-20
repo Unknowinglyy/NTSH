@@ -61,14 +61,14 @@ def measure_voltage(sample_rate=10):
             print(f"Mode of Changes: {mode_value:.2f} V, Count: {mode_count}")
 
             print(f"Max: {np.max(voltageChangeArr)}")
-            print(f"Max Rounded: {np.round(mode_value, 2)}")
+            print(f"Mode Rounded: {np.round(mode_value, 2)}")
 
             if (np.round(average_change, 2) == 0) and (mode_value == 0) and (np.round((np.sum(np.unique(voltageChangeArr_np))), 0) == 0):
                 print("NO WAVE")
             if (len(np.unique(voltageChangeArr_np)) >= 2) and (average_change > 0) and np.any(voltageChangeArr_np > 1) and (np.round(mode_value, 2) == 0 or ((np.max(voltageChangeArr)) - mode_value <= 0.25)) :
                 if (mode_count > 10):
                     print("SQUARE WAVE")
-            if (average_change > 0 and mode_count >= 9) and (len(np.unique(voltageChangeArr_np)) > 3) and (mode_value != 0) and not((np.max(voltageChangeArr)) - mode_value <= 0.25):
+            if (average_change > 0 and mode_count >= 9) and (len(np.unique(voltageChangeArr_np)) > 3) and (mode_value != 0):
                 print("TRIANGLE WAVE")
             if (len(np.unique(voltageChangeArr_np)) > 4) and average_change > 0 and mode_count <= 9:
                 if (mode_value == 0) and (mode_count < 9):
@@ -84,7 +84,7 @@ def measure_voltage(sample_rate=10):
         time.sleep(1 / 50)  # Wait for the next sample
 
 def main():
-    measure_voltage(sample_rate=100)  # 50 samples per second
+    measure_voltage(sample_rate=200)  # 50 samples per second
 
 if __name__ == "__main__":
     main()
