@@ -53,8 +53,8 @@ def measure_voltage(sample_rate=10):
             voltageChangeArr_B_np = np.array(voltageChangeArr_B)
 
 
-            print(voltageChangeArr)  # Print as NumPy array
-            print(np.unique(voltageChangeArr_np))
+            #print(voltageChangeArr)  # Print as NumPy array
+            #print(np.unique(voltageChangeArr_np))
             
             # Calculate mode
             mode_change = stats.mode(voltageChangeArr_np)
