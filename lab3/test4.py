@@ -38,10 +38,6 @@ def analyze_waveform(voltages):
     else:
         print("The waveform is likely a Triangle wave.")
 
-# In your measure_voltage function, call this after collecting voltages
-analyze_waveform(voltages)
-
-
 def measure_voltage(sample_rate=1000, num_samples=1000):
     previous_voltage = None
     voltages = []  # List to store raw voltage readings
