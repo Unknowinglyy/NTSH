@@ -4,6 +4,7 @@ import digitalio
 import board
 import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
+import numpy as np
 
 # Create SPI bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -25,7 +26,7 @@ def measure_voltage(sample_rate=10):
     while True:
         voltage = chan0.voltage
         change = voltage - previous_voltage if previous_voltage is not None else 0.0
-        total_change += change
+        total_change += np.fabs(change)
         
         print(f"Voltage: {voltage:.4f} V, Change: {change:.4f} V")
         
