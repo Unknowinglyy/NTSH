@@ -43,15 +43,15 @@ def measure_voltage(sample_rate=10):
         
         if count % 20 == 0:  # Every 20 readings
             average_change = total_change / sample_rate  # Calculate average change
-            print(f"Average Change (last 20 readings): {average_change:.2f} V")
-            print(voltageChangeArr)
-            print(np.unique(voltageChangeArr))
+            # print(f"Average Change (last 20 readings): {average_change:.2f} V")
+            # print(voltageChangeArr)
+            # print(np.unique(voltageChangeArr))
             
             # Calculate mode
             mode_change = stats.mode(voltageChangeArr)
             mode_value = mode_change.mode[0]
             mode_count = mode_change.count[0]
-            print(f"Mode of Changes: {mode_value:.2f} V, Count: {mode_count}")
+            #print(f"Mode of Changes: {mode_value:.2f} V, Count: {mode_count}")
 
             if average_change <= 0.02:
                 print("NO WAVE")
