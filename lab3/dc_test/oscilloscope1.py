@@ -51,7 +51,7 @@ def measure_voltage(sample_rate=10):
                 print("SQUARE WAVE")
             if (len(np.unique(voltageChangeArr)) > 3) and (len(np.unique(voltageChangeArr)) <= 6) and average_change > 0.02:
                 print("TRIANGLE WAVE")
-            if (len(np.unique(voltageChangeArr)) > 3) and average_change > 0.02:
+            if (len(np.unique(voltageChangeArr)) > 4) and average_change > 0.02:
                 print("SINE WAVE")
             print("-" * 40)  # Output a line of dashes
 
