@@ -43,7 +43,7 @@ def measure_voltage(sample_rate=10):
         previous_voltage = voltage  # Update previous voltage
         count += 1
         
-        if count % sample_count == 0:  # Every 50 readings
+        if count % sample_count == 0:  # Every 75 readings
             freq = find_frequency()
             average_change = total_change / sample_count  # Calculate average change
             print(f"Average Change (last {sample_count} readings): {average_change:.2f} V")
