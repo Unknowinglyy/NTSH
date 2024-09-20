@@ -65,7 +65,7 @@ def measure_voltage(sample_rate=10):
                 print("NO WAVE")
             if (len(np.unique(voltageChangeArr_np)) >= 2) and (average_change > 0) and np.any(voltageChangeArr_np > 1) and (np.round(mode_value, 2) == 0):
                 print("SQUARE WAVE")
-            if (average_change > 0 and mode_count >= 5) and (len(np.unique(voltageChangeArr_np)) > 3) and (mode_value != 0):
+            if (average_change > 0 and mode_count >= 9) and (len(np.unique(voltageChangeArr_np)) > 3) and (mode_value != 0):
                 print("TRIANGLE WAVE")
             if (len(np.unique(voltageChangeArr_np)) > 4) and average_change > 0 and mode_count <= 5:
                 if (mode_value == 0) and (mode_count < 5):
