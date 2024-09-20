@@ -68,8 +68,10 @@ def measure_voltage(sample_rate=10):
             if (average_change > 0 and mode_count >= 5) and (len(np.unique(voltageChangeArr_np)) > 3) and (mode_value != 0):
                 print("TRIANGLE WAVE")
             if (len(np.unique(voltageChangeArr_np)) > 4) and average_change > 0 and mode_count <= 5:
-                if (mode_value == 0)
-                print("SINE WAVE")
+                if (mode_value == 0) and (mode_count < 5):
+                    print("SINE WAVE")
+                if (mode_value != 0):
+                    print("SINE WAVE")
             print("-" * 40)  # Output a line of dashes
 
             total_change = 0.0  # Reset total change for the next set of readings
