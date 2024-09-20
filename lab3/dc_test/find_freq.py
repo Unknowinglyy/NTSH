@@ -51,10 +51,10 @@ def find_frequency(sample_rate=1000, duration=2):
     peak_freq = freqs[peak_freq_index]
 
     # Print debug information
-    print(f"fft_result = {fft_result}\n")
-    print(f"freqs = {freqs}\n")
-    print(f"peak_freq_index = {peak_freq_index}\n")
-    print(f"peak_freq = {peak_freq}\n")
+    # print(f"fft_result = {fft_result}\n")
+    # print(f"freqs = {freqs}\n")
+    # print(f"peak_freq_index = {peak_freq_index}\n")
+    # print(f"peak_freq = {peak_freq}\n")
 
     return abs(peak_freq)
 
