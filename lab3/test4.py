@@ -19,6 +19,23 @@ mcp = MCP.MCP3008(spi, cs)
 # Create an analog input channel on pin 0
 chan0 = AnalogIn(mcp, MCP.P0)
 
+import numpy as np
+
+def analyze_waveform(voltages):
+    max_voltage = np.max(voltages)
+    min_voltage = np.min(voltages)
+    peak_to_peak = max_voltage - min_voltage
+    rms_value = np.sqrt(np.mean(np.square(voltages)))
+
+    # Calculate expected RMS for sine and triangle waves
+    expected_rms_sine = max_voltage / np.sqrt(2)
+    expected_rms_triangle = max_voltage / np.sqrt(3)
+
+    if abs(rms_value - expected_rms_sine) < abs(rms_value - expected_rms_triangle):
+        print("The waveform is likely a Sine wave.")
+    else:
+        print("The waveform is likely a Triangle wave.")
+
 def measure_voltage(sample_rate=1000, num_samples=1000):
     previous_voltage = None
     voltages = []  # List to store raw voltage readings
@@ -66,6 +83,7 @@ def measure_voltage(sample_rate=1000, num_samples=1000):
         print(f"Actual RMS Voltage (based on samples): {actual_rms:.4f} V")
         print(f"Expected RMS - Actual RMS: {expected_rms_max - actual_rms:.4f} V")
         print("-" * 40)  # Separator for clarity
+        analyze_waveform(voltages)
 
         # Clear the lists for the next batch of samples
         slopes.clear()
