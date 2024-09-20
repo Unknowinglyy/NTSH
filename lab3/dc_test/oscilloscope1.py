@@ -30,7 +30,7 @@ def measure_voltage(sample_rate=10):
         change_mag = np.fabs(change)
 
         # Store |change|
-        voltageChangeArr.append(np.round(change_mag, 1))
+        voltageChangeArr.append(np.round(change_mag, 2))
     
         # Add |change| to total change
         total_change += change_mag
