@@ -28,7 +28,7 @@ def measure_voltage(sample_rate=10):
         change = voltage - previous_voltage if previous_voltage is not None else 0.0
         total_change += np.fabs(change)
         
-        print(f"Voltage: {voltage:.4f} V, Change: {change:.4f} V")
+        print(f"Voltage: {voltage:.2f} V, |Change|: {np.fabs(change:.2f)} V")
         
         previous_voltage = voltage  # Update previous voltage
         count += 1
