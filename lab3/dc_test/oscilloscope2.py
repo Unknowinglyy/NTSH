@@ -51,7 +51,7 @@ def measure_voltage(sample_rate=10):
             mode_change = stats.mode(voltageChangeArr)
             mode_value = mode_change.mode[0]
             mode_count = mode_change.count[0]
-            #print(f"Mode of Changes: {mode_value:.2f} V, Count: {mode_count}")
+            print(f"Mode of Changes: {mode_value:.2f} V, Count: {mode_count}")
 
             if average_change <= 0.02:
                 print("NO WAVE")
