@@ -21,7 +21,7 @@ def measure_voltage(sample_rate=10):
     count = 0  # Initialize count for readings
     while True:
         voltage = chan0.voltage
-        print(f"Voltage: {voltage:.4f} V")
+        print(f"Voltage: {voltage:.1f} V")
         
         count += 1
         if count % 10 == 0:  # Every 10 readings
