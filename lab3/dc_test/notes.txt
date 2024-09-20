@@ -1,2 +1,2 @@
-oscill2
-- square wave @ 20hz wrong
+Oscilloscope2 works for most cases
+- Wrong detection on Triangle Wave @ 20Hz
