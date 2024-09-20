@@ -74,6 +74,8 @@ def measure_voltage(sample_rate=10):
                     print("TRIANGLE WAVE")
                 elif((np.round(freq, 2) > 2)):
                     print("TRIANGLE WAVE")
+            elif(average_change > 0 and mode_count > 8) and (len(np.unique(voltageChangeArr_np)) >= 6) and (mode_value != 0) and (np.round(freq, 2) <= 2) and (np.round(freq, 2) >= 1):
+                    print("TRIANGLE WAVE")
             if (len(np.unique(voltageChangeArr_np)) > 4) and average_change > 0 and mode_count <= 9:
                 if (mode_value == 0) and (mode_count < 9):
                     print("SINE WAVE")
