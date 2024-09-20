@@ -27,14 +27,26 @@ def analyze_waveform(voltages):
     peak_to_peak = max_voltage - min_voltage
     rms_value = np.sqrt(np.mean(np.square(voltages)))
 
-    # Calculate expected RMS for sine and triangle waves
-    expected_rms_sine = max_voltage / np.sqrt(2)
-    expected_rms_triangle = max_voltage / np.sqrt(3)
+    # Calculate slopes
+    slopes = np.diff(voltages)
+    std_dev_slopes = np.std(slopes)
 
-    if abs(rms_value - expected_rms_sine) < abs(rms_value - expected_rms_triangle):
+    # Fourier Transform for harmonic analysis
+    N = len(voltages)
+    yf = fft(voltages)
+    freqs = np.fft.fftfreq(N)
+
+    # Check the first few harmonics
+    fundamental_freq = freqs[np.argmax(np.abs(yf[:N//2]))]  # Peak frequency
+    harmonic_count = np.count_nonzero(np.abs(yf) > (0.1 * np.max(np.abs(yf))))  # Count significant harmonics
+
+    # Basic criteria for differentiation
+    if std_dev_slopes < 0.01 and harmonic_count > 2:
         print("The waveform is likely a Sine wave.")
-    else:
+    elif std_dev_slopes >= 0.01 and harmonic_count <= 2:
         print("The waveform is likely a Triangle wave.")
+    else:
+        print("The waveform is ambiguous.")
 
 def measure_voltage(sample_rate=1000, num_samples=1000):
     previous_voltage = None
