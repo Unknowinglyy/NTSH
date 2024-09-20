@@ -1,51 +1,79 @@
-import numpy as np
-import spidev
 import time
-from scipy.stats import linregress
+import busio
+import digitalio
+import board
+import adafruit_mcp3xxx.mcp3008 as MCP
+from adafruit_mcp3xxx.analog_in import AnalogIn
+import numpy as np  # Import numpy for calculations
+from scipy.stats import linregress  # Import for linear regression analysis
 
-# MCP3008 setup
-spi = spidev.SpiDev()
-spi.open(0, 0)  # Open SPI bus 0, device 0
-spi.max_speed_hz = 1350000  # Set speed to 1.35MHz
+# Create SPI bus
+spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
 
-# Parameters
-num_samples = 1000  # Number of samples to analyze
-voltage_readings = []
+# Create CS (chip select)
+cs = digitalio.DigitalInOut(board.D25)
 
-try:
+# Create MCP object
+mcp = MCP.MCP3008(spi, cs)
+
+# Create an analog input channel on pin 0
+chan0 = AnalogIn(mcp, MCP.P0)
+
+def measure_voltage(sample_rate=1000, num_samples=1000):
+    previous_voltage = None
+    voltages = []  # List to store raw voltage readings
+    slopes = []    # List to store slopes between samples
+    indices = []   # List to store index values for linearity analysis
+
     while True:
-        # Read voltage from MCP3008 (channel 0)
-        adc_value = spi.xfer2([1, (8 << 4), 0])  # Start bit + channel
-        voltage = ((adc_value[1] & 3) << 8) + adc_value[2]
-        voltage = voltage * (3.3 / 1023)  # Convert to voltage (assuming 3.3V reference)
+        for i in range(num_samples):  # Collect specified number of samples
+            voltage = chan0.voltage
+            voltages.append(voltage)
+            indices.append(i)  # Store the index for regression analysis
 
-        # Store the reading
-        voltage_readings.append(voltage)
+            # Calculate the slope
+            if previous_voltage is not None:
+                slope = voltage - previous_voltage
+                slopes.append(slope)
+            
+            previous_voltage = voltage
+            
+            # Wait for the next sample
+            time.sleep(1 / sample_rate)
 
-        # Once we have enough samples, perform analysis
-        if len(voltage_readings) >= num_samples:
-            # Analyze linearity (using linear regression)
-            indices = np.arange(len(voltage_readings))
-            slope, intercept, r_value, p_value, std_err = linregress(indices, voltage_readings)
+        # After collecting samples, calculate stats
+        std_dev_slopes = np.std(slopes) if len(slopes) > 1 else 0
+        max_voltage = np.max(voltages) if voltages else 0
 
-            # Calculate standard deviation
-            std_dev = np.std(voltage_readings)
+        # Calculate expected RMS value based on max voltage
+        expected_rms_max = max_voltage / np.sqrt(2) if max_voltage > 0 else 0
+        
+        # Calculate actual RMS value from the sample voltages
+        actual_rms = np.sqrt(np.mean(np.square(voltages))) if voltages else 0
 
-            # Calculate linearity as R-squared value
+        # Linear regression analysis for linearity
+        if len(voltages) > 1:
+            slope, intercept, r_value, p_value, std_err = linregress(indices, voltages)
             linearity = r_value**2
+        else:
+            linearity = 0
 
-            # Output results
-            print(f"Linearity (R-squared): {linearity:.4f}")
-            print(f"Standard Deviation: {std_dev:.4f} V")
+        # Print the results
+        print(f"Linearity (R-squared): {linearity:.4f}")
+        print(f"Standard Deviation of Slopes: {std_dev_slopes:.4f} V/s")
+        print(f"Maximum Voltage: {max_voltage:.4f} V")
+        print(f"Expected RMS Voltage (based on max): {expected_rms_max:.4f} V")
+        print(f"Actual RMS Voltage (based on samples): {actual_rms:.4f} V")
+        print(f"Expected RMS - Actual RMS: {expected_rms_max - actual_rms:.4f} V")
+        print("-" * 40)  # Separator for clarity
 
-            # Clear the readings for the next batch
-            voltage_readings = []
+        # Clear the lists for the next batch of samples
+        slopes.clear()
+        voltages.clear()
+        indices.clear()
 
-        # Sleep for a short period to control the reading frequency
-        time.sleep(0.1)
+def main():
+    measure_voltage(sample_rate=1000, num_samples=1000)  # 1000 samples per second
 
-except KeyboardInterrupt:
-    print("Stopping the script.")
-
-finally:
-    spi.close()
+if __name__ == "__main__":
+    main()
