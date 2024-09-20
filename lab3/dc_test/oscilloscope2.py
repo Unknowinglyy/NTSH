@@ -45,7 +45,7 @@ def measure_voltage(sample_rate=10):
             average_change = total_change / sample_rate  # Calculate average change
             # print(f"Average Change (last 20 readings): {average_change:.2f} V")
             # print(voltageChangeArr)
-            # print(np.unique(voltageChangeArr))
+            print(np.unique(voltageChangeArr))
             
             # Calculate mode
             mode_change = stats.mode(voltageChangeArr)
