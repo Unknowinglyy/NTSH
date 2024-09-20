@@ -46,24 +46,24 @@ def measure_voltage(sample_rate=10):
         if count % sample_count == 0:  # Every 50 readings
             freq = find_frequency()
             average_change = total_change / sample_count  # Calculate average change
-            #print(f"Average Change (last {sample_count} readings): {average_change:.2f} V")
+            print(f"Average Change (last {sample_count} readings): {average_change:.2f} V")
             
             # Convert to NumPy arrays for analysis
             voltageChangeArr_np = np.array(voltageChangeArr)
             voltageChangeArr_B_np = np.array(voltageChangeArr_B)
 
 
-            #print(voltageChangeArr)  # Print as NumPy array
-            #print(np.unique(voltageChangeArr_np))
+            print(voltageChangeArr)  # Print as NumPy array
+            print(np.unique(voltageChangeArr_np))
             
             # Calculate mode
             mode_change = stats.mode(voltageChangeArr_np)
             mode_value = mode_change.mode[0]
             mode_count = mode_change.count[0]
-            #print(f"Mode of Changes: {mode_value:.2f} V, Count: {mode_count}")
+            print(f"Mode of Changes: {mode_value:.2f} V, Count: {mode_count}")
 
-            #print(f"Max Change: {np.max(voltageChangeArr)}")
-            #print(f"Max Voltage: {np.max(voltageChangeArr)}")
+            print(f"Max Change: {np.max(voltageChangeArr)}")
+            print(f"Max Voltage: {np.max(voltageChangeArr)}")
 
             if (np.round(average_change, 2) == 0) and (mode_value == 0) and (np.round((np.sum(np.unique(voltageChangeArr_np))), 0) == 0):
                 print("NO WAVE")
