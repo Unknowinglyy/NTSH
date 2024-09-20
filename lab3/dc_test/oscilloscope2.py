@@ -84,7 +84,7 @@ def measure_voltage(sample_rate=10):
         time.sleep(1 / 50)  # Wait for the next sample
 
 def main():
-    measure_voltage(sample_rate=50)  # 50 samples per second
+    measure_voltage(sample_rate=75)  # 50 samples per second
 
 if __name__ == "__main__":
     main()
