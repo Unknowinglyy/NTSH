@@ -68,6 +68,7 @@ def measure_voltage(sample_rate=10):
 
             total_change = 0.0  # Reset total change for the next 20 readings
             voltageChangeArr.clear()
+            voltageChangeArr_B.clear()
         
         time.sleep(1 / 50)  # Wait for the next sample [I CHANGED THE VALUE FROM 1/sample_rate to 50]
 
