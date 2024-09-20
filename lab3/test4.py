@@ -21,34 +21,26 @@ mcp = MCP.MCP3008(spi, cs)
 chan0 = AnalogIn(mcp, MCP.P0)
 
 import numpy as np
+import numpy as np
 
 def analyze_waveform(voltages):
     max_voltage = np.max(voltages)
     min_voltage = np.min(voltages)
+    peak_to_peak = max_voltage - min_voltage
     rms_value = np.sqrt(np.mean(np.square(voltages)))
 
-    # Calculate slopes
-    slopes = np.diff(voltages)
-    std_dev_slopes = np.std(slopes)
+    # Calculate expected RMS for sine and triangle waves
+    expected_rms_sine = max_voltage / np.sqrt(2)
+    expected_rms_triangle = max_voltage / np.sqrt(3)
 
-    # Fourier Transform for harmonic analysis
-    N = len(voltages)
-    yf = fft(voltages)
-    harmonic_amplitudes = np.abs(yf[:N//2])
-    
-    # Identify the fundamental frequency
-    fundamental_amplitude = np.max(harmonic_amplitudes)
-    
-    # Count significant harmonics (threshold can be adjusted)
-    significant_harmonics = np.sum(harmonic_amplitudes > (0.1 * fundamental_amplitude))
-
-    # Criteria for differentiation
-    if std_dev_slopes < 0.02 and significant_harmonics > 2:
+    if abs(rms_value - expected_rms_sine) < abs(rms_value - expected_rms_triangle):
         print("The waveform is likely a Sine wave.")
-    elif std_dev_slopes >= 0.02 and significant_harmonics <= 2:
-        print("The waveform is likely a Triangle wave.")
     else:
-        print("The waveform is ambiguous.")
+        print("The waveform is likely a Triangle wave.")
+
+# In your measure_voltage function, call this after collecting voltages
+analyze_waveform(voltages)
+
 
 def measure_voltage(sample_rate=1000, num_samples=1000):
     previous_voltage = None
