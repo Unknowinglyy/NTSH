@@ -33,50 +33,51 @@ def measure_voltage(sample_rate=10):
         change_mag = np.fabs(change)
 
         # Store |change|
-        voltageChangeArr.append(np.round(change_mag, 2))
-        voltageChangeArr = np.array(voltageChangeArr)
-        
+        voltageChangeArr.append(np.round(change_mag, 2))  # Use list for appending
         voltageChangeArr_B.append(np.round(change_mag, 0))
 
         # Add |change| to total change
         total_change += change_mag
         
-        #print(f"Voltage: {voltage:.2f} V, |Change|: {change_mag:.2f} V")
-        
         previous_voltage = voltage  # Update previous voltage
         count += 1
         
-        if count % sample_count == 0:  # Every 25 readings
-            average_change = total_change / sample_rate  # Calculate average change
-            print(f"Average Change (last 20 readings): {average_change:.2f} V")
-            print(voltageChangeArr)
+        if count % sample_count == 0:  # Every 50 readings
+            average_change = total_change / sample_count  # Calculate average change
+            print(f"Average Change (last {sample_count} readings): {average_change:.2f} V")
+            
+            # Convert to NumPy arrays for analysis
+            voltageChangeArr_np = np.array(voltageChangeArr)
+            voltageChangeArr_B_np = np.array(voltageChangeArr_B)
+
+            print(voltageChangeArr_np)  # Print as NumPy array
             print(voltageChangeArr_B)
-            print(np.unique(voltageChangeArr))
+            print(np.unique(voltageChangeArr_np))
             
             # Calculate mode
-            mode_change = stats.mode(voltageChangeArr)
+            mode_change = stats.mode(voltageChangeArr_np)
             mode_value = mode_change.mode[0]
             mode_count = mode_change.count[0]
             print(f"Mode of Changes: {mode_value:.2f} V, Count: {mode_count}")
 
-            if (np.round(average_change, 2) == 0) and (mode_value == 0) and (np.round((np.sum(np.unique(voltageChangeArr))), 0) == 0):
+            if (np.round(average_change, 2) == 0) and (mode_value == 0) and (np.round((np.sum(np.unique(voltageChangeArr_np))), 0) == 0):
                 print("NO WAVE")
-            if (len(np.unique(voltageChangeArr)) > 2) and (average_change > 0) and np.any(voltageChangeArr > 1):
+            if (len(np.unique(voltageChangeArr_np)) > 2) and (average_change > 0) and np.any(voltageChangeArr_np > 1):
                 print("SQUARE WAVE")
-            if (average_change > 0 and mode_count >= 5) and (len(np.unique(voltageChangeArr)) > 3):
+            if (average_change > 0 and mode_count >= 5) and (len(np.unique(voltageChangeArr_np)) > 3):
                 print("TRIANGLE WAVE")
-            if (len(np.unique(voltageChangeArr)) > 4) and average_change > 0 and mode_count < 4:
+            if (len(np.unique(voltageChangeArr_np)) > 4) and average_change > 0 and mode_count < 4:
                 print("SINE WAVE")
             print("-" * 40)  # Output a line of dashes
 
-            total_change = 0.0  # Reset total change for the next 20 readings
-            voltageChangeArr.clear()
+            total_change = 0.0  # Reset total change for the next set of readings
+            voltageChangeArr.clear()  # Clear list for the next readings
             voltageChangeArr_B.clear()
         
-        time.sleep(1 / 50)  # Wait for the next sample [I CHANGED THE VALUE FROM 1/sample_rate to 50]
+        time.sleep(1 / 50)  # Wait for the next sample
 
 def main():
-    measure_voltage(sample_rate=50)  # 20 samples per second
+    measure_voltage(sample_rate=50)  # 50 samples per second
 
 if __name__ == "__main__":
     main()
