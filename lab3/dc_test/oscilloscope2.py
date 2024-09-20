@@ -76,7 +76,7 @@ def measure_voltage(sample_rate=10):
                     print("SINE WAVE")
                 if (mode_value != 0):
                     print("SINE WAVE")
-            elif((np.round(freq, 2) <= 2) and ((np.round(freq, 2) >= 1) and mode_count > 9 and len(np.unique(voltageChangeArr_np)) > 4 and average_change > 0):
+            elif ((np.round(freq, 2) <= 2) and ((np.round(freq, 2) >= 1) and mode_count > 9 and len(np.unique(voltageChangeArr_np)) > 4 and average_change > 0)):
                 print("SINE WAVE")
             print(f"Current Frequency: {freq}")
             print("-" * 40)  # Output a line of dashes
