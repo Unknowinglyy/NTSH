@@ -61,7 +61,6 @@ def measure_voltage(sample_rate=10):
             print(f"Mode of Changes: {mode_value:.2f} V, Count: {mode_count}")
 
             print(f"Max: {np.max(voltageChangeArr)}")
-            print(f"Mode Rounded: {np.round(mode_value, 2)}")
 
             if (np.round(average_change, 2) == 0) and (mode_value == 0) and (np.round((np.sum(np.unique(voltageChangeArr_np))), 0) == 0):
                 print("NO WAVE")
@@ -70,7 +69,7 @@ def measure_voltage(sample_rate=10):
                     print("SQUARE WAVE")
             if (average_change > 0 and mode_count > 8) and (len(np.unique(voltageChangeArr_np)) > 7) and (mode_value != 0):
                 print("TRIANGLE WAVE")
-            if (len(np.unique(voltageChangeArr_np)) > 4) and average_change > 0 and mode_count <= 7:
+            if (len(np.unique(voltageChangeArr_np)) > 4) and average_change > 0 and mode_count <= 9:
                 if (mode_value == 0) and (mode_count < 9):
                     print("SINE WAVE")
                 if (mode_value != 0):
