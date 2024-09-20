@@ -70,7 +70,7 @@ def measure_voltage(sample_rate=10):
                 if (mode_count > 10):
                     print("SQUARE WAVE")
             if (average_change > 0 and mode_count > 8) and (len(np.unique(voltageChangeArr_np)) > 7) and (mode_value != 0):
-                if ((freq <= 2) and (freq >= 1)):
+                if ((np.floor(freq) <= 2) and (np.floor(freq) >= 1)):
                     print("POOP")
                 elif (freq > 2):
                     print("TRIANGLE WAVE")
