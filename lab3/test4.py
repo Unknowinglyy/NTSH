@@ -32,9 +32,9 @@ def analyze_waveform(voltages):
     shape_factor = rms_value / average_value if average_value != 0 else 0
 
     # Calculate skewness and kurtosis
-    skewness = ((np.mean((voltages - average_value)**3)) / 
+    skewness = (((np.mean((voltages - average_value)**3)) / 
                 (np.std(voltages)**3)) if np.std(voltages) != 0 else 0)
-    kurtosis = ((np.mean((voltages - average_value)**4)) / 
+    kurtosis = (((np.mean((voltages - average_value)**4)) / 
                 (np.std(voltages)**4)) if np.std(voltages) != 0 else 0)
 
     print(f"Shape Factor: {shape_factor:.4f}, Skewness: {skewness:.4f}, Kurtosis: {kurtosis:.4f}")
