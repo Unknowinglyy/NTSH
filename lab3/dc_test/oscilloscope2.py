@@ -36,7 +36,7 @@ def measure_voltage(sample_rate=10):
         # Add |change| to total change
         total_change += change_mag
         
-        print(f"Voltage: {voltage:.2f} V, |Change|: {change_mag:.2f} V")
+        #print(f"Voltage: {voltage:.2f} V, |Change|: {change_mag:.2f} V")
         
         previous_voltage = voltage  # Update previous voltage
         count += 1
