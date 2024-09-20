@@ -54,7 +54,7 @@ def measure_voltage(sample_rate=10):
             total_change = 0.0  # Reset total change for the next 10 readings
             voltageChangeArr.clear()
         
-        time.sleep(1 / sample_rate)  # Wait for the next sample
+        time.sleep(1 / 50)  # Wait for the next sample
 
 def main():
     measure_voltage(sample_rate=20)  # 20 samples per second
