@@ -24,6 +24,7 @@ def measure_voltage(sample_rate=10):
     count = 0  # Initialize count for readings
     total_change = 0.0  # Initialize total change
     voltageChangeArr = []
+    voltageChangeArr_B = []
 
     while True:
         voltage = chan0.voltage
@@ -32,7 +33,8 @@ def measure_voltage(sample_rate=10):
 
         # Store |change|
         voltageChangeArr.append(np.round(change_mag, 2))
-    
+        voltageChangeArr_B.append(np.round(change_mag, 0))
+
         # Add |change| to total change
         total_change += change_mag
         
@@ -45,6 +47,7 @@ def measure_voltage(sample_rate=10):
             average_change = total_change / sample_rate  # Calculate average change
             print(f"Average Change (last 20 readings): {average_change:.2f} V")
             print(voltageChangeArr)
+            print(voltageChangeArr_B)
             print(np.unique(voltageChangeArr))
             
             # Calculate mode
@@ -55,7 +58,7 @@ def measure_voltage(sample_rate=10):
 
             if (np.round(average_change, 0) == 0) and (mode_value == 0) and (np.round((np.sum(np.unique(voltageChangeArr))), 0) == 0):
                 print("NO WAVE")
-            if (len(np.unique(voltageChangeArr)) <= 3) and (average_change > 0) and (mode_value != 0):
+            if (len(np.unique(voltageChangeArr_B)) <= 2) and (average_change > 0):
                 print("SQUARE WAVE")
             if (average_change > 0 and mode_count >= 5) and (len(np.unique(voltageChangeArr)) > 3):
                 print("TRIANGLE WAVE")
