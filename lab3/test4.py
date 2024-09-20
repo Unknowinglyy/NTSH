@@ -36,7 +36,7 @@ def analyze_waveform(voltages):
                 (np.std(voltages)**3)) if np.std(voltages) != 0 else 0)
     kurtosis = (((np.mean((voltages - average_value)**4)) / 
                 (np.std(voltages)**4)) if np.std(voltages) != 0 else 0)
-
+    
     print(f"Shape Factor: {shape_factor:.4f}, Skewness: {skewness:.4f}, Kurtosis: {kurtosis:.4f}")
 
     # Criteria for differentiation
