@@ -44,6 +44,7 @@ def measure_voltage(sample_rate=10):
         count += 1
         
         if count % sample_count == 0:  # Every 50 readings
+            freq = find_frequency()
             average_change = total_change / sample_count  # Calculate average change
             print(f"Average Change (last {sample_count} readings): {average_change:.2f} V")
             
@@ -69,13 +70,16 @@ def measure_voltage(sample_rate=10):
                 if (mode_count > 10):
                     print("SQUARE WAVE")
             if (average_change > 0 and mode_count > 8) and (len(np.unique(voltageChangeArr_np)) > 7) and (mode_value != 0):
-                print("TRIANGLE WAVE")
+                if ((freq <= 2) and (freq >= 1)):
+                    print("POOP")
+                elif (freq > 2):
+                    print("TRIANGLE WAVE")
             if (len(np.unique(voltageChangeArr_np)) > 4) and average_change > 0 and mode_count <= 9:
                 if (mode_value == 0) and (mode_count < 9):
                     print("SINE WAVE")
                 if (mode_value != 0):
                     print("SINE WAVE")
-            print(f"Current Frequency: {find_frequency()}")
+            print(f"Current Frequency: {freq}")
             print("-" * 40)  # Output a line of dashes
 
             total_change = 0.0  # Reset total change for the next set of readings
