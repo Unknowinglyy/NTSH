@@ -25,18 +25,27 @@ import numpy as np
 
 def analyze_waveform(voltages):
     max_voltage = np.max(voltages)
-    min_voltage = np.min(voltages)
-    peak_to_peak = max_voltage - min_voltage
     rms_value = np.sqrt(np.mean(np.square(voltages)))
+    average_value = np.mean(voltages)
 
-    # Calculate expected RMS for sine and triangle waves
-    expected_rms_sine = max_voltage / np.sqrt(2)
-    expected_rms_triangle = max_voltage / np.sqrt(3)
+    # Calculate shape factor
+    shape_factor = rms_value / average_value if average_value != 0 else 0
 
-    if abs(rms_value - expected_rms_sine) < abs(rms_value - expected_rms_triangle):
+    # Calculate skewness and kurtosis
+    skewness = ((np.mean((voltages - average_value)**3)) / 
+                (np.std(voltages)**3)) if np.std(voltages) != 0 else 0)
+    kurtosis = ((np.mean((voltages - average_value)**4)) / 
+                (np.std(voltages)**4)) if np.std(voltages) != 0 else 0)
+
+    print(f"Shape Factor: {shape_factor:.4f}, Skewness: {skewness:.4f}, Kurtosis: {kurtosis:.4f}")
+
+    # Criteria for differentiation
+    if shape_factor > 1.0 and skewness < 0.5:
         print("The waveform is likely a Sine wave.")
-    else:
+    elif shape_factor < 0.6 and skewness > 0.5:
         print("The waveform is likely a Triangle wave.")
+    else:
+        print("The waveform is ambiguous.")
 
 def measure_voltage(sample_rate=2000, num_samples=2000):
     previous_voltage = None
