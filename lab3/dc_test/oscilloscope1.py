@@ -43,18 +43,21 @@ def measure_voltage(sample_rate=10):
         if count % 20 == 0:  # Every 10 readings
             average_change = total_change / sample_rate  # Calculate average change
             print(f"Average Change (last 10 readings): {average_change:.2f} V")
-
+            print(voltageChangeArr)
+            print(np.unique(voltageChangeArr))
             if average_change <= 0.02:
                 print("NO WAVE")
-            if (len(np.unique(voltageChangeArr)) < 4) and average_change > 0.02:
+            if (len(np.unique(voltageChangeArr)) < 2) and average_change > 0.02:
                 print("SQUARE WAVE")
-            print(voltageChangeArr)
+            if (len(np.unique(voltageChangeArr)) > 3) and (len(np.unique(voltageChangeArr)) < 6) and 
+                average_change > 0.02:
+                print("TRIANGLE WAVE")
             print("-" * 40)  # Output a line of dashes
 
             total_change = 0.0  # Reset total change for the next 10 readings
             voltageChangeArr.clear()
         
-        time.sleep(1 / 50)  # Wait for the next sample
+        time.sleep(1 / 50)  # Wait for the next sample [I CHANGED THE VALUE FROM 1/sample_rate to 50]
 
 def main():
     measure_voltage(sample_rate=20)  # 20 samples per second
