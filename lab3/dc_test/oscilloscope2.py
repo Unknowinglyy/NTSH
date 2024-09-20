@@ -6,6 +6,7 @@ import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 import numpy as np
 from scipy import stats  # Import stats from scipy
+from find_freq2 import find_frequency
 
 # Create SPI bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -74,6 +75,7 @@ def measure_voltage(sample_rate=10):
                     print("SINE WAVE")
                 if (mode_value != 0):
                     print("SINE WAVE")
+            find_frequency(sample_rate=75, duration=2)
             print("-" * 40)  # Output a line of dashes
 
             total_change = 0.0  # Reset total change for the next set of readings
