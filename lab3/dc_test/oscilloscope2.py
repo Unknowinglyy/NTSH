@@ -6,7 +6,7 @@ import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 import numpy as np
 from scipy import stats  # Import stats from scipy
-from find_freq2 import find_frequency
+from find_freq3 import find_frequency
 
 # Create SPI bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
