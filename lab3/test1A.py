@@ -26,9 +26,12 @@ def measure_voltage(sample_rate=10):
     while True:
         voltage = chan0.voltage
         change = voltage - previous_voltage if previous_voltage is not None else 0.0
-        total_change += np.fabs(change)
+        change_mag = np.fabs(change)
+
+        # Add |change| to total change
+        total_change += change_mag
         
-        print(f"Voltage: {voltage:.2f} V, |Change|: {np.fabs(change:.2f)} V")
+        print(f"Voltage: {voltage:.2f} V, |Change|: {change_mag} V")
         
         previous_voltage = voltage  # Update previous voltage
         count += 1
