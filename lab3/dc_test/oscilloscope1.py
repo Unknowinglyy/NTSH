@@ -22,12 +22,16 @@ def measure_voltage(sample_rate=10):
     previous_voltage = None  # Initialize previous voltage
     count = 0  # Initialize count for readings
     total_change = 0.0  # Initialize total change
+    voltageChangeArr = []
 
     while True:
         voltage = chan0.voltage
         change = voltage - previous_voltage if previous_voltage is not None else 0.0
         change_mag = np.fabs(change)
 
+        # Store |change|
+        voltageChangeArr.append(change_mag:.2f)
+    
         # Add |change| to total change
         total_change += change_mag
         
@@ -38,9 +42,12 @@ def measure_voltage(sample_rate=10):
         
         if count % 10 == 0:  # Every 10 readings
             average_change = total_change / 10  # Calculate average change
+            print(f"Average Change (last 10 readings): {average_change:.2f} V")
+
             if average_change == 0 or average_change <= 0.05:
                 print("NO WAVE")
-            print(f"Average Change (last 10 readings): {average_change:.2f} V")
+            
+            print(voltageChangeArr)
             print("-" * 40)  # Output a line of dashes
             total_change = 0.0  # Reset total change for the next 10 readings
 
