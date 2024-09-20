@@ -38,7 +38,7 @@ def analyze_waveform(voltages):
     else:
         print("The waveform is likely a Triangle wave.")
 
-def measure_voltage(sample_rate=1000, num_samples=1000):
+def measure_voltage(sample_rate=2000, num_samples=2000):
     previous_voltage = None
     voltages = []  # List to store raw voltage readings
     slopes = []    # List to store slopes between samples
