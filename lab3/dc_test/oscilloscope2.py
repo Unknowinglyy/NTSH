@@ -62,7 +62,8 @@ def measure_voltage(sample_rate=10):
             mode_count = mode_change.count[0]
             print(f"Mode of Changes: {mode_value:.2f} V, Count: {mode_count}")
 
-            print(f"Max: {np.max(voltageChangeArr)}")
+            print(f"Max Change: {np.max(voltageChangeArr)}")
+            #print(f"Max Voltage: {np.max(voltageChangeArr)}")
 
             if (np.round(average_change, 2) == 0) and (mode_value == 0) and (np.round((np.sum(np.unique(voltageChangeArr_np))), 0) == 0):
                 print("NO WAVE")
@@ -81,7 +82,7 @@ def measure_voltage(sample_rate=10):
                     print("SINE WAVE")
                 if (mode_value != 0):
                     print("SINE WAVE")
-            elif ((np.round(freq, 2) <= 2) and ((np.round(freq, 2) >= 1) and mode_count < 12 and len(np.unique(voltageChangeArr_np)) > 4 and average_change > 0)):
+            elif ((np.round(freq, 2) <= 2) and ((np.round(freq, 2) >= 1) and mode_count < 15 and len(np.unique(voltageChangeArr_np)) > 4 and average_change > 0)):
                 print("SINE WAVE")
             print(f"Current Frequency: {freq}")
             print("-" * 40)  # Output a line of dashes
