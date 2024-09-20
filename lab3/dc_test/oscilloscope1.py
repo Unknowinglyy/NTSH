@@ -40,7 +40,7 @@ def measure_voltage(sample_rate=10):
         previous_voltage = voltage  # Update previous voltage
         count += 1
         
-        if count % 10 == 0:  # Every 10 readings
+        if count % 20 == 0:  # Every 10 readings
             average_change = total_change / 10  # Calculate average change
             print(f"Average Change (last 10 readings): {average_change:.2f} V")
 
@@ -57,7 +57,7 @@ def measure_voltage(sample_rate=10):
         time.sleep(1 / sample_rate)  # Wait for the next sample
 
 def main():
-    measure_voltage(sample_rate=10)  # 10 samples per second
+    measure_voltage(sample_rate=20)  # 10 samples per second
 
 if __name__ == "__main__":
     main()
