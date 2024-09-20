@@ -1,3 +1,11 @@
+import time
+import busio
+import digitalio
+import board
+import adafruit_mcp3xxx.mcp3008 as MCP
+from adafruit_mcp3xxx.analog_in import AnalogIn
+import numpy as np
+
 def find_frequency(sample_rate=1000, duration=4):
     num_samples = sample_rate * duration
     samples = []
