@@ -66,10 +66,10 @@ def find_frequency(sample_rate=1000, duration=4):
             peak_freq += offset * (freqs[1] - freqs[0])  # Adjust by the frequency spacing
 
     # Print debug information
-    print(f"fft_result = {fft_result}\n")
-    print(f"freqs = {freqs}\n")
-    print(f"peak_freq_index = {peak_freq_index}\n")
-    print(f"peak_freq = {peak_freq:.10f}\n")  # Adjusted for higher precision
+    # print(f"fft_result = {fft_result}\n")
+    # print(f"freqs = {freqs}\n")
+    # print(f"peak_freq_index = {peak_freq_index}\n")
+    # print(f"peak_freq = {peak_freq:.10f}\n")  # Adjusted for higher precision
 
     return abs(peak_freq)
 

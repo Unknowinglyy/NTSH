@@ -75,7 +75,7 @@ def measure_voltage(sample_rate=10):
                     print("SINE WAVE")
                 if (mode_value != 0):
                     print("SINE WAVE")
-            find_frequency(sample_rate=75, duration=2)
+            print(find_frequency(sample_rate=75, duration=2))
             print("-" * 40)  # Output a line of dashes
 
             total_change = 0.0  # Reset total change for the next set of readings
