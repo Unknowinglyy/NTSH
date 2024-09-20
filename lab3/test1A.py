@@ -38,7 +38,7 @@ def measure_voltage(sample_rate=10):
         
         if count % 10 == 0:  # Every 10 readings
             average_change = total_change / 10  # Calculate average change
-            print(f"Average Change (last 10 readings): {average_change:.4f} V")
+            print(f"Average Change (last 10 readings): {average_change:.2f} V")
             print("-" * 40)  # Output a line of dashes
             total_change = 0.0  # Reset total change for the next 10 readings
 
