@@ -46,7 +46,7 @@ def update_plot(frame):
     detect_step(accel_z, current_time)
     
     ax.clear()
-    ax.plot(time_data, accel_x_data, lalel='Accel X')
+    ax.plot(time_data, accel_x_data, label='Accel X')
     ax.plot(time_data, accel_y_data, label='Accel Y')
     ax.plot(time_data, accel_z_data, label='Accel Z')
 
