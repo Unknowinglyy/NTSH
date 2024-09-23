@@ -3,6 +3,7 @@ import busio
 import adafruit_mpu6050
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from mp1_toolkits.mplot3d import Axes3D
 from time import sleep, perf_counter
 
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -62,7 +63,7 @@ def main():
     ani = animation.FuncAnimation(fig, update_plot, interval=100)
 
     try:
-        plpt.show()
+        plt.show()
     except KeyboardInterrupt:
         print(f"Total steps detected: {step_count}")
 
