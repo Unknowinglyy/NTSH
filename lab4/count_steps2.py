@@ -33,7 +33,7 @@ def detect_step(accel_z, current_time):
         print(f"Step detected! Total steps: {step_count}")
     
     step_time_data.append(current_time)
-    step_accel_z_data.append(accel_x_data[-1])
+    step_accel_x_data.append(accel_x_data[-1])
     step_accel_y_data.append(accel_y_data[-1])
     step_accel_z_data.append(accel_z_data[-1])
 
