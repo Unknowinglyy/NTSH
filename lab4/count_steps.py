@@ -66,6 +66,7 @@ def main():
         plt.show()
     except KeyboardInterrupt:
         print(f"Total steps detected: {step_count}")
+        return
 
 if __name__ == "__main__":
     main()
