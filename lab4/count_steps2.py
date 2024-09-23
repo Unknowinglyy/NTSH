@@ -2,28 +2,33 @@ import board
 import busio
 import adafruit_mpu6050
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from mpl_toolkits.mplot3d import Axes3D
-from time import sleep, perf_counter
+from time import perf_counter, sleep
 
+# Initialize I2C and MPU6050
 i2c = busio.I2C(board.SCL, board.SDA)
 mpu = adafruit_mpu6050.MPU6050(i2c)
 
-step_threshold = 10.0
-step_interval = 0.5
+# Parameters for step detection
+step_threshold = 10.0  # Adjust this threshold based on your specific needs
+step_interval = 0.5  # Minimum time between steps in seconds
 
+# Variables to keep track of steps
 last_step_time = 0
 step_count = 0
 
+# Lists to store data for plotting
 time_data = []
 accel_x_data = []
 accel_y_data = []
 accel_z_data = []
 
+# Lists to store step data for plotting
 step_time_data = []
 step_accel_x_data = []
 step_accel_y_data = []
 step_accel_z_data = []
+
+start_time = perf_counter()
 
 def detect_step(accel_z, current_time):
     global last_step_time, step_count
@@ -31,20 +36,22 @@ def detect_step(accel_z, current_time):
         step_count += 1
         last_step_time = current_time
         print(f"Step detected! Total steps: {step_count}")
-    
-    step_time_data.append(current_time)
-    step_accel_x_data.append(accel_x_data[-1])
-    step_accel_y_data.append(accel_y_data[-1])
-    step_accel_z_data.append(accel_z_data[-1])
 
-    if len(step_time_data) > 50:
-        step_time_data.pop(0)
-        step_accel_x_data.pop(0)
-        step_accel_y_data.pop(0)
-        step_accel_z_data.pop(0)
+        # Store step data
+        step_time_data.append(current_time - start_time)
+        step_accel_x_data.append(accel_x_data[-1])
+        step_accel_y_data.append(accel_y_data[-1])
+        step_accel_z_data.append(accel_z_data[-1])
+
+        # Limit the size of the lists to the last 50 steps
+        if len(step_time_data) > 50:
+            step_time_data.pop(0)
+            step_accel_x_data.pop(0)
+            step_accel_y_data.pop(0)
+            step_accel_z_data.pop(0)
 
 def main():
-    global step_count
+    global step_count, start_time
     print("Starting step counter...")
 
     try:
@@ -52,7 +59,7 @@ def main():
             accel_x, accel_y, accel_z = mpu.acceleration
             current_time = perf_counter()
 
-            time_data.append(current_time)
+            time_data.append(current_time - start_time)
             accel_x_data.append(accel_x)
             accel_y_data.append(accel_y)
             accel_z_data.append(accel_z)
@@ -64,13 +71,11 @@ def main():
         plot_steps()
 
 def plot_steps():
-    if step_time_data:
-        start_time = step_time_data[0]
-        normalized_step_time_data = [t - start_time for t in step_time_data]
+    # Plot the acceleration data for the last 50 steps
     plt.figure()
-    plt.plot(normalized_step_time_data, step_accel_x_data, label='Step Accel X')
-    plt.plot(normalized_step_time_data, step_accel_y_data, label='Step Accel Y')
-    plt.plot(normalized_step_time_data, step_accel_z_data, label='Step Accel Z')
+    plt.plot(step_time_data, step_accel_x_data, label='Step Accel X')
+    plt.plot(step_time_data, step_accel_y_data, label='Step Accel Y')
+    plt.plot(step_time_data, step_accel_z_data, label='Step Accel Z')
 
     plt.xlabel('Time (s)')
     plt.ylabel('Acceleration (m/s^2)')
