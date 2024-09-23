@@ -7,8 +7,8 @@ from time import sleep, perf_counter
 i2c = busio.I2C(board.SCL, board.SDA)
 mpu = adafruit_mpu6050.MPU6050(i2c)
 
-step_threshold = 3.0
-step_interval = 0.3
+step_threshold = 10.0
+step_interval = 0.5
 
 last_step_time = 0
 step_count = 0
