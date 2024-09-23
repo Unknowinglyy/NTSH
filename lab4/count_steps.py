@@ -3,7 +3,7 @@ import busio
 import adafruit_mpu6050
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from mp1_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import Axes3D
 from time import sleep, perf_counter
 
 i2c = busio.I2C(board.SCL, board.SDA)
