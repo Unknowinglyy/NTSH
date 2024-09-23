@@ -28,7 +28,7 @@ def detect_step(accel_z, current_time):
         print(f"Step detected! Total steps: {step_count}")
 
 def update_plot(frame):
-    global step_count
+    global step_count, ax
     accel_x, accel_y, accel_z = mpu.acceleration
     current_time = perf_counter()
 
@@ -55,7 +55,7 @@ def update_plot(frame):
     ax.legend(loc='upper right')
 
 def main():
-    global step_count
+    global step_count, ax
     print("Starting step counter...")
 
     # Set up the plot
