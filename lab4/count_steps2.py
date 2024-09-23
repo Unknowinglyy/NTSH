@@ -64,10 +64,13 @@ def main():
         plot_steps()
 
 def plot_steps():
+    if step_time_data:
+        start_time = step_time_data[0]
+        normalized_step_time_data = [t - start_time for t in step_time_data]]
     plt.figure()
-    plt.plot(step_time_data, step_accel_x_data, label='Step Accel X')
-    plt.plot(step_time_data, step_accel_y_data, label='Step Accel Y')
-    plt.plot(step_time_data, step_accel_z_data, label='Step Accel Z')
+    plt.plot(normalized_step_time_data, step_accel_x_data, label='Step Accel X')
+    plt.plot(normalized_step_time_data, step_accel_y_data, label='Step Accel Y')
+    plt.plot(normalized_step_time_data, step_accel_z_data, label='Step Accel Z')
 
     plt.xlabel('Time (s)')
     plt.ylabel('Acceleration (m/s^2)')
