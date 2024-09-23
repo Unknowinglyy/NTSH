@@ -61,12 +61,7 @@ def main():
     # Set up the plot
     fig, ax = plt.subplots()
     ani = animation.FuncAnimation(fig, update_plot, interval=100)
-
-    try:
-        plt.show()
-    except KeyboardInterrupt:
-        print(f"Total steps detected: {step_count}")
-        return
+    plt.show()
 
 if __name__ == "__main__":
     main()
