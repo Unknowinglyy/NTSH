@@ -5,25 +5,26 @@ import matplotlib.pyplot as plt
 from time import perf_counter, sleep
 from math import sqrt
 
-# Initialize I2C and MPU6050
+# initialize I2C and MPU6050
 i2c = busio.I2C(board.SCL, board.SDA)
 mpu = adafruit_mpu6050.MPU6050(i2c)
 
-# Parameters for step detection
-step_threshold = 10.0  # Adjust this threshold based on your specific needs
-step_interval = 0.5  # Minimum time between steps in seconds
+# parameters for step detection
+step_threshold = 10.0
+# minimum time between steps in seconds
+step_interval = 0.5
 
-# Variables to keep track of steps
+# variables to keep track of steps
 last_step_time = 0
 step_count = 0
 
-# Lists to store data for plotting
+# lists to store data for plotting
 time_data = []
 accel_x_data = []
 accel_y_data = []
 accel_z_data = []
 
-# Lists to store step data for plotting
+# lists to store step data for plotting
 step_time_data = []
 step_accel_x_data = []
 step_accel_y_data = []
@@ -39,13 +40,13 @@ def detect_step(accel_x ,accel_y, accel_z, current_time):
         last_step_time = current_time
         print(f"Step detected! Total steps: {step_count}")
 
-        # Store step data
+        # store step data
         step_time_data.append(current_time - start_time)
         step_accel_x_data.append(accel_x_data[-1])
         step_accel_y_data.append(accel_y_data[-1])
         step_accel_z_data.append(accel_z_data[-1])
 
-        # Limit the size of the lists to the last 50 steps
+        # limit the size of the lists to the last 50 steps
         if len(step_time_data) > 50:
             step_time_data.pop(0)
             step_accel_x_data.pop(0)
@@ -73,7 +74,7 @@ def main():
         plot_steps()
 
 def plot_steps():
-    # Plot the acceleration data for the last 50 steps
+    # plot the acceleration data for the last 50 steps
     plt.figure()
     plt.plot(step_time_data, step_accel_x_data, label='Step Accel X')
     plt.plot(step_time_data, step_accel_y_data, label='Step Accel Y')

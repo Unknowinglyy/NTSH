@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
 from time import sleep, perf_counter
+from math import sqrt
 
 i2c = busio.I2C(board.SCL, board.SDA)
 mpu = adafruit_mpu6050.MPU6050(i2c)
@@ -20,9 +21,10 @@ accel_x_data = []
 accel_y_data = []
 accel_z_data = []
 
-def detect_step(accel_z, current_time):
+def detect_step(accel_x, accel_y, accel_z, current_time):
     global last_step_time, step_count
-    if accel_z > step_threshold and (current_time - last_step_time) > step_interval:
+    total_accel = sqrt(accel_x**2 + accel_y**2 + accel_z**2)
+    if total_accel > step_threshold and (current_time - last_step_time) > step_interval:
         step_count += 1
         last_step_time = current_time
         print(f"Step detected! Total steps: {step_count}")
@@ -43,7 +45,7 @@ def update_plot(frame):
         accel_y_data.pop(0)
         accel_z_data.pop(0)
 
-    detect_step(accel_z, current_time)
+    detect_step(accel_x, accel_y, accel_z, current_time)
     
     ax.clear()
     ax.plot(time_data, accel_x_data, label='Accel X')
