@@ -34,7 +34,6 @@ start_time = perf_counter()
 def detect_step(accel_x ,accel_y, accel_z, current_time):
     global last_step_time, step_count
     total_accel = sqrt(accel_x**2 + accel_y**2 + accel_z**2)
-    print(f"Total acceleration: {total_accel}")
     if total_accel > step_threshold and (current_time - last_step_time) > step_interval:
         step_count += 1
         last_step_time = current_time
