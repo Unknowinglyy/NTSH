@@ -25,6 +25,6 @@ for event in device.read_loop():
             while running:
                 print(f"Touch at X: {x}, Y: {y}")
                 time.sleep(1)
-                if not(event.type == evdev.ecodes.EV_KEY):
+                if (event.type != evdev.ecodes.EV_KEY):
                     print("this should output")
                     running = False
