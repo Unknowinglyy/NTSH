@@ -1,15 +1,23 @@
-import serial
+import evdev
 
-ser = serial.Serial('ttyAMA0', 9600, timeout=1)
+device_path = '/dev/input/event4'
+
+device = evdev.InputDevice(device_path)
+
+print(f"Listening for events from {device_path}...")
 
 try:
-    while True:
-        line = ser.readline().decode('utf-8').strip()
-        if line:
-            print(f"Received: {line}")
-
+    for event in device.read_loop():
+        if event.type == evdev.encodes.EV_ABS:
+            absevent = evdev.categorize(event)
+            print(f"Absolute event: code = {absevent.event.code}, value = {absevent.event.value}")
+        elif event.type == evdev.encodes.EV_KEY:
+            keyevent = evdev.categorize(event)
+            print(f"Key event: code = {keyevent.event.code}, value = {keyevent.event.value}")
+        elif event.type == evdev.encodes.EV_SYN:
+            print("Sync event")
 except KeyboardInterrupt:
-    print("Exiting Program")
+    print("Exiting...")
 finally:
-    ser.close()
-    print("Serial port closed")
+    device.close()
+    print("Input device closed")
