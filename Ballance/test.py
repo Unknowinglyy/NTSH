@@ -1,9 +1,6 @@
 import serial
 
-serial_port = 'AMA0' # '/dev/ttyUSB0'
-baud_rate = 9600
-
-ser = serial.Serial(serial_port, baud_rate, timeout=1)
+ser = serial.Serial('/dev/ttyAMA0', 9600, timeout=1)
 
 try:
     while True:
