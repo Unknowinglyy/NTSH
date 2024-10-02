@@ -3,7 +3,7 @@ import time
 # Replace 'eventX' with your actual event device for the touchscreen
 device_path = '/dev/input/event4'
 device = evdev.InputDevice(device_path)
- running = True
+running = True
 
 print(f"Device: {device.name}")
 print(f"Listening for touch events on {device.path}...")
