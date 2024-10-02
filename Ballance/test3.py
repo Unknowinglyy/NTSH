@@ -1,7 +1,7 @@
 import evdev
 
 # Replace 'eventX' with your actual event device for the touchscreen
-device_path = '/dev/input/eventX'
+device_path = '/dev/input/event4'
 device = evdev.InputDevice(device_path)
 
 print(f"Device: {device.name}")
