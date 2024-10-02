@@ -1,0 +1,6 @@
+To Determine Which event# input the touch screen is, run 'sudo evtest'
+Touchscreen event# input that returns coordinates is ' event4' 
+
+
+
+
