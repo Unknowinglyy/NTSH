@@ -1,5 +1,5 @@
 import evdev
-
+import time
 # Replace 'eventX' with your actual event device for the touchscreen
 device_path = '/dev/input/event4'
 device = evdev.InputDevice(device_path)
@@ -13,13 +13,17 @@ x, y = None, None
 for event in device.read_loop():
     # Only process single-touch absolute X and Y events (ignore multitouch)
     if event.type == evdev.ecodes.EV_ABS:
-        if event.code == evdev.ecodes.ABS_X:
+        if event.code == evdev.ecodes.ABS_X or event.code == evdev.ecodes.ABS_MT_POSITION_X:
             x = event.value
-        elif event.code == evdev.ecodes.ABS_Y:
+        elif event.code == evdev.ecodes.ABS_Y or event.code == evdev.ecodes.ABS_MT_POSITION_Y:
             y = event.value
         # Print coordinates when both X and Y are captured
         if x is not None and y is not None:
             print(f"Touch at X: {x}, Y: {y}")
-            x, y = None, None  # Reset after output
     elif event.type == evdev.ecodes.EV_KEY:
-            print(f"Touch at X: {x}, Y: {y}")
+            running = True
+            while running:
+                print(f"Touch at X: {x}, Y: {y}")
+                time.sleep(1)
+                if not(event.type == evdev.ecodes.EV_KEY):
+                    running = False
