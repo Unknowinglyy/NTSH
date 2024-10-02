@@ -1,7 +1,7 @@
 import serial
 import time
 
-serial_port = 'AMA0' # '/dev/ttyUSB0'
+serial_port = 'dev/ttyAMA0' # '/dev/ttyUSB0'
 baud_rates = [9600, 19200, 38400, 57600, 115200]
 
 for baud_rate in baud_rates:
