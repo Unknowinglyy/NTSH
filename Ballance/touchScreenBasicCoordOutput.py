@@ -23,6 +23,7 @@ for event in device.read_loop():
             print(f"Touch at X: {x}, Y: {y}")
     elif event.type == evdev.ecodes.EV_KEY:
             while running:
+                print(f"current type: {event.type}")
                 print(f"Touch at X: {x}, Y: {y}")
                 time.sleep(1)
                 if (event.type != evdev.ecodes.EV_KEY):
