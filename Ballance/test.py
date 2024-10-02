@@ -1,6 +1,6 @@
 import serial
 
-ser = serial.Serial('/dev/ttyAMA0', 9600, timeout=1)
+ser = serial.Serial('ttyAMA0', 9600, timeout=1)
 
 try:
     while True:
