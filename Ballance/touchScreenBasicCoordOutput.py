@@ -22,4 +22,4 @@ for event in device.read_loop():
             print(f"Touch at X: {x}, Y: {y}")
             x, y = None, None  # Reset after output
     elif event.type == evdev.ecodes.EV_KEY:
-            
+            print("No touch")
