@@ -1,6 +1,6 @@
 import serial
 
-serial_port = 'COM3'
+serial_port = 'AMA0' # '/dev/ttyUSB0'
 baud_rate = 9600
 
 ser = serial.Serial(serial_port, baud_rate, timeout=1)
