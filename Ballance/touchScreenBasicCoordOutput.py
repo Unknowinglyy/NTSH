@@ -3,7 +3,6 @@ import time
 # Replace 'eventX' with your actual event device for the touchscreen
 device_path = '/dev/input/event4'
 device = evdev.InputDevice(device_path)
-running = True
 
 print(f"Device: {device.name}")
 print(f"Listening for touch events on {device.path}...")
@@ -22,10 +21,5 @@ for event in device.read_loop():
         if x is not None and y is not None:
             print(f"Touch at X: {x}, Y: {y}")
     elif event.type == evdev.ecodes.EV_KEY:
-            while running:
-                print(f"current type: {event.type}")
-                print(f"Touch at X: {x}, Y: {y}")
-                time.sleep(1)
-                if (event.type != evdev.ecodes.EV_KEY):
-                    print("this should output")
-                    running = False
+            print(f"Touch at X: {x}, Y: {y}")
+            time.sleep(1)
