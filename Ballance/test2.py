@@ -10,9 +10,7 @@ print(f"Listening for touch events on {device.path}...")
 # Read touch events in a loop
 for event in device.read_loop():
     if event.type == evdev.ecodes.EV_ABS:
-        if event.code == evdev.ecodes.ABS_X:
             x = event.value
-            print(f"X Coordinate: {x}")
-        elif event.code == evdev.ecodes.ABS_Y:
             y = event.value
-            print(f"X Coordinate: {y}")
+            print(f"X Coordinate: {x}")
+            print(f"Y Coordinate: {y}")
