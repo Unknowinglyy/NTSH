@@ -120,11 +120,11 @@ def main():
         glLoadIdentity()
         glTranslatef(0.0, 0.0, -5.0)
         glRotatef(pitch, 1.0, 0.0, 0.0)
-        glRotatef(roll, 0.0, 1.0, 0.0)
-        glRotatef(yaw, 0.0, 0.0, 1.0)
+        glRotatef(yaw, 0.0, -1.0, 0.0)
+        glRotatef(roll, 0.0, 0.0, -1.0)
         draw_rect()
         pygame.display.flip()
-        clock.tick(60)
+        #clock.tick(60)
 
 if __name__ == "__main__":
     main()
