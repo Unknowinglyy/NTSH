@@ -96,7 +96,7 @@ def get_orientation(dt):
     roll += gyro_y * dt
     yaw += gyro_z * dt
 
-    alpha = 0.98
+    alpha = 0.9
     pitch = alpha * pitch + (1 - alpha) * accel_pitch
     roll = alpha * roll + (1 - alpha) * accel_roll
 
@@ -113,7 +113,7 @@ def main():
                 return
         
 
-        dt = clock.tick(60) / 1000.0
+        dt = clock.tick(120) / 1000.0
         get_orientation(dt)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
