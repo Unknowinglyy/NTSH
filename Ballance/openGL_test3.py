@@ -42,9 +42,9 @@ def init():
 
 def draw_cube():
     glBegin(GL_QUADS)
-    scale_x = 2.0  # Scale factor along X axis
-    scale_y = 1.0  # Scale factor along Y axis
-    scale_z = 0.5  # Scale factor along Z axis
+    scale_x = 1.5  # Scale factor along X axis
+    scale_y = 2.0  # Scale factor along Y axis
+    scale_z = 0.3  # Scale factor along Z axis
     
     glBegin(GL_QUADS)
     # Front face
