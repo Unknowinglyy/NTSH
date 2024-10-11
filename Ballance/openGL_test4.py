@@ -14,6 +14,12 @@ import time
 i2c = busio.I2C(board.SCL, board.SDA)
 mpu = adafruit_mpu6050.MPU6050(i2c)
 
+# Initialize Pygame
+pygame.init()
+screen = pygame.display.set_mode((800, 600), DOUBLEBUF | OPENGL)
+pygame.display.set_caption('MPU6050 Orientation')
+
+
 # Variables to store orientation
 pitch = roll = yaw = 0.0
 
