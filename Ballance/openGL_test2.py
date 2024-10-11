@@ -6,11 +6,11 @@ import board
 import busio
 import adafruit_mpu6050
 
-# Initialize I2C and the MPU6050 sensor
+# Initialize I2C and MPU6050 sensor
 i2c = busio.I2C(board.SCL, board.SDA)
 mpu = adafruit_mpu6050.MPU6050(i2c)
 
-# Global variables to store the rotation angles
+# Global variables to track orientation
 pitch = 0.0
 roll = 0.0
 yaw = 0.0
@@ -48,24 +48,21 @@ def draw():
     glLoadIdentity()
     glTranslatef(0, 0.0, -7.0)
 
-    # Display the current pitch, roll, and yaw values as text
-    osd_text = "pitch: " + str("{0:.2f}".format(pitch)) + ", roll: " + str("{0:.2f}".format(roll))
+    # Display current pitch, roll, and yaw values
+    osd_text = f"pitch: {pitch:.2f}, roll: {roll:.2f}"
     if yaw_mode:
-        osd_line = osd_text + ", yaw: " + str("{0:.2f}".format(yaw))
-    else:
-        osd_line = osd_text
-    drawText((-2, -2, 2), osd_line)
+        osd_text += f", yaw: {yaw:.2f}"
+    drawText((-2, -2, 2), osd_text)
 
-    # Apply the accumulated rotations based on the gyro data
+    # Apply rotations based on the accumulated angles
     if yaw_mode:
-        glRotatef(yaw, 0.0, 1.0, 0.0)  # Yaw (rotate around y-axis)
-
-    glRotatef(pitch, 1.0, 0.0, 0.0)    # Pitch (rotate around x-axis)
-    glRotatef(-1 * roll, 0.0, 0.0, 1.0)  # Roll (rotate around z-axis)
+        glRotatef(yaw, 0.0, 1.0, 0.0)  # Yaw around y-axis
+    glRotatef(pitch, 1.0, 0.0, 0.0)   # Pitch around x-axis
+    glRotatef(-1 * roll, 0.0, 0.0, 1.0)  # Roll around z-axis
 
     # Draw a simple 3D cube
     glBegin(GL_QUADS)
-    
+
     # Top face (green)
     glColor3f(0.0, 1.0, 0.0)
     glVertex3f(1.0, 0.2, -1.0)
@@ -113,33 +110,34 @@ def draw():
 def read_data(delta_time):
     global pitch, roll, yaw
 
-    # Read gyro data (angular velocity)
-    ax, ay, az = mpu.gyro
+    # Read gyroscope data from MPU6050
+    gyro_x, gyro_y, gyro_z = mpu.gyro
+    print(f"Gyro Data -> X: {gyro_x:.2f}, Y: {gyro_y:.2f}, Z: {gyro_z:.2f}")
 
-    # Integrate the angular velocity to update the orientation angles
-    pitch += ay * delta_time
-    roll += ax * delta_time
+    # Integrate gyroscope data to update pitch, roll, and yaw
+    pitch += gyro_y * delta_time
+    roll += gyro_x * delta_time
     if yaw_mode:
-        yaw += az * delta_time
-    else:
-        yaw = 0  # Only apply yaw when yaw_mode is enabled
+        yaw += gyro_z * delta_time
 
 def main():
     global yaw_mode, last_time
 
+    # Pygame setup for OpenGL window
     video_flags = OPENGL | DOUBLEBUF
-
     pygame.init()
     screen = pygame.display.set_mode((640, 480), video_flags)
     pygame.display.set_caption("Press Esc to quit, z toggles yaw mode")
     resize(640, 480)
     init()
 
-    last_time = pygame.time.get_ticks()  # Initialize last_time
+    # Initialize time tracking
+    last_time = pygame.time.get_ticks()
     frames = 0
     ticks = pygame.time.get_ticks()
 
     while True:
+        # Event handling
         event = pygame.event.poll()
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
             pygame.quit()
@@ -147,18 +145,18 @@ def main():
         if event.type == KEYDOWN and event.key == K_z:
             yaw_mode = not yaw_mode
 
-        # Calculate the time delta since the last frame
+        # Calculate time delta between frames
         current_time = pygame.time.get_ticks()
         delta_time = (current_time - last_time) / 1000.0  # Convert to seconds
         last_time = current_time
 
-        read_data(delta_time)  # Update the pitch, roll, and yaw
-        draw()  # Draw the cube with the updated orientation
+        read_data(delta_time)  # Update orientation based on sensor data
+        draw()  # Render the cube with updated orientation
 
         pygame.display.flip()
         frames += 1
 
-    print("fps: %d" % ((frames * 1000) / (pygame.time.get_ticks() - ticks)))
+    print(f"fps: {frames * 1000 // (pygame.time.get_ticks() - ticks)}")
 
 if __name__ == '__main__':
     main()
