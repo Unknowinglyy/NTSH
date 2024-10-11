@@ -80,19 +80,25 @@ def draw_rect():
     glVertex3f( 1.0,-0.2,-1.0)		
     glEnd()	
 
-def get_orientation():
+def get_orientation(dt):
     global pitch, roll, yaw
     accel_data = mpu.acceleration
     gyro_data = mpu.gyro
 
     # Calculate pitch and roll from accelerometer data
     accel_x, accel_y, accel_z = accel_data
-    pitch = math.atan2(accel_y, math.sqrt(accel_x**2 + accel_z**2)) * 180 / math.pi
-    roll = math.atan2(-accel_x, accel_z) * 180 / math.pi
+    accel_pitch = math.atan2(accel_y, math.sqrt(accel_x**2 + accel_z**2)) * 180 / math.pi
+    accel_roll = math.atan2(-accel_x, accel_z) * 180 / math.pi
 
     # Integrate gyroscope data to get yaw
     gyro_x, gyro_y, gyro_z = gyro_data
-    yaw += gyro_z * 0.01  # Assuming a loop time of 10ms
+    pitch += gyro_x * dt
+    roll += gyro_y * dt
+    yaw += gyro_z * dt
+
+    alpha = 0.98
+    pitch = alpha * pitch + (1 - alpha) * accel_pitch
+    roll = alpha * roll + (1 - alpha) * accel_roll
 
 def main():
     resize(800, 600)
@@ -105,8 +111,10 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 return
+        
 
-        get_orientation()
+        dt = clock.tick(60) / 1000.0
+        get_orientation(dt)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
@@ -116,7 +124,7 @@ def main():
         glRotatef(roll, 0.0, 0.0, 1.0)
         draw_rect()
         pygame.display.flip()
-        clock.tick(60)
+        #clock.tick(60)
 
 if __name__ == "__main__":
     main()
