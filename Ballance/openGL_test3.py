@@ -113,7 +113,7 @@ def main():
         glRotatef(pitch, 1.0, 0.0, 0.0)
         glRotatef(roll, 0.0, 1.0, 0.0)
         glRotatef(yaw, 0.0, 0.0, 1.0)
-        draw_cube()
+        draw_rect()
         pygame.display.flip()
         clock.tick(60)
 
