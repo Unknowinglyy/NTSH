@@ -41,54 +41,43 @@ def init():
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 
 def draw_cube():
-    glBegin(GL_QUADS)
-    scale_x = 1.5  # Scale factor along X axis
-    scale_y = 2.0  # Scale factor along Y axis
-    scale_z = 0.3  # Scale factor along Z axis
-    
-    glBegin(GL_QUADS)
-    # Front face
-    glColor3f(1.0, 0.0, 0.0)
-    glVertex3f(-scale_x, -scale_y, scale_z)
-    glVertex3f(scale_x, -scale_y, scale_z)
-    glVertex3f(scale_x, scale_y, scale_z)
-    glVertex3f(-scale_x, scale_y, scale_z)
-    
-    # Back face
-    glColor3f(0.0, 1.0, 0.0)
-    glVertex3f(-scale_x, -scale_y, -scale_z)
-    glVertex3f(-scale_x, scale_y, -scale_z)
-    glVertex3f(scale_x, scale_y, -scale_z)
-    glVertex3f(scale_x, -scale_y, -scale_z)
-    
-    # Top face
-    glColor3f(0.0, 0.0, 1.0)
-    glVertex3f(-scale_x, scale_y, -scale_z)
-    glVertex3f(-scale_x, scale_y, scale_z)
-    glVertex3f(scale_x, scale_y, scale_z)
-    glVertex3f(scale_x, scale_y, -scale_z)
-    
-    # Bottom face
-    glColor3f(1.0, 1.0, 0.0)
-    glVertex3f(-scale_x, -scale_y, -scale_z)
-    glVertex3f(scale_x, -scale_y, -scale_z)
-    glVertex3f(scale_x, -scale_y, scale_z)
-    glVertex3f(-scale_x, -scale_y, scale_z)
-    
-    # Right face
-    glColor3f(1.0, 0.0, 1.0)
-    glVertex3f(scale_x, -scale_y, -scale_z)
-    glVertex3f(scale_x, scale_y, -scale_z)
-    glVertex3f(scale_x, scale_y, scale_z)
-    glVertex3f(scale_x, -scale_y, scale_z)
-    
-    # Left face
-    glColor3f(0.0, 1.0, 1.0)
-    glVertex3f(-scale_x, -scale_y, -scale_z)
-    glVertex3f(-scale_x, -scale_y, scale_z)
-    glVertex3f(-scale_x, scale_y, scale_z)
-    glVertex3f(-scale_x, scale_y, -scale_z)
-    glEnd()
+    glBegin(GL_QUADS)	
+    glColor3f(0.0,1.0,0.0)
+    glVertex3f( 1.0, 0.2,-1.0)
+    glVertex3f(-1.0, 0.2,-1.0)		
+    glVertex3f(-1.0, 0.2, 1.0)		
+    glVertex3f( 1.0, 0.2, 1.0)		
+
+    glColor3f(1.0,0.5,0.0)	
+    glVertex3f( 1.0,-0.2, 1.0)
+    glVertex3f(-1.0,-0.2, 1.0)		
+    glVertex3f(-1.0,-0.2,-1.0)		
+    glVertex3f( 1.0,-0.2,-1.0)		
+
+    glColor3f(1.0,0.0,0.0)		
+    glVertex3f( 1.0, 0.2, 1.0)
+    glVertex3f(-1.0, 0.2, 1.0)		
+    glVertex3f(-1.0,-0.2, 1.0)		
+    glVertex3f( 1.0,-0.2, 1.0)		
+
+    glColor3f(1.0,1.0,0.0)	
+    glVertex3f( 1.0,-0.2,-1.0)
+    glVertex3f(-1.0,-0.2,-1.0)
+    glVertex3f(-1.0, 0.2,-1.0)		
+    glVertex3f( 1.0, 0.2,-1.0)		
+
+    glColor3f(0.0,0.0,1.0)	
+    glVertex3f(-1.0, 0.2, 1.0)
+    glVertex3f(-1.0, 0.2,-1.0)		
+    glVertex3f(-1.0,-0.2,-1.0)		
+    glVertex3f(-1.0,-0.2, 1.0)		
+
+    glColor3f(1.0,0.0,1.0)	
+    glVertex3f( 1.0, 0.2,-1.0)
+    glVertex3f( 1.0, 0.2, 1.0)
+    glVertex3f( 1.0,-0.2, 1.0)		
+    glVertex3f( 1.0,-0.2,-1.0)		
+    glEnd()	
 
 def get_orientation():
     global pitch, roll, yaw
