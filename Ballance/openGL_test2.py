@@ -1,3 +1,14 @@
+from OpenGL.GL import *
+from OpenGL.GLU import *
+import pygame
+from pygame.locals import *
+import board
+import busio
+import adafruit_mpu6050
+
+i2c = busio.I2C(board.SCL, board.SDA)
+mpu = adafruit_mpu6050.MPU6050(i2c)
+
 # Add these global variables to track the accumulated angles
 pitch = 0.0
 roll = 0.0
