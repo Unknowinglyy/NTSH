@@ -17,3 +17,7 @@ To disable touchscreen from being registered as mouse input:
 in the CLI type: 
 xinput
 xinput --disable <touchscreen ID>
+
+
+# Resources / Citations
+https://github.com/mattzzw/Arduino-mpu6050
