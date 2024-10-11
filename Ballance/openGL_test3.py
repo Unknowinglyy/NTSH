@@ -40,7 +40,7 @@ def init():
     glDepthFunc(GL_LEQUAL)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
 
-def draw_cube():
+def draw_rect():
     glBegin(GL_QUADS)	
     glColor3f(0.0,1.0,0.0)
     glVertex3f( 1.0, 0.2,-1.0)
