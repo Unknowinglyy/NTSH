@@ -21,3 +21,5 @@ xinput --disable <touchscreen ID>
 
 # Resources / Citations
 https://github.com/mattzzw/Arduino-mpu6050
+
+Touchscreen: https://www.amazon.com/dp/B07TZGVY8K?ref=ppx_yo2ov_dt_b_fed_asin_title

@@ -1,7 +1,7 @@
 import evdev
 import time
 # Replace 'eventX' with your actual event device for the touchscreen
-device_path = '/dev/input/event4'
+device_path = '/dev/input/event3'
 device = evdev.InputDevice(device_path)
 
 print(f"Device: {device.name}")
@@ -22,4 +22,4 @@ for event in device.read_loop():
             print(f"Touch at X: {x}, Y: {y}")
     elif event.type == evdev.ecodes.EV_KEY:
             print(f"Touch at X: {x}, Y: {y}")
-            time.sleep(2)
+            #time.sleep(1)
