@@ -2,22 +2,22 @@ import RPi.GPIO as GPIO
 import time
 
 # Pin definitions
-step_pin = 23  # Pin connected to STEP on TMC2208
-dir_pin = 24   # Pin connected to DIR on TMC2208
-en_pin = None  # Enable pin connected to ground (active low)
+step_pin = 16  # Pin connected to STEP on TMC2208
+dir_pin = 18  # Pin connected to DIR on TMC2208
+en_pin = 20   # Pin connected to EN on TMC2208
 
 # Motor movement parameters
 test_steps = 100            # Number of steps to move in each direction
 delay_time = 0.01           # Delay in seconds between steps
 
 # Setup GPIO
-GPIO.setmode(GPIO.BCM)
+GPIO.setmode(GPIO.BOARD)
 GPIO.setup(step_pin, GPIO.OUT)
 GPIO.setup(dir_pin, GPIO.OUT)
+#GPIO.setup(en_pin, GPIO.OUT)
 
-# Since the enable pin is connected to ground, we don't need to set it up
-# GPIO.setup(en_pin, GPIO.OUT)  # Uncomment if you have a control pin for EN
-# GPIO.output(en_pin, GPIO.LOW)  # Uncomment if using an EN pin
+# Enable the driver
+#GPIO.output(en_pin, GPIO.LOW)  # Set EN pin to LOW to enable motor outputs
 
 try:
     print("Starting motor test...")
