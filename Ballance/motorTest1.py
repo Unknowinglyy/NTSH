@@ -2,13 +2,14 @@ import RPi.GPIO as GPIO
 import time
 
 # Pin definitions
-step_pin = 16  # Pin connected to STEP on TMC2208
-dir_pin = 18  # Pin connected to DIR on TMC2208
-en_pin = 20   # Pin connected to EN on TMC2208
+step_pin = 23  # Pin connected to STEP on TMC2208
+dir_pin = 24   # Pin connected to DIR on TMC2208
+#en_pin = 25
 
 # Motor movement parameters
-test_steps = 100            # Number of steps to move in each direction
-delay_time = 0.01           # Delay in seconds between steps
+test_steps = 200            # Number of steps to move in each direction
+delay_time = 0.0001           # Delay in seconds between steps
+          # Delay in seconds between steps
 
 # Setup GPIO
 GPIO.setmode(GPIO.BOARD)
