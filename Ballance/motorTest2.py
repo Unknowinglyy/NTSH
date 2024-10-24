@@ -42,5 +42,6 @@ except KeyboardInterrupt:
     print("Motor test interrupted.")
 
 finally:
-    GPIO.cleanup()
+    step.close()
+    direction.close()
     print("GPIO cleaned up.")
