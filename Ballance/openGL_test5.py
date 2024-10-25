@@ -90,7 +90,7 @@ def draw_rect():
 
 def draw_points():
     current_time = time.time()
-    glColor3f(1.0, 1.0, 1.0)
+    glColor3f(0, 1.0, 0)
     glBegin(GL_POINTS)
     for point, timestamp in points:
         if current_time - timestamp < 2:
@@ -175,12 +175,12 @@ def main():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
-        prism_top_center = (0.0, 0.2, 0.0)
+        # prism_top_center = (0.0, 0.2, 0.0)
         # Set the camera position and orientation
-        gluLookAt(0, 0.5, 5,  # Camera position
-                  prism_top_center[0], prism_top_center[1], prism_top_center[2],  # Look at point
-                  0, 1, 0)  # Up direction
-        # glTranslatef(0, 0, -5.0)
+        # gluLookAt(0, 0.5, 5,  # Camera position
+        #           prism_top_center[0], prism_top_center[1], prism_top_center[2],  # Look at point
+        #           0, 1, 0)  # Up direction
+        glTranslatef(0, 0, -5.0)
         glRotatef(pitch, 1, 0.0, 0.0)
         glRotatef(yaw, 0.0, -1, 0.0)
         glRotatef(roll, 0.0, 0.0, -1)
