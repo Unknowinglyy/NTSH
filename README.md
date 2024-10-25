@@ -18,7 +18,8 @@ in the CLI type:
 xinput
 xinput --disable <touchscreen ID>
 
-`
+```
+
     --------------------------------
     |(3800, 150)       (3800, 3940)|
     |                              |
@@ -28,8 +29,9 @@ xinput --disable <touchscreen ID>
  ^  |                              |
  |  |(250, 150)         (250, 3940)|
 +x  --------------------------------  
-+y ->     
-`
++y ->    
+
+```
 
 # Resources / Citations
 https://github.com/mattzzw/Arduino-mpu6050
