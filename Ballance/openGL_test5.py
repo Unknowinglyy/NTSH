@@ -113,7 +113,7 @@ def update_points():
     for x, y in read_touch_coordinates():
         print(f"reading touch coordinates: {x}, {y}")
         print("converting to gl coordinates...")
-        gl_x = ((y-150) / (3940 - 150)) * 0.4 - 0.2
+        gl_x = ((y-150) / (3940 - 150)) * 2 - 1
         gl_y = 0.3
         gl_z = -(((x-250) / (3800 - 250)) * 2 - 1)
         print(f"corresponding gl coordinates: {gl_x}, {gl_y}, {gl_z}")
