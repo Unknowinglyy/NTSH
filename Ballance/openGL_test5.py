@@ -25,6 +25,7 @@ pygame.display.set_caption('MPU6050 Orientation')
 pitch = roll = yaw = 0.0
 
 points = []
+current_position = (0, 0)
 
 def resize(width, height):
     if height == 0:
@@ -109,7 +110,7 @@ def draw_points():
     #pygame.display.flip()
 
 def update_points():
-    global points
+    global points, current_position
     for x, y in read_touch_coordinates():
         print(f"reading touch coordinates: {x}, {y}")
         print("converting to gl coordinates...")
@@ -122,6 +123,8 @@ def update_points():
         if len(points) == 100:
             points.pop(0)
         points.append(((gl_x, gl_y, gl_z), time.time()))
+
+        current_position = (gl_x, gl_z)
 
         # pygame.event.post(pygame.event.Event(pygame.USEREVENT))
 
@@ -145,6 +148,13 @@ def get_orientation(dt):
     alpha = 0.9
     pitch = alpha * pitch + (1 - alpha) * accel_pitch
     roll = alpha * roll + (1 - alpha) * accel_roll
+
+def draw_text(text, position):
+    font = pygame.font.Font(None, 36)
+    text_surface = font.render(text, True, (255, 255, 255, 255))
+    text_data = pygame.image.tostring(text_surface, "RGBA", True)
+    glRasterPos2d(*position)
+    glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
 def main():
     resize(800, 600)
@@ -186,6 +196,8 @@ def main():
         glRotatef(roll, 0.0, 0.0, -1)
         draw_rect()
         draw_points()
+
+        draw_text(f"Position: {current_position[0]}, {current_position[1]}", (-0.95, 0.9))
         pygame.display.flip()
         #clock.tick(60)
 
