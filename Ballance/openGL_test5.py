@@ -88,6 +88,7 @@ def draw_rect():
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
+    gluLookAt(0, 0, 5, 0, 0, 0, 0, 1, 0)
     draw_rect()
     current_time = time.time()
     glColor3f(1.0, 1.0, 1.0)
@@ -163,7 +164,7 @@ def main():
         time.sleep(0.01)
         
 
-        dt = clock.tick(120) / 1000.0
+        dt = clock.tick(60) / 1000.0
         get_orientation(dt)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
