@@ -174,7 +174,11 @@ def main():
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
-        glTranslatef(1.0, 1.0, -5.0)
+        # Set the camera position and orientation
+        gluLookAt(0, 0, 5,  # Camera position
+                  0, 0, 0,  # Look at point
+                  0, 1, 0)  # Up direction
+        #glTranslatef(0, 0, -5.0)
         glRotatef(pitch, 1, 0.0, 0.0)
         glRotatef(yaw, 0.0, -1, 0.0)
         glRotatef(roll, 0.0, 0.0, -1)
