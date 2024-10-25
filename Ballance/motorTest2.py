@@ -16,11 +16,11 @@ direction = OutputDevice(dir_pin)
 try:
     print("Starting motor test...")
 
-    while True:
+    while True: 
         # Move clockwise
         direction.on()
-        print("moving clockwise")
-        for _ in range(test_steps):
+        print("moving clockwise") 
+        for _ in range(test_steps):   
             step.on()
             time.sleep(delay_time)  # Adjust for speed
             step.off()
