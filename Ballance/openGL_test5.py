@@ -54,7 +54,7 @@ def draw_rect():
     glVertex3f(0.5, 0.3, 0.0)  # Point 2
     glVertex3f(-0.5, 0.3, 0.0) # Point 3
     glEnd()
-    
+
     glBegin(GL_QUADS)	
     glColor3f(0.0,1.0,0.0)
     glVertex3f( 1.0, 0.2,-1.0)
@@ -117,7 +117,11 @@ def update_points():
         gl_x = ((x-250) / (3800 - 250)) * 2 - 1
         gl_y = ((y-150) / (3940 - 150)) * 0.4 - 0.2
         gl_z = 0.21
-
+        print(f"corresponding gl coordinates: {gl_x}, {gl_y}, {gl_z}")
+        #if the length of the points list is 100, remove the oldest point
+        #else just append the new point
+        if len(points) == 100:
+            points.pop(0)
         points.append(((gl_x, gl_y, gl_z), time.time()))
 
         # pygame.event.post(pygame.event.Event(pygame.USEREVENT))
