@@ -156,7 +156,7 @@ def get_orientation(dt):
     roll = alpha * roll + (1 - alpha) * accel_roll
 
 def draw_text(x, y, text):
-    text_surface = font.render(text, True, (255, 255, 255, 0)).convert_alpha()
+    text_surface = font.render(text, True, (255, 0, 255, 0)).convert_alpha()
     text_data = pygame.image.tostring(text_surface, "RGBA", True)
     glWindowPos2d(x, y)
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
