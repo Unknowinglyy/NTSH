@@ -184,7 +184,7 @@ def main():
         glTranslatef(0.0, 0.0, -5.0)  
         glRotatef(90, 1.0, 0.0, 0.0) # hard coded pitch tilt
         glRotatef(20, -1.0, 0.0, 0.0) # hard coded pitch tilt
-        glRotatef(60, 0.0, 0.0, -1.0) # hard coded roll tilt
+        glRotatef(10, 0.0, 0.0, -1.0) # hard coded roll tilt
         
 
         glRotatef(pitch, 1, 0.0, 0.0) # up down
