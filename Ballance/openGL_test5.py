@@ -197,7 +197,7 @@ def main():
         draw_rect()
         draw_points()
 
-        draw_text((-0.95, 0.9), f"Current Position: {current_position[0]}, {current_position[1]}")
+        draw_text(-0.95, 0.9, f"Current Position: {current_position[0]}, {current_position[1]}")
         pygame.display.flip()
         #clock.tick(60)
 
