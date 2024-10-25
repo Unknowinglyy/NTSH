@@ -103,6 +103,7 @@ def display():
     glBegin(GL_POINTS)
     for point, timestamp in points:
         if current_time - timestamp < 2:
+            print(f"currently drawing point at {point[0]}, {point[1]}, {point[2]}")
             glVertex3f(point[0], point[1], point[2])
     glEnd()
 
