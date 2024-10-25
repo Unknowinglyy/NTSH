@@ -153,7 +153,7 @@ def draw_text(text, position):
     font = pygame.font.Font(None, 36)
     text_surface = font.render(text, True, (255, 255, 255, 255))
     text_data = pygame.image.tostring(text_surface, "RGBA", True)
-    glRasterPos2d(*position)
+    glRasterPos2d(position[0], position[1])
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
 def main():
@@ -197,7 +197,7 @@ def main():
         draw_rect()
         draw_points()
 
-        draw_text(f"Position: {current_position[0]}, {current_position[1]}", (-0.95, 0.9))
+        draw_text(f"Position: {current_position[0]}, {current_position[1]}", (10, 580))
         pygame.display.flip()
         #clock.tick(60)
 
