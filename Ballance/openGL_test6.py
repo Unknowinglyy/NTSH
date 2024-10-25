@@ -180,10 +180,12 @@ def main():
         # gluLookAt(0, 0.5, 5,  # Camera position
         #           prism_top_center[0], prism_top_center[1], prism_top_center[2],  # Look at point
         #           0, 1, 0)  # Up direction
+        
         glTranslatef(0.0, 0.0, -5.0)  
-        glRotatef(10, -1.0, 0.0, 0.0) 
-        glRotatef(10, 0.0, 0.0, -1.0)
-        # glRotatef(90, 1.0, 0.0, 0.0)
+        glRotatef(10, -1.0, 0.0, 0.0) # hard coded pitch tilt
+        glRotatef(10, 0.0, 0.0, -1.0) # hard coded roll tilt
+        glRotatef(90, 1.0, 0.0, 0.0) # top down view
+
         glRotatef(pitch, 1, 0.0, 0.0) # up down
         glRotatef(yaw, 0.0, -1, 0.0) # side to side
         glRotatef(roll, 0.0, 0.0, -1) # tilt
