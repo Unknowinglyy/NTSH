@@ -94,7 +94,7 @@ def display():
             glVertex3f(point[0], point[1], point[2])
     glEnd()
 
-    pygame.display.flip()
+    #pygame.display.flip()
 
 def update_points():
     global points
