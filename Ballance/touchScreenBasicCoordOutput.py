@@ -22,3 +22,10 @@ def read_touch_coordinates(device_path='/dev/input/event6'):
                 yield(x, y)
             elif event.type == evdev.ecodes.EV_KEY:
                 yield(x, y)
+
+
+if __name__ == "__main__":
+    for x, y in read_touch_coordinates():
+        print(f"X: {x}, Y: {y}")
+        if x is None or y is None:
+            break

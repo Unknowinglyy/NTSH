@@ -98,7 +98,7 @@ def display():
 
 def update_points():
     global points
-    for x,y in read_touch_coordinates():
+    for x, y in read_touch_coordinates():
         gl_x = ((x-250) / (3800 - 250)) * 2 - 1
         gl_y = ((y-150) / (3940 - 150)) * 0.4 - 0.2
         gl_z = 0.2
