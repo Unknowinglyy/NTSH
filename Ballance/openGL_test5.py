@@ -48,13 +48,6 @@ def init():
 
 def draw_rect():
 
-    # Draw three static points for testing
-    glBegin(GL_POINTS)
-    glVertex3f(0.0, 0.3, 0.0)  # Point 1
-    glVertex3f(0.5, 0.3, 0.0)  # Point 2
-    glVertex3f(-0.5, 0.3, 0.0) # Point 3
-    glEnd()
-
     glBegin(GL_QUADS)	
     glColor3f(0.0,1.0,0.0)
     glVertex3f( 1.0, 0.2,-1.0)
@@ -93,20 +86,23 @@ def draw_rect():
     glVertex3f( 1.0,-0.2,-1.0)		
     glEnd()	
 
-    display()
+    #display()
 
-def display():
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glLoadIdentity()
-    gluLookAt(0, 0, 5, 0, 0, 0, 0, 1, 0)
-    #draw_rect()
+def draw_points():
     current_time = time.time()
-    glBegin(GL_POINTS)
     glColor3f(1.0, 1.0, 1.0)
+    glBegin(GL_POINTS)
     for point, timestamp in points:
         if current_time - timestamp < 2:
             print(f"currently drawing point at {point[0]}, {point[1]}, {point[2]}")
             glVertex3f(point[0], point[1], point[2])
+    glEnd()
+
+    # Draw three static points for testing
+    glBegin(GL_POINTS)
+    glVertex3f(0.0, 0.3, 0.0)  # Point 1
+    glVertex3f(0.5, 0.3, 0.0)  # Point 2
+    glVertex3f(-0.5, 0.3, 0.0) # Point 3
     glEnd()
 
 
@@ -183,6 +179,7 @@ def main():
         glRotatef(yaw, 0.0, -1.0, 0.0)
         glRotatef(roll, 0.0, 0.0, -1.0)
         draw_rect()
+        draw_points()
         pygame.display.flip()
         #clock.tick(60)
 
