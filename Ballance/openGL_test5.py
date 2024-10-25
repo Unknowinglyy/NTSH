@@ -93,11 +93,13 @@ def draw_rect():
     glVertex3f( 1.0,-0.2,-1.0)		
     glEnd()	
 
+    display()
+
 def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     gluLookAt(0, 0, 5, 0, 0, 0, 0, 1, 0)
-    draw_rect()
+    #draw_rect()
     current_time = time.time()
     glBegin(GL_POINTS)
     glColor3f(1.0, 1.0, 1.0)
@@ -167,7 +169,7 @@ def main():
             # elif event.type == pygame.USEREVENT:
             #     display()
         
-        display()
+        #display()
         time.sleep(0.01)
         
 
