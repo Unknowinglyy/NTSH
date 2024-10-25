@@ -181,7 +181,8 @@ def main():
         #           prism_top_center[0], prism_top_center[1], prism_top_center[2],  # Look at point
         #           0, 1, 0)  # Up direction
         glTranslatef(0.0, 0.0, -5.0)  
-        glRotatef(90, 1.0, 0.0, 0.0)
+        glRotatef(20, 0.0, 1.0, 0.0)
+        # glRotatef(90, 1.0, 0.0, 0.0)
         glRotatef(pitch, 1, 0.0, 0.0)
         glRotatef(yaw, 0.0, -1, 0.0)
         glRotatef(roll, 0.0, 0.0, -1)
