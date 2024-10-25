@@ -47,6 +47,14 @@ def init():
     glPointSize(10)
 
 def draw_rect():
+
+    # Draw three static points for testing
+    glBegin(GL_POINTS)
+    glVertex3f(0.0, 0.3, 0.0)  # Point 1
+    glVertex3f(0.5, 0.3, 0.0)  # Point 2
+    glVertex3f(-0.5, 0.3, 0.0) # Point 3
+    glEnd()
+    
     glBegin(GL_QUADS)	
     glColor3f(0.0,1.0,0.0)
     glVertex3f( 1.0, 0.2,-1.0)
@@ -98,12 +106,6 @@ def display():
             glVertex3f(point[0], point[1], point[2])
     glEnd()
 
-    # Draw three static points for testing
-    glBegin(GL_POINTS)
-    glVertex3f(0.0, 0.3, 0.0)  # Point 1
-    glVertex3f(0.5, 0.3, 0.0)  # Point 2
-    glVertex3f(-0.5, 0.3, 0.0) # Point 3
-    glEnd()
 
     #pygame.display.flip()
 
