@@ -126,6 +126,8 @@ def update_points():
             points.pop(0)
         points.append(((gl_x, gl_y, gl_z), time.time()))
 
+        current_position = (gl_x, gl_z)
+
         # pygame.event.post(pygame.event.Event(pygame.USEREVENT))
 
 
