@@ -44,7 +44,7 @@ def init():
     glDepthFunc(GL_LEQUAL)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
     glEnable(GL_POINT_SMOOTH)
-    glPointSize(10)
+    glPointSize(5.0)
 
 def draw_rect():
 
@@ -99,11 +99,11 @@ def draw_points():
     glEnd()
 
     # Draw three static points for testing
-    glBegin(GL_POINTS)
-    glVertex3f(0.0, 0.3, 0.0)  # Point 1
-    glVertex3f(0.5, 0.3, 0.0)  # Point 2
-    glVertex3f(-0.5, 0.3, 0.0) # Point 3
-    glEnd()
+    # glBegin(GL_POINTS)
+    # glVertex3f(0.0, 0.3, 0.0)  # Point 1
+    # glVertex3f(0.5, 0.3, 0.0)  # Point 2
+    # glVertex3f(-0.5, 0.3, 0.0) # Point 3
+    # glEnd()
 
 
     #pygame.display.flip()
@@ -174,11 +174,13 @@ def main():
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
+
+        prism_top_center = (0.0, 0.2, 0.0)
         # Set the camera position and orientation
-        gluLookAt(0, 0, 5,  # Camera position
-                  0, 0, 0,  # Look at point
+        gluLookAt(0, 0.5, 5,  # Camera position
+                  prism_top_center[0], prism_top_center[1], prism_top_center[2],  # Look at point
                   0, 1, 0)  # Up direction
-        #glTranslatef(0, 0, -5.0)
+        # glTranslatef(0, 0, -5.0)
         glRotatef(pitch, 1, 0.0, 0.0)
         glRotatef(yaw, 0.0, -1, 0.0)
         glRotatef(roll, 0.0, 0.0, -1)
