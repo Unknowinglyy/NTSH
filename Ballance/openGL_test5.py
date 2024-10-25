@@ -99,8 +99,8 @@ def display():
     gluLookAt(0, 0, 5, 0, 0, 0, 0, 1, 0)
     draw_rect()
     current_time = time.time()
-    glColor3f(1.0, 1.0, 1.0)
     glBegin(GL_POINTS)
+    glColor3f(1.0, 1.0, 1.0)
     for point, timestamp in points:
         if current_time - timestamp < 2:
             print(f"currently drawing point at {point[0]}, {point[1]}, {point[2]}")
