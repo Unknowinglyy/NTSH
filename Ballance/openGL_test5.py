@@ -43,6 +43,8 @@ def init():
     glEnable(GL_DEPTH_TEST)
     glDepthFunc(GL_LEQUAL)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+    glEnable(GL_POINT_SMOOTH)
+    glPointSize(10)
 
 def draw_rect():
     glBegin(GL_QUADS)	
@@ -88,6 +90,7 @@ def display():
     glLoadIdentity()
     draw_rect()
     current_time = time.time()
+    glColor3f(1.0, 1.0, 1.0)
     glBegin(GL_POINTS)
     for point, timestamp in points:
         if current_time - timestamp < 2:
@@ -103,7 +106,7 @@ def update_points():
         print("converting to gl coordinates...")
         gl_x = ((x-250) / (3800 - 250)) * 2 - 1
         gl_y = ((y-150) / (3940 - 150)) * 0.4 - 0.2
-        gl_z = 0.2
+        gl_z = 0.21
 
         points.append(((gl_x, gl_y, gl_z), time.time()))
 
