@@ -148,6 +148,12 @@ def get_orientation(dt):
     pitch = alpha * pitch + (1 - alpha) * accel_pitch
     roll = alpha * roll + (1 - alpha) * accel_roll
 
+def draw_text(x, y, text):
+    text_surface = font.render(text, True, (255, 255, 255, 255), (0, 66, 0, 255))
+    text_data = pygame.image.tostring(text_surface, "RGBA", True)
+    glWindowPos2d(x, y)
+    glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
+
 def main():
     resize(800, 600)
     init()
@@ -195,6 +201,7 @@ def main():
         glRotatef(roll, 0.0, 0.0, -1) # tilt
         draw_rect()
         draw_points()
+        draw_text(-0.95, 0.9, f"Current Position: {current_position[0]}, {current_position[1]}")
         pygame.display.flip()
         #clock.tick(60)
 
