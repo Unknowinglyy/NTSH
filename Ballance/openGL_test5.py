@@ -107,7 +107,7 @@ def update_points():
 
         points.append(((gl_x, gl_y, gl_z), time.time()))
 
-        pygame.event.post(pygame.event.Event(pygame.USEREVENT))
+        # pygame.event.post(pygame.event.Event(pygame.USEREVENT))
 
 
 def get_orientation(dt):
@@ -146,8 +146,8 @@ def main():
                 return
             elif event.type == VIDEORESIZE:
                 resize(event.w, event.h)
-            elif event.type == pygame.USEREVENT:
-                display()
+            # elif event.type == pygame.USEREVENT:
+            #     display()
         
         display()
         time.sleep(0.01)
