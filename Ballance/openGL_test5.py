@@ -150,7 +150,7 @@ def get_orientation(dt):
     roll = alpha * roll + (1 - alpha) * accel_roll
 
 def draw_text(text, position):
-    font = pygame.font.Font(None, 36)
+    font = pygame.font.SysFont('quicksand', 36)
     text_surface = font.render(text, True, (255, 255, 255, 255))
     text_data = pygame.image.tostring(text_surface, "RGBA", True)
     glRasterPos2d(position[0], position[1])
