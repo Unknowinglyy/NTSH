@@ -11,6 +11,7 @@ import math
 import time
 from touchScreenBasicCoordOutput import read_touch_coordinates
 
+
 # Initialize I2C and MPU6050
 i2c = busio.I2C(board.SCL, board.SDA)
 mpu = adafruit_mpu6050.MPU6050(i2c)
@@ -42,11 +43,13 @@ def init():
     glShadeModel(GL_SMOOTH)
     glClearColor(0.0, 0.0, 0.0, 0.0)
     glClearDepth(1.0)
-    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_DEPTH_TEST, GL_BLEND)
     glDepthFunc(GL_LEQUAL)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
     glEnable(GL_POINT_SMOOTH)
     glPointSize(5.0)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
 
 def draw_rect():
 
@@ -153,7 +156,7 @@ def get_orientation(dt):
     roll = alpha * roll + (1 - alpha) * accel_roll
 
 def draw_text(x, y, text):
-    text_surface = font.render(text, True, (255, 255, 255, 255), (0, 66, 0, 255))
+    text_surface = font.render(text, True, (255, 255, 66, 255)).convert_alpha()
     text_data = pygame.image.tostring(text_surface, "RGBA", True)
     glWindowPos2d(x, y)
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
