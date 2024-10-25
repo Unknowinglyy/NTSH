@@ -112,7 +112,7 @@ def draw_points():
     #pygame.display.flip()
 
 def update_points():
-    global points
+    global points, current_position
     for x, y in read_touch_coordinates():
         print(f"reading touch coordinates: {x}, {y}")
         print("converting to gl coordinates...")
