@@ -90,7 +90,7 @@ def draw_rect():
 
 def draw_points():
     current_time = time.time()
-    glColor3f(0, 1.0, 0)
+    glColor3f(1.0, 1.0, 1.0)
     glBegin(GL_POINTS)
     for point, timestamp in points:
         if current_time - timestamp < 2:
