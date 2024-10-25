@@ -26,6 +26,7 @@ pitch = roll = yaw = 0.0
 
 points = []
 current_position = (0, 0)
+font = pygame.font.SysFont('arial', 24)
 
 def resize(width, height):
     if height == 0:
