@@ -115,8 +115,8 @@ def update_points():
         print(f"reading touch coordinates: {x}, {y}")
         print("converting to gl coordinates...")
         gl_x = ((x-250) / (3800 - 250)) * 2 - 1
-        gl_y = ((y-150) / (3940 - 150)) * 0.4 - 0.2
-        gl_z = 0.21
+        gl_y = 0.3
+        gl_z = ((y-150) / (3940 - 150)) * 0.4 - 0.2
         print(f"corresponding gl coordinates: {gl_x}, {gl_y}, {gl_z}")
         #if the length of the points list is 100, remove the oldest point
         #else just append the new point
