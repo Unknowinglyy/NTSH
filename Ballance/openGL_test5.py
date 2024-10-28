@@ -17,7 +17,7 @@ mpu = adafruit_mpu6050.MPU6050(i2c)
 
 # Initialize Pygame
 pygame.init()
-screen = pygame.display.set_mode((1600, 1200), DOUBLEBUF | OPENGL)
+screen = pygame.display.set_mode((800, 600), DOUBLEBUF | OPENGL)
 pygame.display.set_caption('MPU6050 Orientation')
 
 
