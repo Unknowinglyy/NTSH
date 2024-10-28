@@ -103,7 +103,7 @@ def draw_points():
     for point, timestamp in points:
         if current_time - timestamp < 2:
             print(f"currently drawing point at {point[0]}, {point[1]}, {point[2]}")
-            draw_circle(point[0], point[1], point[2], radius=0.05, num_segments=8)
+            draw_circle(point[0], point[1], point[2], radius=0.05, num_segments=7)
 
 def update_points():
     global points, current_position
