@@ -121,7 +121,7 @@ def update_points():
         print(f"corresponding gl coordinates: {gl_x}, {gl_y}, {gl_z}")
         #if the length of the points list is 100, remove the oldest point
         #else just append the new point
-        if len(points) == 100:
+        if len(points) == 200:
             points.pop(0)
         points.append(((gl_x, gl_y, gl_z), time.time()))
 
