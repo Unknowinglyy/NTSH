@@ -186,6 +186,10 @@ def main():
         draw_rect()
         draw_points()
 
+        # Display the current position at the bottom of the screen
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        draw_text(10, screen_height - 30, f"Current Position: {current_position}")
+
         pygame.display.flip()
 
 if __name__ == "__main__":
