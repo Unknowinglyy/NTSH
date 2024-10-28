@@ -95,7 +95,7 @@ def draw_points():
     glColor3f(0.0, 0.0, 1.0)
     glBegin(GL_POINTS)
     for point, timestamp in points:
-        if current_time - timestamp < 1:
+        if current_time - timestamp < 10:
             print(f"currently drawing point at {point[0]}, {point[1]}, {point[2]}")
             glVertex3f(point[0], point[1], point[2])
     glEnd()
