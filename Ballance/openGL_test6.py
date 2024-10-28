@@ -38,6 +38,10 @@ def resize(width, height):
     gluPerspective(45, aspect_ratio, 0.1, 100.0)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
+    # Set the initial camera position and orientation
+    gluLookAt(0, 0.5, zoom_level,  # Camera position (adjusted by zoom_level)
+              0, 0, 0,    # Look at the origin
+              0, 1, 0)    # Up direction
 
 def init():
     glShadeModel(GL_SMOOTH)
