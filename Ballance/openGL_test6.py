@@ -108,7 +108,16 @@ def draw_points():
     for point, timestamp in points:
         if current_time - timestamp < 2:
             print(f"currently drawing point at {point[0]}, {point[1]}, {point[2]}")
-            draw_circle(point[0], point[1], point[2], radius=0.05, num_segments=7)
+            # Save the current model view matrix
+            glPushMatrix()
+            # Reset the model view matrix to ensure the point faces the camera
+            glTranslatef(point[0], point[1], point[2])
+            glRotatef(-yaw, 0.0, 1.0, 0.0)
+            glRotatef(-pitch, 1.0, 0.0, 0.0)
+            glRotatef(-roll, 0.0, 0.0, 1.0)
+            draw_circle(0, 0, 0, radius=0.05, num_segments=7)
+            # Restore the model view matrix
+            glPopMatrix()
 
 def update_points():
     global points, current_position
