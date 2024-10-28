@@ -95,7 +95,7 @@ def draw_points():
     glColor3f(0.0, 0.0, 1.0)
     glBegin(GL_POINTS)
     for point, timestamp in points:
-        if current_time - timestamp < 2:
+        if current_time - timestamp < 1:
             print(f"currently drawing point at {point[0]}, {point[1]}, {point[2]}")
             glVertex3f(point[0], point[1], point[2])
     glEnd()
@@ -121,7 +121,7 @@ def update_points():
         print(f"corresponding gl coordinates: {gl_x}, {gl_y}, {gl_z}")
         #if the length of the points list is 100, remove the oldest point
         #else just append the new point
-        if len(points) == 200:
+        if len(points) == 100:
             points.pop(0)
         points.append(((gl_x, gl_y, gl_z), time.time()))
 
