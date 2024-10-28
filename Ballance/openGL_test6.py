@@ -17,7 +17,7 @@ mpu = adafruit_mpu6050.MPU6050(i2c)
 
 # Initialize Pygame
 pygame.init()
-screen = pygame.display.set_mode((800, 600), DOUBLEBUF | OPENGL | RESIZABLE)
+screen = pygame.display.set_mode((1600, 1200), DOUBLEBUF | OPENGL | RESIZABLE)
 pygame.display.set_caption('MPU6050 Orientation')
 
 # Variables to store orientation
@@ -179,15 +179,10 @@ def main():
                   0, 1, 0)    # Up direction
 
         glTranslatef(0, 0, -5.0)
-        glRotatef(90, 1.0, 0.0, 0.0)  # Hard-coded pitch tilt
-        glRotatef(10, -1.0, 0.0, 0.0) # Hard-coded pitch tilt
-        glRotatef(10, 0.0, 0.0, -1.0) # Hard-coded roll tilt
-        glRotatef(3, 0.0, 1.0, 0.0)   # Hard-coded yaw tilt
-
-        glRotatef(pitch, 1, 0.0, 0.0) # up down
-        glRotatef(yaw, 0.0, -1, 0.0)  # side to side
-        glRotatef(roll, 0.0, 0.0, -1) # tilt
-
+        glRotatef(pitch, 1, 0.0, 0.0)
+        glRotatef(yaw, 0.0, -1, 0.0)
+        glRotatef(roll, 0.0, 0.0, -1)
+        
         draw_rect()
         draw_points()
 
