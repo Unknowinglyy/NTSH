@@ -162,11 +162,10 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 return
-            elif event.type == pygame.WINDOWEVENT:
-                if event.event == pygame.WINDOWEVENT_RESIZED:
-                    # Update the OpenGL viewport and perspective on window resize
-                    resize(event.w, event.h)
-                    screen = pygame.display.set_mode((event.w, event.h), DOUBLEBUF | OPENGL | RESIZABLE)
+            elif event.type == VIDEORESIZE:
+                # Update the OpenGL viewport and perspective on window resize
+                resize(event.w, event.h)
+                screen = pygame.display.set_mode((event.w, event.h), DOUBLEBUF | OPENGL | RESIZABLE)
 
         dt = clock.tick(60) / 1000.0
         get_orientation(dt)
@@ -182,4 +181,12 @@ def main():
         glTranslatef(0, 0, -5.0)
         glRotatef(pitch, 1, 0.0, 0.0)
         glRotatef(yaw, 0.0, -1, 0.0)
-        glRotatef(roll, 0.0, 0.0, -1
+        glRotatef(roll, 0.0, 0.0, -1)
+        
+        draw_rect()
+        draw_points()
+
+        pygame.display.flip()
+
+if __name__ == "__main__":
+    main()
