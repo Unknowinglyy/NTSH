@@ -17,9 +17,8 @@ mpu = adafruit_mpu6050.MPU6050(i2c)
 
 # Initialize Pygame
 pygame.init()
-screen = pygame.display.set_mode((1600, 1200), DOUBLEBUF | OPENGL)
+screen = pygame.display.set_mode((1600, 1200), DOUBLEBUF | OPENGL | RESIZABLE)
 pygame.display.set_caption('MPU6050 Orientation')
-
 
 # Variables to store orientation
 pitch = roll = yaw = 0.0
@@ -31,10 +30,11 @@ font = pygame.font.SysFont('arial', 24)
 def resize(width, height):
     if height == 0:
         height = 1
+    aspect_ratio = width / height
     glViewport(0, 0, width, height)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(45, 1.0 * width / height, 0.1, 100.0)
+    gluPerspective(45, aspect_ratio, 0.1, 100.0)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
@@ -49,46 +49,43 @@ def init():
     glPointSize(5.0)
 
 def draw_rect():
+    glBegin(GL_QUADS)    
+    glColor3f(0.0, 1.0, 0.0)
+    glVertex3f( 1.0, 0.2, -1.0)
+    glVertex3f(-1.0, 0.2, -1.0)        
+    glVertex3f(-1.0, 0.2,  1.0)        
+    glVertex3f( 1.0, 0.2,  1.0)        
 
-    glBegin(GL_QUADS)	
-    glColor3f(0.0,1.0,0.0)
-    glVertex3f( 1.0, 0.2,-1.0)
-    glVertex3f(-1.0, 0.2,-1.0)		
-    glVertex3f(-1.0, 0.2, 1.0)		
-    glVertex3f( 1.0, 0.2, 1.0)		
+    glColor3f(1.0, 0.5, 0.0)    
+    glVertex3f( 1.0, -0.2,  1.0)
+    glVertex3f(-1.0, -0.2,  1.0)        
+    glVertex3f(-1.0, -0.2, -1.0)        
+    glVertex3f( 1.0, -0.2, -1.0)        
 
-    glColor3f(1.0,0.5,0.0)	
-    glVertex3f( 1.0,-0.2, 1.0)
-    glVertex3f(-1.0,-0.2, 1.0)		
-    glVertex3f(-1.0,-0.2,-1.0)		
-    glVertex3f( 1.0,-0.2,-1.0)		
+    glColor3f(1.0, 0.0, 0.0)        
+    glVertex3f( 1.0, 0.2,  1.0)
+    glVertex3f(-1.0, 0.2,  1.0)        
+    glVertex3f(-1.0, -0.2,  1.0)        
+    glVertex3f( 1.0, -0.2,  1.0)        
 
-    glColor3f(1.0,0.0,0.0)		
-    glVertex3f( 1.0, 0.2, 1.0)
-    glVertex3f(-1.0, 0.2, 1.0)		
-    glVertex3f(-1.0,-0.2, 1.0)		
-    glVertex3f( 1.0,-0.2, 1.0)		
+    glColor3f(1.0, 1.0, 0.0)    
+    glVertex3f( 1.0, -0.2, -1.0)
+    glVertex3f(-1.0, -0.2, -1.0)
+    glVertex3f(-1.0, 0.2, -1.0)        
+    glVertex3f( 1.0, 0.2, -1.0)        
 
-    glColor3f(1.0,1.0,0.0)	
-    glVertex3f( 1.0,-0.2,-1.0)
-    glVertex3f(-1.0,-0.2,-1.0)
-    glVertex3f(-1.0, 0.2,-1.0)		
-    glVertex3f( 1.0, 0.2,-1.0)		
+    glColor3f(0.0, 0.0, 1.0)    
+    glVertex3f(-1.0, 0.2,  1.0)
+    glVertex3f(-1.0, 0.2, -1.0)        
+    glVertex3f(-1.0, -0.2, -1.0)        
+    glVertex3f(-1.0, -0.2,  1.0)        
 
-    glColor3f(0.0,0.0,1.0)	
-    glVertex3f(-1.0, 0.2, 1.0)
-    glVertex3f(-1.0, 0.2,-1.0)		
-    glVertex3f(-1.0,-0.2,-1.0)		
-    glVertex3f(-1.0,-0.2, 1.0)		
-
-    glColor3f(1.0,0.0,1.0)	
-    glVertex3f( 1.0, 0.2,-1.0)
-    glVertex3f( 1.0, 0.2, 1.0)
-    glVertex3f( 1.0,-0.2, 1.0)		
-    glVertex3f( 1.0,-0.2,-1.0)		
-    glEnd()	
-
-    #display()
+    glColor3f(1.0, 0.0, 1.0)    
+    glVertex3f( 1.0, 0.2, -1.0)
+    glVertex3f( 1.0, 0.2,  1.0)
+    glVertex3f( 1.0, -0.2,  1.0)        
+    glVertex3f( 1.0, -0.2, -1.0)        
+    glEnd()
 
 def draw_circle(x, y, z, radius, num_segments):
     glBegin(GL_TRIANGLE_FAN)
@@ -113,20 +110,15 @@ def update_points():
     for x, y in read_touch_coordinates():
         print(f"reading touch coordinates: {x}, {y}")
         print("converting to gl coordinates...")
-        gl_x = ((y-150) / (3940 - 150)) * 2 - 1
+        gl_x = ((y - 150) / (3940 - 150)) * 2 - 1
         gl_y = 0.3  
-        gl_z = -(((x-250) / (3800 - 250)) * 2 - 1)
+        gl_z = -(((x - 250) / (3800 - 250)) * 2 - 1)
         print(f"corresponding gl coordinates: {gl_x}, {gl_y}, {gl_z}")
-        #if the length of the points list is 100, remove the oldest point
-        #else just append the new point
         if len(points) == 100:
             points.pop(0)
         points.append(((gl_x, gl_y, gl_z), time.time()))
 
         current_position = (gl_x, gl_z)
-
-        # pygame.event.post(pygame.event.Event(pygame.USEREVENT))
-
 
 def get_orientation(dt):
     global pitch, roll, yaw
@@ -154,9 +146,10 @@ def draw_text(x, y, text):
     glWindowPos2d(x, y)
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
-
 def main():
-    resize(800, 600)
+    # Set initial window size
+    initial_width, initial_height = 800, 600
+    resize(initial_width, initial_height)
     init()
 
     import threading
@@ -169,14 +162,11 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 return
-            elif event.type == VIDEORESIZE:
-                resize(event.w, event.h)
-            # elif event.type == pygame.USEREVENT:
-            #     display()
-        
-        #display()
-        time.sleep(0.01)
-        
+            elif event.type == pygame.WINDOWEVENT:
+                if event.event == pygame.WINDOWEVENT_RESIZED:
+                    # Update the OpenGL viewport and perspective on window resize
+                    resize(event.w, event.h)
+                    screen = pygame.display.set_mode((event.w, event.h), DOUBLEBUF | OPENGL | RESIZABLE)
 
         dt = clock.tick(60) / 1000.0
         get_orientation(dt)
@@ -184,21 +174,12 @@ def main():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
-        # prism_top_center = (0.0, 0.2, 0.0)
         # Set the camera position and orientation
-        # gluLookAt(0, 0.5, 5,  # Camera position
-        #           prism_top_center[0], prism_top_center[1], prism_top_center[2],  # Look at point
-        #           0, 1, 0)  # Up direction
+        gluLookAt(0, 0.5, 5,  # Camera position
+                  0, 0, 0,    # Look at the origin
+                  0, 1, 0)    # Up direction
+
         glTranslatef(0, 0, -5.0)
         glRotatef(pitch, 1, 0.0, 0.0)
         glRotatef(yaw, 0.0, -1, 0.0)
-        glRotatef(roll, 0.0, 0.0, -1)
-        draw_rect()
-        draw_points()
-
-        draw_text(-0.95, 0.9, f"Current Position: {current_position[0]}, {current_position[1]}")
-        pygame.display.flip()
-        #clock.tick(60)
-
-if __name__ == "__main__":
-    main()
+        glRotatef(roll, 0.0, 0.0, -1
