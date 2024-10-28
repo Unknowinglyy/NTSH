@@ -17,7 +17,7 @@ mpu = adafruit_mpu6050.MPU6050(i2c)
 
 # Initialize Pygame
 pygame.init()
-screen = pygame.display.set_mode((800, 600), DOUBLEBUF | OPENGL)
+screen = pygame.display.set_mode((1600, 1200), DOUBLEBUF | OPENGL)
 pygame.display.set_caption('MPU6050 Orientation')
 
 
@@ -116,7 +116,7 @@ def update_points():
         print(f"reading touch coordinates: {x}, {y}")
         print("converting to gl coordinates...")
         gl_x = ((y-150) / (3940 - 150)) * 2 - 1
-        gl_y = 0.3
+        gl_y = 0.3  
         gl_z = -(((x-250) / (3800 - 250)) * 2 - 1)
         print(f"corresponding gl coordinates: {gl_x}, {gl_y}, {gl_z}")
         #if the length of the points list is 100, remove the oldest point

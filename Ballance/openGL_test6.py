@@ -17,7 +17,7 @@ mpu = adafruit_mpu6050.MPU6050(i2c)
 
 # Initialize Pygame
 pygame.init()
-screen = pygame.display.set_mode((800, 600), DOUBLEBUF | OPENGL)
+screen = pygame.display.set_mode((1600, 1200), DOUBLEBUF | OPENGL)
 pygame.display.set_caption('MPU6050 Orientation')
 
 
@@ -27,7 +27,6 @@ pitch = roll = yaw = 0.0
 points = []
 current_position = (0, 0)
 font = pygame.font.SysFont('arial', 24)
-
 
 def resize(width, height):
     if height == 0:
@@ -91,25 +90,23 @@ def draw_rect():
 
     #display()
 
+def draw_circle(x, y, z, radius, num_segments):
+    glBegin(GL_TRIANGLE_FAN)
+    glVertex3f(x, y, z)  # Center of the circle
+    for i in range(num_segments + 1):
+        angle = 2.0 * math.pi * i / num_segments
+        dx = radius * math.cos(angle)
+        dy = radius * math.sin(angle)
+        glVertex3f(x + dx, y + dy, z)
+    glEnd()
+
 def draw_points():
     current_time = time.time()
     glColor3f(0.0, 0.0, 1.0)
-    glBegin(GL_POINTS)
     for point, timestamp in points:
         if current_time - timestamp < 2:
             print(f"currently drawing point at {point[0]}, {point[1]}, {point[2]}")
-            glVertex3f(point[0], point[1], point[2])
-    glEnd()
-
-    # Draw three static points for testing
-    # glBegin(GL_POINTS)
-    # glVertex3f(0.0, 0.3, 0.0)  # Point 1
-    # glVertex3f(0.5, 0.3, 0.0)  # Point 2
-    # glVertex3f(-0.5, 0.3, 0.0) # Point 3
-    # glEnd()
-
-
-    #pygame.display.flip()
+            draw_circle(point[0], point[1], point[2], radius=0.05, num_segments=20)
 
 def update_points():
     global points, current_position
@@ -117,7 +114,7 @@ def update_points():
         print(f"reading touch coordinates: {x}, {y}")
         print("converting to gl coordinates...")
         gl_x = ((y-150) / (3940 - 150)) * 2 - 1
-        gl_y = 0.3
+        gl_y = 0.3  
         gl_z = -(((x-250) / (3800 - 250)) * 2 - 1)
         print(f"corresponding gl coordinates: {gl_x}, {gl_y}, {gl_z}")
         #if the length of the points list is 100, remove the oldest point
@@ -152,10 +149,11 @@ def get_orientation(dt):
     roll = alpha * roll + (1 - alpha) * accel_roll
 
 def draw_text(x, y, text):
-    text_surface = font.render(text, True, (255, 255, 255, 255), (0, 0, 0, 255))
+    text_surface = font.render(text, True, (255, 255, 255, 255), (0, 66, 0, 255))
     text_data = pygame.image.tostring(text_surface, "RGBA", True)
     glWindowPos2d(x, y)
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
+
 
 def main():
     resize(800, 600)
@@ -191,16 +189,13 @@ def main():
         # gluLookAt(0, 0.5, 5,  # Camera position
         #           prism_top_center[0], prism_top_center[1], prism_top_center[2],  # Look at point
         #           0, 1, 0)  # Up direction
-
-        glTranslatef(0.0, 0.0, -5.0)  
-        glRotatef(10, -1.0, 0.0, 0.0) # hard coded pitch tilt
-        glRotatef(10, 0.0, 0.0, -1.0) # hard coded roll tilt
-
-        glRotatef(pitch, 1, 0.0, 0.0) # up down
-        glRotatef(yaw, 0.0, -1, 0.0) # side to side
-        glRotatef(roll, 0.0, 0.0, -1) # tilt
+        glTranslatef(0, 0, -5.0)
+        glRotatef(pitch, 1, 0.0, 0.0)
+        glRotatef(yaw, 0.0, -1, 0.0)
+        glRotatef(roll, 0.0, 0.0, -1)
         draw_rect()
         draw_points()
+
         draw_text(-0.95, 0.9, f"Current Position: {current_position[0]}, {current_position[1]}")
         pygame.display.flip()
         #clock.tick(60)
