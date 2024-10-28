@@ -22,6 +22,7 @@ pygame.display.set_caption('MPU6050 Orientation')
 
 # Variables to store orientation
 pitch = roll = yaw = 0.0
+zoom_level = 3.0  # Initial zoom level
 
 points = []
 current_position = (0, 0)
@@ -147,6 +148,8 @@ def draw_text(x, y, text):
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
 def main():
+    global zoom_level
+
     # Set initial window size
     initial_width, initial_height = 800, 600
     resize(initial_width, initial_height)
@@ -166,6 +169,11 @@ def main():
                 # Update the OpenGL viewport and perspective on window resize
                 resize(event.w, event.h)
                 screen = pygame.display.set_mode((event.w, event.h), DOUBLEBUF | OPENGL | RESIZABLE)
+            elif event.type == KEYDOWN:
+                if event.key == K_PLUS or event.key == K_EQUALS:  # '+' key
+                    zoom_level -= 0.1
+                elif event.key == K_MINUS:  # '-' key
+                    zoom_level += 0.1
 
         dt = clock.tick(60) / 1000.0
         get_orientation(dt)
@@ -174,7 +182,7 @@ def main():
         glLoadIdentity()
 
         # Set the camera position and orientation
-        gluLookAt(0, 0.5, 3,  # Camera position (moved closer from 5 to 3)
+        gluLookAt(0, 0.5, zoom_level,  # Camera position (adjusted by zoom_level)
                   0, 0, 0,    # Look at the origin
                   0, 1, 0)    # Up direction
 
