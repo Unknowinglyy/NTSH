@@ -9,7 +9,7 @@ step_pin2 = 20  # Pin connected to STEP on 2nd TMC2208
 dir_pin2 = 21   # Pin connected to DIR on 2nd TMC2208
 
 # Motor movement parameters
-test_steps = 100              # Number of steps to move in each direction
+test_steps = 200              # Number of steps to move in each direction
 delay_time = 0.001           # Delay in seconds between steps
 
 # Setup GPIO
