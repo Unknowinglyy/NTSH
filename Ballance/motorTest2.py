@@ -37,7 +37,6 @@ try:
             time.sleep(delay_time)  # Adjust for speed
             
         print("just moved counter-clockwise")
-        direction.off()
 
 except KeyboardInterrupt:
     print("Motor test interrupted.")
