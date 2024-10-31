@@ -6,7 +6,7 @@ step_pin = 23  # Pin connected to STEP on TMC2208
 dir_pin = 24   # Pin connected to DIR on TMC2208
 
 # Motor movement parameters
-test_steps = 1600            # Number of steps to move in each direction
+test_steps = 100            # Number of steps to move in each direction
 delay_time = 0.001           # Delay in seconds between steps
 
 # Setup GPIO
@@ -27,16 +27,16 @@ try:
             time.sleep(delay_time)  # Adjust for speed
             
         print("just moved clockwise")
-        # Move counterclockwise
-        direction.off()
-        print("moving counter-clockwise")
-        for _ in range(test_steps):
-            step.on()
-            time.sleep(delay_time)  # Adjust for speed
-            step.off()
-            time.sleep(delay_time)  # Adjust for speed
+        # # Move counterclockwise
+        # direction.off()
+        # print("moving counter-clockwise")
+        # for _ in range(test_steps):
+        #     step.on()
+        #     time.sleep(delay_time)  # Adjust for speed
+        #     step.off()
+        #     time.sleep(delay_time)  # Adjust for speed
             
-        print("just moved  counter-clockwise")
+        # print("just moved counter-clockwise")
 
 except KeyboardInterrupt:
     print("Motor test interrupted.")
