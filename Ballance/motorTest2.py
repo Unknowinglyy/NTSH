@@ -18,15 +18,15 @@ try:
 
     while True: 
         # Move clockwise
-        direction.on()
-        print("moving clockwise") 
-        for _ in range(test_steps):   
-            step.on()
-            time.sleep(delay_time)  # Adjust for speed
-            step.off()
-            time.sleep(delay_time)  # Adjust for speed
+        # direction.on()
+        # print("moving clockwise") 
+        # for _ in range(test_steps):   
+        #     step.on()
+        #     time.sleep(delay_time)  # Adjust for speed
+        #     step.off()
+        #     time.sleep(delay_time)  # Adjust for speed
             
-        print("just moved clockwise")
+        # print("just moved clockwise")
         # Move counterclockwise
         direction.off()
         print("moving counter-clockwise")
@@ -37,6 +37,7 @@ try:
             time.sleep(delay_time)  # Adjust for speed
             
         print("just moved counter-clockwise")
+        direction.on()
 
 except KeyboardInterrupt:
     print("Motor test interrupted.")
