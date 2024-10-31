@@ -38,6 +38,5 @@ https://github.com/mattzzw/Arduino-mpu6050
 
 Touchscreen: https://www.amazon.com/dp/B07TZGVY8K?ref=ppx_yo2ov_dt_b_fed_asin_title
 
-
-
 we have the motors at 0.46 A and 0.65 as the Vref
+
