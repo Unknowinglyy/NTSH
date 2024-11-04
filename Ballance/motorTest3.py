@@ -24,8 +24,6 @@ try:
             step.on()
             time.sleep(delay_time)  # Adjust for speed
             step.off()
-            step2.off()
-            step3.off()
             time.sleep(delay_time)  # Adjust for speed
         print("just moved clockwise")
 
