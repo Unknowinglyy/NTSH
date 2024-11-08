@@ -1,7 +1,7 @@
 import evdev
 
 
-def read_touch_coordinates(device_path='/dev/input/event3'):
+def read_touch_coordinates(device_path='/dev/input/event9'):
     device = evdev.InputDevice(device_path)
 
     print(f"Device: {device.name}")
