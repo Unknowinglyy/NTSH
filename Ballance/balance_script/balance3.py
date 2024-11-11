@@ -120,7 +120,7 @@ def pid_controller(setpoint_x, setpoint_y):
 
     start_time = time.time()
     while time.time() - start_time < 0.02:
-        move_to_target(4.25, -output[0], -output[1])
+        move_to_target(4.25, -output[0], -output[1], duration=1.0)
 
 def main():
     try:

@@ -57,7 +57,7 @@ if __name__ == "__main__":
             if error_x > 0:
                 move_motor(step2, error_x, direction2, True)
             else:
-                move_motor(step3, -error_x, direction3, False)
+                move_motor(step3, -error_x, direction, False)
 
             if error_y > 0:
                 move_motor(step, error_y, direction, True)
