@@ -5,7 +5,7 @@ import time
 import math
 
 # Add the root directory to the sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Import the Point class and read_touch_coordinates function from touchScreenBasicCoordOutput
 from touchScreenBasicCoordOutput import Point, read_touch_coordinates
