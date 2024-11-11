@@ -88,7 +88,7 @@ def move_to(hz, nx, ny):
         move_motor(stepperC, directionC, pos[2])
     else:
         pos = [round((angOrig - machine.theta(i, hz, 0, 0)) * angToStep) for i in range(3)]
-        pos = [max(min(p, 3200), 0) for p in pos]
+        pos = [max(min(p, 800), 0) for p in pos]
         move_motor(stepperA, directionA, pos[0])
         move_motor(stepperB, directionB, pos[1])
         move_motor(stepperC, directionC, pos[2])
