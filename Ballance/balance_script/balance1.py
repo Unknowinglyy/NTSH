@@ -94,6 +94,7 @@ def move_to(hz, nx, ny):
 def pid(setpointX, setpointY):
     global detected, error, errorPrev, integr, deriv, out
     p = read_touch_coordinates()
+    print(f"X = {p.x}   Y = {p.y}")
     if p is not None and p.x is not None:
         detected = True
         for i in range(2):
@@ -111,7 +112,7 @@ def pid(setpointX, setpointY):
 
     timeI = time.time()
     while time.time() - timeI < 0.02:
-        move_to(4.25, -out[0], -out[1])
+        # move_to(4.25, -out[0], -out[1])
 # ------------------------------------------------------------
 def main():
     global detected
