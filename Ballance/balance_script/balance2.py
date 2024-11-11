@@ -57,9 +57,9 @@ if __name__ == "__main__":
             error_y = pid_y(y)
 
             if error_x > 0:
-                move_motor(step2, error_x, direction2, True)
+                move_motor(step2, error_x, direction2, False)
             else:
-                move_motor(step3, -error_x, direction2, False)
+                move_motor(step3, -error_x, direction2, True)
 
             if error_y > 0:
                 move_motor(step, error_y, direction, True)
