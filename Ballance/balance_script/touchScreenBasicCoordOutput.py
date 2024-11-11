@@ -24,8 +24,8 @@ def read_touch_coordinates(device_path='/dev/input/event4'):
             # Return coordinates when both X and Y are captured
             if x is not None and y is not None:
                 return Point(x, y)
-        elif event.type == evdev.ecodes.EV_KEY:
-            return Point(x, y)
+            elif event.type == evdev.ecodes.EV_KEY:
+                return Point(x, y)
 
 if __name__ == "__main__":
     point = read_touch_coordinates()
