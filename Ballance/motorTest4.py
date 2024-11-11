@@ -32,7 +32,7 @@ direction3 = OutputDevice(dir_pin3)
 
 def move_motor(step, direction, steps, delay, phase_shift):
     for i in range(steps):
-        angle = 2 * math.pi * wave_frequency * i / steps + phase_shift
+        angle = 2 * math.pi * wave_frequency * i /  (steps + phase_shift)
         print(angle)
         if math.sin(angle) > 0:
             #clockwise
