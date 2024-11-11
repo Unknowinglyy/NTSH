@@ -62,9 +62,9 @@ def move_motor(stepper, direction, steps):
 
     for _ in range(steps):
         stepper.on()
-        time.sleep(0.0003)  # Smoother movement
+        time.sleep(0.001)  # Smoother movement
         stepper.off()
-        time.sleep(0.0003)
+        time.sleep(0.001)
 
 def move_to_target(hz, nx, ny):
     global detected
