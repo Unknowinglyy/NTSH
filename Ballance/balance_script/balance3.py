@@ -19,6 +19,7 @@ MOTOR_PINS = [
 ANGLE_ORIGINAL = 206.662752199
 ANGLE_TO_STEP = 3200 / 360
 SPEED_CONSTANT = 20
+STEP_DIVIDER = 2  # Reduce steps by dividing the number of steps by this value
 
 # PID Constants
 KP = 4E-4
@@ -58,7 +59,7 @@ manipulator = ThreeRPSManipulator(2, 3.125, 1.75, 3.669)
 
 def move_motor(stepper, direction, steps):
     direction.off() if steps < 0 else direction.on()
-    steps = abs(steps)
+    steps = abs(steps) // STEP_DIVIDER
 
     for _ in range(steps):
         stepper.on()
@@ -68,14 +69,15 @@ def move_motor(stepper, direction, steps):
 
 def move_to_target(hz, nx, ny):
     global detected
-    positions = [
-        round((ANGLE_ORIGINAL - manipulator.calculate_theta(i, hz, nx, ny)) * ANGLE_TO_STEP)
-        for i in range(3)
-    ]
+    # Determine which motor(s) to move based on the direction of the error
+    if abs(nx) > abs(ny):
+        motor_to_move = 0 if nx > 0 else 1
+    else:
+        motor_to_move = 2 if ny > 0 else 1
 
-    # Move motors to the calculated positions
-    for i in range(3):
-        move_motor(steppers[i], directions[i], positions[i])
+    position = round((ANGLE_ORIGINAL - manipulator.calculate_theta(motor_to_move, hz, nx, ny)) * ANGLE_TO_STEP)
+    # Move the selected motor to the calculated position
+    move_motor(steppers[motor_to_move], directions[motor_to_move], position)
 
 def pid_controller(setpoint_x, setpoint_y):
     global detected, error, error_prev, integral, derivative, output
