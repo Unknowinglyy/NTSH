@@ -76,7 +76,7 @@ def move_motor(step, direction, steps, current_position, motor_name):
         print(f"{motor_name} moving CW {steps} steps (current position: {current_position + steps}/200)")
     else:
         direction.off()
-        if current_position + steps < 0:
+        if -current_position + steps < 0:
             steps = -current_position
         print(f"{motor_name} moving CCW {steps} steps (current position: {current_position + steps}/200)")
     for _ in range(abs(steps)):
@@ -117,7 +117,7 @@ def pid(setpointX, setpointY):
             deriv[i] = 0 if math.isnan(deriv[i]) or math.isinf(deriv[i]) else deriv[i]
             out[i] = kp * error[i] + ki * integr[i] + kd * deriv[i]
             out[i] = max(min(out[i], 0.25), -0.25)
-        print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
+        # print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
     else:
         print("No ball detected")
         detected = False
