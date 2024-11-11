@@ -1,6 +1,5 @@
 import evdev
 
-
 class Point:
     def __init__(self, x, y):
         self.x = x
@@ -14,7 +13,7 @@ def read_touch_coordinates(device_path='/dev/input/event4'):
     
     x, y = None, None
 
-     # Read touch events in a loop
+    # Read touch events in a loop
     for event in device.read_loop():
         # Only process single-touch absolute X and Y events (ignore multitouch)
         if event.type == evdev.ecodes.EV_ABS:
@@ -22,15 +21,12 @@ def read_touch_coordinates(device_path='/dev/input/event4'):
                 x = event.value
             elif event.code == evdev.ecodes.ABS_Y or event.code == evdev.ecodes.ABS_MT_POSITION_Y:
                 y = event.value
-            # Print coordinates when both X and Y are captured
+            # Return coordinates when both X and Y are captured
             if x is not None and y is not None:
                 return Point(x, y)
-            elif event.type == evdev.ecodes.EV_KEY:
-                return Point(x, y)
-
+        elif event.type == evdev.ecodes.EV_KEY:
+            return Point(x, y)
 
 if __name__ == "__main__":
-    for x, y in read_touch_coordinates():
-        print(f"X: {x}, Y: {y}")
-        if x is None or y is None:
-            break
+    point = read_touch_coordinates()
+    print(f"X: {point.x}, Y: {point.y}")

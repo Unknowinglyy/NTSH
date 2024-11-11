@@ -95,25 +95,22 @@ def move_to(hz, nx, ny):
 def pid(setpointX, setpointY):
     global detected, error, errorPrev, integr, deriv, out
     p = read_touch_coordinates()
-    try:
-        if p.x is not None:
-            detected = True
-            for i in range(2):
-                errorPrev[i] = error[i]
-                error[i] = (i == 0) * (Xoffset - p.x - setpointX) + (i == 1) * (Yoffset - p.y - setpointY)
-                integr[i] += error[i] + errorPrev[i]
-                deriv[i] = error[i] - errorPrev[i]
-                deriv[i] = 0 if math.isnan(deriv[i]) or math.isinf(deriv[i]) else deriv[i]
-                out[i] = kp * error[i] + ki * integr[i] + kd * deriv[i]
-                out[i] = max(min(out[i], 0.25), -0.25)
-            print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
-        else:
-            time.sleep(0.01)
-            p = read_touch_coordinates()
-            if p.x is None:
-                detected = False
-    except StopIteration:
-        detected = False
+    if p is not None and p.x is not None:
+        detected = True
+        for i in range(2):
+            errorPrev[i] = error[i]
+            error[i] = (i == 0) * (Xoffset - p.x - setpointX) + (i == 1) * (Yoffset - p.y - setpointY)
+            integr[i] += error[i] + errorPrev[i]
+            deriv[i] = error[i] - errorPrev[i]
+            deriv[i] = 0 if math.isnan(deriv[i]) or math.isinf(deriv[i]) else deriv[i]
+            out[i] = kp * error[i] + ki * integr[i] + kd * deriv[i]
+            out[i] = max(min(out[i], 0.25), -0.25)
+        print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
+    else:
+        time.sleep(0.01)
+        p = read_touch_coordinates()
+        if p is None or p.x is None:
+            detected = False
 
     timeI = time.time()
     while time.time() - timeI < 0.02:
