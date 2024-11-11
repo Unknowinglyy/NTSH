@@ -96,7 +96,7 @@ def move_to(hz, nx, ny):
         # Move motors to the calculated positions
         current_positions[0] = move_motor(stepperA, directionA, pos[0] - current_positions[0], current_positions[0], "Motor A")
         current_positions[1] = move_motor(stepperB, directionB, pos[1] - current_positions[1], current_positions[1], "Motor B")
-        current_positions[2] = move_motor(stepperC, directionC, pos[2] - current_positions[2], current_positions[2])
+        current_positions[2] = move_motor(stepperC, directionC, pos[2] - current_positions[2], current_positions[2], "Motor C")
     else:
         # Revert to initial positions if the ball is not detected
         current_positions[0] = move_motor(stepperA, directionA, initial_positions[0] - current_positions[0], current_positions[0], "Motor A")
