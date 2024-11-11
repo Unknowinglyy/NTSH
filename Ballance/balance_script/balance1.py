@@ -81,7 +81,7 @@ def move_to(hz, nx, ny):
     if detected:
         pos = [round((angOrig - machine.theta(i, hz, nx, ny)) * angToStep) for i in range(3)]
         # Constrain positions to prevent moving past range of motion
-        pos = [max(min(p, 3200), 0) for p in pos]
+        pos = [max(min(p, 800), 0) for p in pos]
         # Move motors to the calculated positions
         move_motor(stepperA, directionA, pos[0])
         move_motor(stepperB, directionB, pos[1])
