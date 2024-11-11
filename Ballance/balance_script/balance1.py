@@ -15,7 +15,7 @@ dir_pin3 = 6   # Pin connected to DIR on 3rd TMC2208
 
 # Motor movement parameters
 angOrig = 206.662752199
-angToStep = 3200 / 360
+angToStep = 800 / 360
 ks = 20  # Speed amplifying constant
 
 # PID variables
