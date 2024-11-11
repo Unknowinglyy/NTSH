@@ -11,7 +11,7 @@ def read_touch_coordinates(device_path='/dev/input/event4'):
     print(f"Device: {device.name}")
     print(f"Listening for touch events on {device.path}...")
     
-    x, y = None, None
+    x, y = 0, 0
 
     # Read touch events in a loop
     for event in device.read_loop():
