@@ -6,10 +6,8 @@ from touchScreenBasicCoordOutput import read_touch_coordinates, Point
 # Motor Pins
 step_pin_A = 23  # Pin connected to STEP on TMC2208 for Motor A
 dir_pin_A = 24   # Pin connected to DIR on TMC2208 for Motor A
-
 step_pin_B = 20  # Pin connected to STEP on TMC2208 for Motor B
 dir_pin_B = 21   # Pin connected to DIR on TMC2208 for Motor B
-
 step_pin_C = 5   # Pin connected to STEP on TMC2208 for Motor C
 dir_pin_C = 6    # Pin connected to DIR on TMC2208 for Motor C
 
@@ -19,9 +17,9 @@ angToStep = 800 / 360  # Steps per degree
 ks = 20  # Speed amplifying constant
 
 # PID variables
-kp = 1E-3  # Increased proportional gain
-ki = 5E-6  # Adjusted integral gain
-kd = 1E-2  # Adjusted derivative gain
+kp = 1E-3
+ki = 5E-6
+kd = 1E-2
 error = [0, 0]
 errorPrev = [0, 0]
 integr = [0, 0]
@@ -36,14 +34,12 @@ Yoffset = 2045
 # Setup GPIO
 stepperA = OutputDevice(step_pin_A)
 directionA = OutputDevice(dir_pin_A)
-
 stepperB = OutputDevice(step_pin_B)
 directionB = OutputDevice(dir_pin_B)
-
 stepperC = OutputDevice(step_pin_C)
 directionC = OutputDevice(dir_pin_C)
 
-# Store initial positions and current positions
+# Store initial and current positions
 initial_positions = [0, 0, 0]
 current_positions = [0, 0, 0]
 
@@ -55,7 +51,6 @@ class Machine:
         self.g = g
 
     def theta(self, i, hz, nx, ny):
-        # Simplified inverse kinematics calculation
         if i == 0:
             return math.atan2(ny, nx)
         elif i == 1:
@@ -69,40 +64,46 @@ class Machine:
 machine = Machine(2, 3.125, 1.75, 3.669291339)
 
 def move_motor(step, direction, steps, current_position, motor_name):
+    steps = max(-current_position, min(steps, 200 - current_position))
     if steps > 0:
         direction.on()
-        if current_position + steps > 200:
-            steps = 200 - current_position
         print(f"{motor_name} moving CW {steps} steps (current position: {current_position + steps}/200)")
     else:
         direction.off()
-        if -current_position + steps < 0:
-            steps = -current_position
-        print(f"{motor_name} moving CCW {steps} steps (current position: {-current_position + steps}/200)")
+        print(f"{motor_name} moving CCW {steps} steps (current position: {current_position + steps}/200)")
+    
     for _ in range(abs(steps)):
         step.on()
-        time.sleep(0.0005)  # Reduced delay to make motors move faster
+        time.sleep(0.0005)
         step.off()
-        time.sleep(0.0005)  # Reduced delay to make motors move faster
+        time.sleep(0.0005)
+    
     return current_position + steps if direction.value else current_position - steps
 
 def move_to(hz, nx, ny):
     global detected, current_positions
     if detected:
         pos = [round((angOrig - machine.theta(i, hz, nx, ny)) * angToStep) for i in range(3)]
-        # Constrain positions to prevent moving past range of motion
         pos = [max(min(p, 200), 0) for p in pos]
-        # Move motors to the calculated positions incrementally
         for i in range(3):
             steps = pos[i] - current_positions[i]
             if steps != 0:
-                current_positions[i] = move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, current_positions[i], f"Motor {chr(65 + i)}")
+                current_positions[i] = move_motor(
+                    [stepperA, stepperB, stepperC][i],
+                    [directionA, directionB, directionC][i],
+                    steps, current_positions[i],
+                    f"Motor {chr(65 + i)}"
+                )
     else:
-        # Revert to initial positions if the ball is not detected
         for i in range(3):
             steps = initial_positions[i] - current_positions[i]
             if steps != 0:
-                current_positions[i] = move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, current_positions[i], f"Motor {chr(65 + i)}")
+                current_positions[i] = move_motor(
+                    [stepperA, stepperB, stepperC][i],
+                    [directionA, directionB, directionC][i],
+                    steps, current_positions[i],
+                    f"Motor {chr(65 + i)}"
+                )
 
 def pid(setpointX, setpointY):
     global detected, error, errorPrev, integr, deriv, out
@@ -111,15 +112,13 @@ def pid(setpointX, setpointY):
         detected = True
         for i in range(2):
             errorPrev[i] = error[i]
-            error[i] = (i == 0) * (Xoffset - p.x - setpointX) + (i == 1) * (Yoffset - p.y - setpointY)
-            integr[i] += error[i] + errorPrev[i]
+            error[i] = ((Xoffset - p.x - setpointX) if i == 0 else (Yoffset - p.y - setpointY))
+            integr[i] += error[i]
             deriv[i] = error[i] - errorPrev[i]
             deriv[i] = 0 if math.isnan(deriv[i]) or math.isinf(deriv[i]) else deriv[i]
             out[i] = kp * error[i] + ki * integr[i] + kd * deriv[i]
             out[i] = max(min(out[i], 0.25), -0.25)
-        # print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
     else:
-        print("No ball detected")
         detected = False
 
     timeI = time.time()
@@ -129,18 +128,20 @@ def pid(setpointX, setpointY):
 def main():
     global detected, initial_positions, current_positions
     try:
-        print("Starting motor test...")
-        # Store initial positions
         initial_positions = [0, 0, 0]
         current_positions = [0, 0, 0]
         while True:
-            pid(2025, 2045)  # Setpoint is the center coordinate
+            pid(2025, 2045)
     except KeyboardInterrupt:
-        print("Motor test interrupted.")
         for i in range(3):
             steps = initial_positions[i] - current_positions[i]
             if steps != 0:
-                current_positions[i] = move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, current_positions[i], f"Motor {chr(65 + i)}")
+                current_positions[i] = move_motor(
+                    [stepperA, stepperB, stepperC][i],
+                    [directionA, directionB, directionC][i],
+                    steps, current_positions[i],
+                    f"Motor {chr(65 + i)}"
+                )
     finally:
         stepperA.close()
         stepperB.close()
