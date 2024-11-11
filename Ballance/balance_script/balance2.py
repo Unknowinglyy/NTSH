@@ -57,19 +57,19 @@ if __name__ == "__main__":
             error_y = pid_y(y)
 
             if error_x > 0:
-                move_motor(step2, error_x, direction2, False)
+                move_motor(step2, error_x, direction2, True)
             else:
-                move_motor(step3, -error_x, direction2, True)
+                move_motor(step2, -error_x, direction2, False)
 
             if error_y > 0:
                 move_motor(step, error_y, direction, True)
             else:
-                move_motor(step3, -error_y, direction, False)
+                move_motor(step, -error_y, direction, False)
 
             if error_x < 0 and error_y < 0:
-                move_motor(step3, -error_x, direction3, True)
+                move_motor(step3, -error_x, direction3, False)
             elif error_x > 0 and error_y > 0:
-                move_motor(step3, error_x, direction3, False)
+                move_motor(step3, error_x, direction3, True)
 
             print(f"X: {x}, Y: {y}, Error X: {error_x}, Error Y: {error_y}")
 
