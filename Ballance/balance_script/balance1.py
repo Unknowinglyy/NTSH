@@ -69,7 +69,7 @@ class Machine:
 machine = Machine(2, 3.125, 1.75, 3.669291339)
 
 def move_motor(step, direction, steps, current_position, motor_name):
-    if steps > 0:
+    if steps > 0 and current_position < 200:
         direction.on()
         if current_position + steps > 200:
             steps = 200 - current_position
