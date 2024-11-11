@@ -3,7 +3,7 @@ import time
 from gpiozero import OutputDevice
 from simple_pid import PID
 
-# Motor pins
+#motor pins
 step_pin = 23
 dir_pin = 24
 step_pin2 = 20
@@ -11,20 +11,26 @@ dir_pin2 = 21
 step_pin3 = 5
 dir_pin3 = 6
 
-# Motor setup
+#motor setup
+#motor 1
 step = OutputDevice(step_pin)
 direction = OutputDevice(dir_pin)
+
+#motor 2
 step2 = OutputDevice(step_pin2)
 direction2 = OutputDevice(dir_pin2)
+
+#motor 3
 step3 = OutputDevice(step_pin3)
 direction3 = OutputDevice(dir_pin3)
 
-# PID setup
+#pid setup using simple_pid module
 pid_x = PID(1, 0.1, 0.05, setpoint=2025)
 pid_y = PID(1, 0.1, 0.05, setpoint=2045)
 pid_x.output_limits = (-100, 100)
 pid_y.output_limits = (-100, 100)
 
+#reading the coordinates of the ball (from previous implementation)
 def read_touch_coordinates(device_path='/dev/input/event4'):
     device = evdev.InputDevice(device_path)
     x, y = None, None
@@ -39,6 +45,7 @@ def read_touch_coordinates(device_path='/dev/input/event4'):
             elif event.type == evdev.ecodes.EV_KEY:
                 yield (x, y)
 
+#moving of motor function
 def move_motor(motor, steps, direction_pin, direction):
     direction_pin.value = direction
     for _ in range(int(abs(steps))):
@@ -53,6 +60,7 @@ if __name__ == "__main__":
             error_x = pid_x(x)
             error_y = pid_y(y)
 
+            #change the direction of the motor based on the error
             if error_x > 0:
                 move_motor(step2, error_x, direction2, True)
             else:
@@ -72,8 +80,9 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("Motor control interrupted.")
-        
+
     finally:
+        #clean up the GPIO pins
         step.close()
         step2.close()
         step3.close()
