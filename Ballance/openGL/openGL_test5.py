@@ -10,10 +10,7 @@ import busio
 import adafruit_mpu6050
 import math
 import time
-# Add the root directory to the sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from touchscreen.touchScreenBasicCoordOutput import read_touch_coordinates, Point
+from ..touchscreen.touchScreenBasicCoordOutput import read_touch_coordinates
 
 # Initialize I2C and MPU6050
 i2c = busio.I2C(board.SCL, board.SDA)
