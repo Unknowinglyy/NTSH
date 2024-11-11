@@ -16,7 +16,7 @@ dir_pin3 = 6  # Pin connected to DIR on 3rd TMC2208
 # Motor movement parameters
 test_steps = 200              # Number of steps to move in each direction
 delay_time = 0.005          # Delay in seconds between steps
-wave_frequency = 5         # Frequency of the wave motion
+wave_frequency = 1         # Frequency of the wave motion
 # ----------------------------------------------------------------------------------
 
 # Setup GPIO
