@@ -2,20 +2,20 @@ import time
 import math
 from gpiozero import OutputDevice
 from touchScreenBasicCoordOutput import read_touch_coordinates, Point
-# -----------------------------------------------------------
+
 # Motor Pins
-step_pin = 23  # Pin connected to STEP on TMC2208
-dir_pin = 24   # Pin connected to DIR on TMC2208
+step_pin_A = 23  # Pin connected to STEP on TMC2208 for Motor A
+dir_pin_A = 24   # Pin connected to DIR on TMC2208 for Motor A
 
-step_pin2 = 20  # Pin connected to STEP on 2nd TMC2208
-dir_pin2 = 21   # Pin connected to DIR on 2nd TMC2208
+step_pin_B = 20  # Pin connected to STEP on TMC2208 for Motor B
+dir_pin_B = 21   # Pin connected to DIR on TMC2208 for Motor B
 
-step_pin3 = 5  # Pin connected to STEP on 3rd TMC2208
-dir_pin3 = 6   # Pin connected to DIR on 3rd TMC2208
+step_pin_C = 5   # Pin connected to STEP on TMC2208 for Motor C
+dir_pin_C = 6    # Pin connected to DIR on TMC2208 for Motor C
 
 # Motor movement parameters
 angOrig = 206.662752199
-angToStep = 800 / 360
+angToStep = 800 / 360  # Steps per degree
 ks = 20  # Speed amplifying constant
 
 # PID variables
@@ -29,19 +29,19 @@ deriv = [0, 0]
 out = [0, 0]
 detected = False
 
-# Touch screen offsets
+# Touch screen offsets (center coordinates)
 Xoffset = 2025
 Yoffset = 2045
 
 # Setup GPIO
-stepperA = OutputDevice(step_pin)
-directionA = OutputDevice(dir_pin)
+stepperA = OutputDevice(step_pin_A)
+directionA = OutputDevice(dir_pin_A)
 
-stepperB = OutputDevice(step_pin2)
-directionB = OutputDevice(dir_pin2)
+stepperB = OutputDevice(step_pin_B)
+directionB = OutputDevice(dir_pin_B)
 
-stepperC = OutputDevice(step_pin3)
-directionC = OutputDevice(dir_pin3)
+stepperC = OutputDevice(step_pin_C)
+directionC = OutputDevice(dir_pin_C)
 
 class Machine:
     def __init__(self, d, e, f, g):
