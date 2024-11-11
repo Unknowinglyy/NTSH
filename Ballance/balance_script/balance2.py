@@ -94,9 +94,8 @@ def move_to(hz, nx, ny):
 
 def pid(setpointX, setpointY):
     global detected, error, errorPrev, integr, deriv, out
-    touch_gen = read_touch_coordinates()
     try:
-        p = next(touch_gen)
+        p = read_touch_coordinates()
         if p.x is not None:
             detected = True
             for i in range(2):
