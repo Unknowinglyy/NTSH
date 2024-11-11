@@ -109,7 +109,7 @@ def pid(setpointX, setpointY):
             print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
         else:
             time.sleep(0.01)
-            p = next(touch_gen)
+            p = read_touch_coordinates()
             if p.x is None:
                 detected = False
     except StopIteration:
