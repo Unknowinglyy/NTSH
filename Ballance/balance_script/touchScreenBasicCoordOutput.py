@@ -8,8 +8,8 @@ class Point:
 def read_touch_coordinates(device_path='/dev/input/event4'):
     device = evdev.InputDevice(device_path)
 
-    print(f"Device: {device.name}")
-    print(f"Listening for touch events on {device.path}...")
+    # print(f"Device: {device.name}")
+    # print(f"Listening for touch events on {device.path}...")
     
     x, y = None, None
 
