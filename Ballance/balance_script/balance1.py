@@ -76,23 +76,22 @@ def move_motor(step, direction, steps, current_position, motor_name):
         print(f"{motor_name} moving CW {steps} steps (current position: {current_position + steps}/200)")
     else:
         direction.off()
-        if current_position + steps < -200:
-            steps = -200 - current_position
-        steps = -steps
-        print(f"{motor_name} moving CCW {steps} steps (current position: {current_position - steps}/200)")
-    for _ in range(steps):
+        if current_position + steps < 0:
+            steps = -current_position
+        print(f"{motor_name} moving CCW {steps} steps (current position: {current_position + steps}/200)")
+    for _ in range(abs(steps)):
         step.on()
         time.sleep(0.0005)  # Reduced delay to make motors move faster
         step.off()
         time.sleep(0.0005)  # Reduced delay to make motors move faster
-    return current_position + steps if direction.value else current_position - steps
+    return current_position + steps if direction.value else current_position + steps
 
 def move_to(hz, nx, ny):
     global detected, current_positions
     if detected:
         pos = [round((angOrig - machine.theta(i, hz, nx, ny)) * angToStep) for i in range(3)]
         # Constrain positions to prevent moving past range of motion
-        pos = [max(min(p, 200), -200) for p in pos]
+        pos = [max(min(p, 200), 0) for p in pos]
         # Move motors to the calculated positions
         current_positions[0] = move_motor(stepperA, directionA, pos[0] - current_positions[0], current_positions[0], "Motor A")
         current_positions[1] = move_motor(stepperB, directionB, pos[1] - current_positions[1], current_positions[1], "Motor B")
