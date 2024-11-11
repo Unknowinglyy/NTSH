@@ -1,147 +1,133 @@
 import time
 import math
 from gpiozero import OutputDevice
-from touchScreenBasicCoordOutput import read_touch_coordinates, Point
+from touchScreenBasicCoordOutput import read_touch_coordinates
 
 # Motor Pins
-step_pin_A = 23  # Pin connected to STEP on TMC2208 for Motor A
-dir_pin_A = 24   # Pin connected to DIR on TMC2208 for Motor A
+step_pin_A = 23  # STEP pin for Motor A
+dir_pin_A = 24   # DIR pin for Motor A
+step_pin_B = 20  # STEP pin for Motor B
+dir_pin_B = 21   # DIR pin for Motor B
+step_pin_C = 5   # STEP pin for Motor C
+dir_pin_C = 6    # DIR pin for Motor C
 
-step_pin_B = 20  # Pin connected to STEP on TMC2208 for Motor B
-dir_pin_B = 21   # Pin connected to DIR on TMC2208 for Motor B
-
-step_pin_C = 5   # Pin connected to STEP on TMC2208 for Motor C
-dir_pin_C = 6    # Pin connected to DIR on TMC2208 for Motor C
-
-# Motor movement parameters
-angOrig = 206.662752199
-angToStep = 3200 / 360  # Steps per degree
-ks = 20  # Speed amplifying constant
-
-# PID variables
-kp = 4E-4
-ki = 2E-6
-kd = 7E-3
-error = [0, 0]
-errorPrev = [0, 0]
-integr = [0, 0]
-deriv = [0, 0]
-out = [0, 0]
-detected = False
-
-# Touch screen offsets (center coordinates)
-Xoffset = 500
-Yoffset = 500
-
-# Setup GPIO
+# Motor Step and Direction Controls
 stepperA = OutputDevice(step_pin_A)
 directionA = OutputDevice(dir_pin_A)
-
 stepperB = OutputDevice(step_pin_B)
 directionB = OutputDevice(dir_pin_B)
-
 stepperC = OutputDevice(step_pin_C)
 directionC = OutputDevice(dir_pin_C)
 
-# Store initial positions and current positions
-initial_positions = [0, 0, 0]
-current_positions = [0, 0, 0]
-speed = [0, 0, 0]
-speedPrev = [0, 0, 0]
+# Target (center) coordinates for the ball
+TARGET_X = 2025
+TARGET_Y = 2045
 
-class Machine:
-    def __init__(self, d, e, f, g):
-        self.d = d
-        self.e = e
-        self.f = f
-        self.g = g
+# PID Controller constants
+KP = 0.001
+KI = 0.0001
+KD = 0.005
 
-    def theta(self, i, hz, nx, ny):
-        # Simplified inverse kinematics calculation
-        if i == 0:
-            return math.atan2(ny, nx)
-        elif i == 1:
-            return math.atan2(ny, nx) + 2 * math.pi / 3
-        elif i == 2:
-            return math.atan2(ny, nx) + 4 * math.pi / 3
-        else:
-            return 0
+# PID state variables
+error_prev_x = 0
+error_prev_y = 0
+integral_x = 0
+integral_y = 0
 
-# Initialize the machine
-machine = Machine(2, 3.125, 1.75, 3.669291339)
+# Conversion factor: steps per degree for the motors (may need tuning)
+STEPS_PER_DEGREE = 3200 / 360
 
-def set_motor_speed(motor, speed):
-    # Set the motor's speed (could use PWM to emulate speed if GPIO library supports it)
-    print(f"Setting motor speed to {speed}")
-
-def move_motor(step, direction, steps, motor_name):
+def move_motor(motor_step, motor_dir, steps):
+    """Moves the motor a specific number of steps in a given direction."""
     if steps > 0:
-        direction.off()
-        print(f"{motor_name} moving CW {steps} steps")
+        motor_dir.on()  # Set direction to clockwise
     else:
-        direction.on()
-        print(f"{motor_name} moving CCW {abs(steps)} steps")
-    
+        motor_dir.off()  # Set direction to counter-clockwise
     for _ in range(abs(steps)):
-        step.on()
+        motor_step.on()
+        time.sleep(0.0005)  # Adjust step delay as necessary
+        motor_step.off()
         time.sleep(0.0005)
-        step.off()
-        time.sleep(0.0005)
 
-def move_to(hz, nx, ny):
-    global detected, current_positions
-    if detected:
-        pos = [round((angOrig - machine.theta(i, hz, nx, ny)) * angToStep) for i in range(3)]
-        for i in range(3):
-            steps = pos[i] - current_positions[i]
-            speed[i] = min(max(abs(steps) * ks, speedPrev[i] - 200), speedPrev[i] + 200)
-            set_motor_speed([stepperA, stepperB, stepperC][i], speed[i])
-            if steps != 0:
-                move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, f"Motor {chr(65 + i)}")
-                current_positions[i] = pos[i]
-    else:
-        for i in range(3):
-            steps = initial_positions[i] - current_positions[i]
-            if steps != 0:
-                move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, f"Motor {chr(65 + i)}")
+def pid_control(target_x, target_y, current_x, current_y):
+    """Calculates PID outputs for both X and Y axes to balance the ball."""
+    global error_prev_x, error_prev_y, integral_x, integral_y
 
-def pid(setpointX, setpointY):
-    global detected, error, errorPrev, integr, deriv, out
-    p = read_touch_coordinates()
-    if p is not None and p.x is not None:
-        detected = True
-        for i in range(2):
-            errorPrev[i] = error[i]
-            error[i] = (i == 0) * (Xoffset - p.x - setpointX) + (i == 1) * (Yoffset - p.y - setpointY)
-            integr[i] += error[i] + errorPrev[i]
-            deriv[i] = error[i] - errorPrev[i]
-            out[i] = max(min(kp * error[i] + ki * integr[i] + kd * deriv[i], 0.25), -0.25)
-    else:
-        print("No ball detected")
-        detected = False
+    # Calculate errors
+    error_x = target_x - current_x
+    error_y = target_y - current_y
 
-    timeI = time.time()
-    while time.time() - timeI < 0.02:
-        move_to(4.25, -out[0], -out[1])
+    # Proportional terms
+    p_term_x = KP * error_x
+    p_term_y = KP * error_y
+
+    # Integral terms
+    integral_x += error_x
+    integral_y += error_y
+    i_term_x = KI * integral_x
+    i_term_y = KI * integral_y
+
+    # Derivative terms
+    derivative_x = error_x - error_prev_x
+    derivative_y = error_y - error_prev_y
+    d_term_x = KD * derivative_x
+    d_term_y = KD * derivative_y
+
+    # Update previous errors
+    error_prev_x = error_x
+    error_prev_y = error_y
+
+    # PID output
+    output_x = p_term_x + i_term_x + d_term_x
+    output_y = p_term_y + i_term_y + d_term_y
+
+    # Return the calculated outputs
+    return output_x, output_y
+
+def control_platform(output_x, output_y):
+    """Moves the motors based on the PID outputs for X and Y directions."""
+    # Convert PID outputs to motor steps (needs tuning for real hardware)
+    steps_A = int(output_x * STEPS_PER_DEGREE)
+    steps_B = int(output_y * STEPS_PER_DEGREE)
+    steps_C = int((output_x + output_y) * STEPS_PER_DEGREE / 2)
+
+    # Move motors based on the calculated steps
+    move_motor(stepperA, directionA, steps_A)
+    move_motor(stepperB, directionB, steps_B)
+    move_motor(stepperC, directionC, steps_C)
 
 def main():
-    global detected, initial_positions, current_positions
     try:
-        initial_positions = [0, 0, 0]
-        current_positions = [0, 0, 0]
         while True:
-            pid(500, 500)
+            # Read the current position of the ball
+            ball_position = read_touch_coordinates()
+            
+            # If the ball position is valid, proceed with balancing
+            if ball_position and ball_position.x is not None and ball_position.y is not None:
+                current_x, current_y = ball_position.x, ball_position.y
+
+                # Calculate PID control output for X and Y
+                output_x, output_y = pid_control(TARGET_X, TARGET_Y, current_x, current_y)
+
+                # Move the platform according to the PID output
+                control_platform(output_x, output_y)
+
+                # Print diagnostic information
+                print(f"Ball Position: ({current_x}, {current_y}), PID Output: ({output_x}, {output_y})")
+            else:
+                print("Ball not detected.")
+
+            # Run at a consistent rate
+            time.sleep(0.02)  # 20 ms loop delay
     except KeyboardInterrupt:
-        for i in range(3):
-            steps = initial_positions[i] - current_positions[i]
-            if steps != 0:
-                move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, f"Motor {chr(65 + i)}")
+        print("Exiting...")
     finally:
+        # Ensure all motors are stopped
         stepperA.close()
-        stepperB.close()
-        stepperC.close()
         directionA.close()
+        stepperB.close()
         directionB.close()
+        stepperC.close()
         directionC.close()
 
 if __name__ == "__main__":
