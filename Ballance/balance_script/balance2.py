@@ -64,6 +64,21 @@ def read_touch_coordinates(device_path='/dev/input/event4'):
             if x is not None and y is not None:
                 yield (x, y)
 
+def move_motor(step, direction, output):
+                if output > 0:
+                    direction.off()
+                else:
+                    direction.on()
+                steps = abs(int(output))
+                while steps > 0:
+                    chunk = min(steps, 20)
+                    for _ in range(chunk):
+                        step.on()
+                        time.sleep(0.005)
+                        step.off()
+                        time.sleep(0.005)
+                    steps -= chunk
+
 if __name__ == "__main__":
     setpoint_x = 2025  # Desired X coordinate
     setpoint_y = 2045  # Desired Y coordinate
@@ -75,39 +90,12 @@ if __name__ == "__main__":
             output_x = pid_control(setpoint_x, x)
             output_y = pid_control(setpoint_y, y)
 
-            # Adjust motor positions based on PID output
-            if output_x > 0:
-                direction.off()
-            else:
-                direction.on()
-            for _ in range(abs(int(output_x))):
-                step.on()
-                time.sleep(0.0009)
-                step.off()
-                time.sleep(0.0009)
-
-            if output_y > 0:
-                direction2.off()
-            else:
-                direction2.on()
-            for _ in range(abs(int(output_y))):
-                step2.on()
-                time.sleep(0.0009)
-                step2.off()
-                time.sleep(0.0009)
-
-            # Move the third motor based on the average of X and Y PID outputs
-            output_z = (output_x + output_y) / 2
-            if output_z > 0:
-                direction3.off()
-            else:
-                direction3.on()
-            for _ in range(abs(int(output_z))):
-                step3.on()
-                time.sleep(0.0009)
-                step3.off()
-                time.sleep(0.0009)
+            move_motor(step, direction, output_x)
+            move_motor(step2, direction2, output_y)
             
+            output_z = (output_x + output_y) / 2
+            move_motor(step3, direction3, output_z)
+    
             print("Motors moved based on PID output")
 
     except KeyboardInterrupt:
