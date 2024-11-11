@@ -1,14 +1,8 @@
 import time
 import math
 from gpiozero import OutputDevice
-from touchScreenBasicCoordOutput import *
+from touchScreenBasicCoordOutput import read_touch_coordinates, Point
 
-# ------------------------------------------------------------
-'''
-    NOTES:
-        - Center Coordinate (2025,2045)
-'''
-# ------------------------------------------------------------
 # Motor Pins
 step_pin = 23  # Pin connected to STEP on TMC2208
 dir_pin = 24   # Pin connected to DIR on TMC2208
@@ -18,7 +12,7 @@ dir_pin2 = 21   # Pin connected to DIR on 2nd TMC2208
 
 step_pin3 = 5  # Pin connected to STEP on 3rd TMC2208
 dir_pin3 = 6   # Pin connected to DIR on 3rd TMC2208
-# ------------------------------------------------------------
+
 # Motor movement parameters
 angOrig = 206.662752199
 angToStep = 3200 / 360
@@ -38,7 +32,7 @@ detected = False
 # Touch screen offsets
 Xoffset = 2025
 Yoffset = 2045
-# ------------------------------------------------------------
+
 # Setup GPIO
 stepperA = OutputDevice(step_pin)
 directionA = OutputDevice(dir_pin)
@@ -48,7 +42,7 @@ directionB = OutputDevice(dir_pin2)
 
 stepperC = OutputDevice(step_pin3)
 directionC = OutputDevice(dir_pin3)
-# ------------------------------------------------------------
+
 class Machine:
     def __init__(self, d, e, f, g):
         self.d = d
@@ -66,11 +60,16 @@ class Machine:
             return math.atan2(ny, nx) + 4 * math.pi / 3
         else:
             return 0
-# ------------------------------------------------------------
+
 # Initialize the machine
 machine = Machine(2, 3.125, 1.75, 3.669291339)
 
 def move_motor(step, direction, steps):
+    if steps > 0:
+        direction.on()
+    else:
+        direction.off()
+        steps = -steps
     for _ in range(steps):
         step.on()
         time.sleep(0.001)
@@ -94,7 +93,6 @@ def move_to(hz, nx, ny):
 def pid(setpointX, setpointY):
     global detected, error, errorPrev, integr, deriv, out
     p = read_touch_coordinates()
-    # print(f"X = {p.x}   Y = {p.y}")
     if p is not None and p.x is not None:
         detected = True
         for i in range(2):
@@ -113,14 +111,13 @@ def pid(setpointX, setpointY):
     timeI = time.time()
     while time.time() - timeI < 0.02:
         move_to(4.25, -out[0], -out[1])
-        
-# ------------------------------------------------------------
+
 def main():
     global detected
     try:
         print("Starting motor test...")
         while True:
-            pid(0, 0)
+            pid(2025, 2045)  # Setpoint is the center coordinate
     except KeyboardInterrupt:
         print("Motor test interrupted.")
     finally:
@@ -131,6 +128,6 @@ def main():
         directionB.close()
         directionC.close()
         print("GPIO cleaned up.")
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     main()
