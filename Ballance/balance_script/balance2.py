@@ -134,7 +134,7 @@ def main():
         print("Starting motor test...")
         enable.on()  # Enable the motor driver (set to LOW)
         while True:
-            pid(0, 0)
+            pid(2025, 2045)
     except KeyboardInterrupt:
         print("Motor test interrupted.")
     finally:
