@@ -99,7 +99,7 @@ if __name__ == "__main__":
             # Move the third motor based on the average of X and Y PID outputs
             output_z = (output_x + output_y) / 2
             if output_z > 0:
-                direction3.of()
+                direction3.off()
             else:
                 direction3.on()
             for _ in range(abs(int(output_z))):
@@ -112,7 +112,7 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("Touchscreen control interrupted.")
-        
+
     finally:
         step.close()
         step2.close()
