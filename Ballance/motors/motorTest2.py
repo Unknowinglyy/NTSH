@@ -18,12 +18,15 @@ test_steps = 200              # Number of steps to move in each direction
 delay_time = 0.005          # Delay in seconds between steps
 
 # Setup GPIO
+#motor 1
 step = OutputDevice(step_pin)
 direction = OutputDevice(dir_pin)
 
+#motor 2
 step2 = OutputDevice(step_pin2)
 direction2 = OutputDevice(dir_pin2)
 
+#motor 3
 step3 = OutputDevice(step_pin3)
 direction3 = OutputDevice(dir_pin3)
 
