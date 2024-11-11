@@ -1,7 +1,13 @@
+import sys
+import os
 from gpiozero import OutputDevice
 import time
 import math
-from touchscreen.touchScreenBasicCoordOutput import read_touch_coordinates
+
+# Add the root directory to the sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from touchscreen.touchScreenBasicCoordOutput import read_touch_coordinates, Point
 
 # Motor Pins
 step_pin = 23  # Pin connected to STEP on TMC2208
@@ -88,22 +94,26 @@ def move_to(hz, nx, ny):
 def pid(setpointX, setpointY):
     global detected, error, errorPrev, integr, deriv, out
     p = read_touch_coordinates()
-    if p.x != 0:
-        detected = True
-        for i in range(2):
-            errorPrev[i] = error[i]
-            error[i] = (i == 0) * (Xoffset - p.x - setpointX) + (i == 1) * (Yoffset - p.y - setpointY)
-            integr[i] += error[i] + errorPrev[i]
-            deriv[i] = error[i] - errorPrev[i]
-            deriv[i] = 0 if math.isnan(deriv[i]) or math.isinf(deriv[i]) else deriv[i]
-            out[i] = kp * error[i] + ki * integr[i] + kd * deriv[i]
-            out[i] = max(min(out[i], 0.25), -0.25)
-        print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
-    else:
-        time.sleep(0.01)
-        p = read_touch_coordinates()
-        if p.x == 0:
-            detected = False
+    try:
+        if p.x is not None:
+            detected = True
+            for i in range(2):
+                errorPrev[i] = error[i]
+                error[i] = (i == 0) * (Xoffset - p.x - setpointX) + (i == 1) * (Yoffset - p.y - setpointY)
+                integr[i] += error[i] + errorPrev[i]
+                deriv[i] = error[i] - errorPrev[i]
+                deriv[i] = 0 if math.isnan(deriv[i]) or math.isinf(deriv[i]) else deriv[i]
+                out[i] = kp * error[i] + ki * integr[i] + kd * deriv[i]
+                out[i] = max(min(out[i], 0.25), -0.25)
+            print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
+        else:
+            time.sleep(0.01)
+            p = read_touch_coordinates()
+            if p.x is None:
+                detected = False
+    except StopIteration:
+        detected = False
+
     timeI = time.time()
     while time.time() - timeI < 0.02:
         move_to(4.25, -out[0], -out[1])
