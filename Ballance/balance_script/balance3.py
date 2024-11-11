@@ -19,7 +19,7 @@ MOTOR_PINS = [
 ANGLE_ORIGINAL = 206.662752199
 ANGLE_TO_STEP = 3200 / 360
 SPEED_CONSTANT = 20
-STEP_DIVIDER = 2  # Reduce steps by dividing the number of steps by this value
+STEP_DIVIDER = 5  # Reduce steps by dividing the number of steps by this value
 
 # PID Constants
 KP = 4E-4
@@ -63,9 +63,9 @@ def move_motor(stepper, direction, steps):
 
     for _ in range(steps):
         stepper.on()
-        time.sleep(0.0003)  # Smoother movement
+        time.sleep(0.01)  # Smoother movement
         stepper.off()
-        time.sleep(0.0003)
+        time.sleep(0.01)
 
 def move_to_target(hz, nx, ny):
     global detected
