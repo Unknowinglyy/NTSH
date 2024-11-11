@@ -15,8 +15,8 @@ dir_pin_C = 6    # Pin connected to DIR on TMC2208 for Motor C
 
 # Motor movement parameters
 angOrig = 206.662752199
-angToStep = 800 / 360  # Steps per degree
-ks = 20  # Speed amplifying constant
+angToStep = 200 / 360  # Steps per degree
+ks = 60  # Speed amplifying constant
 
 # PID variables
 kp = 1E-3  # Increased proportional gain
@@ -127,6 +127,9 @@ def main():
             pid(2025, 2045)  # Setpoint is the center coordinate
     except KeyboardInterrupt:
         print("Motor test interrupted.")
+        move_motor(stepperA, directionA, initial_positions[0])
+        move_motor(stepperB, directionB, initial_positions[1])
+        move_motor(stepperC, directionC, initial_positions[2])
     finally:
         stepperA.close()
         stepperB.close()
