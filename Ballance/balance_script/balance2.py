@@ -77,9 +77,9 @@ if __name__ == "__main__":
 
         # Adjust motor positions based on PID output
         if output_x > 0:
-            direction.on()
-        else:
             direction.off()
+        else:
+            direction.on()
         for _ in range(abs(int(output_x))):
             step.on()
             time.sleep(0.001)
@@ -87,9 +87,9 @@ if __name__ == "__main__":
             time.sleep(0.001)
 
         if output_y > 0:
-            direction2.on()
+            direction2.ff()
         else:
-            direction2.off()
+            direction2.on()
         for _ in range(abs(int(output_y))):
             step2.on()
             time.sleep(0.001)
@@ -99,9 +99,9 @@ if __name__ == "__main__":
         # Move the third motor based on the average of X and Y PID outputs
         output_z = (output_x + output_y) / 2
         if output_z > 0:
-            direction3.on()
+            direction3.of()
         else:
-            direction3.off()
+            direction3.on()
         for _ in range(abs(int(output_z))):
             step3.on()
             time.sleep(0.001)
