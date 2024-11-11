@@ -11,7 +11,10 @@ enable = OutputDevice(enable_pin, initial_value=False)
 
 try:
     print("Starting enable test...")
-    enable.on()
+    while True:
+        print("enabling")
+        enable.on()
+        time.sleep(10)
 
 except KeyboardInterrupt:
     print("enable test interrupted.")
