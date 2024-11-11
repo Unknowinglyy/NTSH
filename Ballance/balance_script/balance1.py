@@ -43,6 +43,8 @@ directionB = OutputDevice(dir_pin2)
 stepperC = OutputDevice(step_pin3)
 directionC = OutputDevice(dir_pin3)
 
+
+
 class Machine:
     def __init__(self, d, e, f, g):
         self.d = d
