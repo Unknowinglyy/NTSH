@@ -1,15 +1,14 @@
-import sys
-import os
-from gpiozero import OutputDevice
 import time
 import math
+from gpiozero import OutputDevice
+from touchScreenBasicCoordOutput import *
 
-# Add the root directory to the sys.path
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# Import all functions and classes from touchScreenBasicCoordOutput
-from touchScreenBasicCoordOutput import * 
-
+# ------------------------------------------------------------
+'''
+    NOTES:
+        - Center Coordinate (2025,2045)
+'''
+# ------------------------------------------------------------
 # Motor Pins
 step_pin = 23  # Pin connected to STEP on TMC2208
 dir_pin = 24   # Pin connected to DIR on TMC2208
@@ -37,8 +36,8 @@ out = [0, 0]
 detected = False
 
 # Touch screen offsets
-Xoffset = 500
-Yoffset = 500
+Xoffset = 2025
+Yoffset = 2045
 
 # Setup GPIO
 stepperA = OutputDevice(step_pin)
@@ -107,10 +106,8 @@ def pid(setpointX, setpointY):
             out[i] = max(min(out[i], 0.25), -0.25)
         print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
     else:
-        time.sleep(0.01)
-        p = read_touch_coordinates()
-        if p is None or p.x is None:
-            detected = False
+        print("No ball detected")
+        detected = False
 
     timeI = time.time()
     while time.time() - timeI < 0.02:
