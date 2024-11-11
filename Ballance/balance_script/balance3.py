@@ -79,24 +79,25 @@ class ThreeRPSManipulator:
 # Initialize the manipulator
 manipulator = ThreeRPSManipulator(2, 3.125, 1.75, 3.669)
 
-def move_motor(stepper, direction, steps):
+def move_motor(stepper, direction, steps, duration):
     direction.off() if steps < 0 else direction.on()
-    steps = abs(steps) // 5
+    steps = abs(steps)
+    step_delay = duration / steps if steps > 0 else 0
 
     for _ in range(steps):
         stepper.on()
-        time.sleep(0.005)  # Smoother movement
+        time.sleep(step_delay / 2)  # Smoother movement
         stepper.off()
-        time.sleep(0.005)
+        time.sleep(step_delay / 2)
 
-def move_to_target(hz, nx, ny):
+def move_to_target(hz, nx, ny, duration=1.0):
     for leg_index in range(3):
         # Calculate theta for each leg
         theta = manipulator.calculate_theta(leg_index, hz, nx, ny)
         position = round(theta * ANGLE_TO_STEP)  # Convert angle to steps
 
-        # Move the selected motor to the calculated position
-        move_motor(steppers[leg_index], directions[leg_index], position)
+        # Move the selected motor to the calculated position within the given duration
+        move_motor(steppers[leg_index], directions[leg_index], position, duration)
 
 def pid_controller(setpoint_x, setpoint_y):
     global detected, error, error_prev, integral, derivative, output
