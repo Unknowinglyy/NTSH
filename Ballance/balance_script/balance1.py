@@ -78,7 +78,7 @@ def move_motor(step, direction, steps, current_position, motor_name):
         direction.off()
         if -current_position + steps < 0:
             steps = -current_position
-        print(f"{motor_name} moving CCW {steps} steps (current position: {current_position + steps}/200)")
+        print(f"{motor_name} moving CCW {steps} steps (current position: {-current_position + steps}/200)")
     for _ in range(abs(steps)):
         step.on()
         time.sleep(0.0005)  # Reduced delay to make motors move faster
