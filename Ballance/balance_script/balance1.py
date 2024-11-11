@@ -5,10 +5,10 @@ import time
 import math
 
 # Add the root directory to the sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Import all functions and classes from touchScreenBasicCoordOutput
-from touchscreen.touchScreenBasicCoordOutput import *
+from touchscreen.touchScreenBasicCoordOutput import * 
 
 # Motor Pins
 step_pin = 23  # Pin connected to STEP on TMC2208
@@ -94,7 +94,7 @@ def move_to(hz, nx, ny):
 
 def pid(setpointX, setpointY):
     global detected, error, errorPrev, integr, deriv, out
-    p = read_touch_coordinates()
+    Point p = read_touch_coordinates()
     if p is not None and p.x is not None:
         detected = True
         for i in range(2):
