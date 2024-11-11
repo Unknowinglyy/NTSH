@@ -23,7 +23,7 @@ dir_pin3 = 6   # Pin connected to DIR on 3rd TMC2208
 enable_pin = 4  # Pin connected to EN on TMC2208
 
 # Motor movement parameters
-angOrig = 10.662752199
+angOrig = 100.662752199
 angToStep = 3200 / 360
 ks = 20  # Speed amplifying constant
 
