@@ -1,6 +1,7 @@
 from gpiozero import OutputDevice
 import time
 import math
+import threading
 
 # ----------------------------------------------------------------------------------
 # Motor Pins
@@ -16,7 +17,7 @@ dir_pin3 = 6  # Pin connected to DIR on 3rd TMC2208
 # Motor movement parameters
 test_steps = 200              # Number of steps to move in each direction
 delay_time = 0.005          # Delay in seconds between steps
-wave_frequency = 0.1         # Frequency of the wave motion
+wave_frequency = 1         # Frequency of the wave motion
 # ----------------------------------------------------------------------------------
 
 # Setup GPIO
@@ -32,10 +33,8 @@ direction3 = OutputDevice(dir_pin3)
 
 def move_motor(step, direction, steps, delay, phase_shift):
     for i in range(steps):
-        angle = 2 * math.pi * wave_frequency * i /  (steps + phase_shift)
-        print(angle)
+        angle = 2 * math.pi * wave_frequency * i / steps + phase_shift
         if math.sin(angle) > 0:
-            #clockwise
             direction.on()
         else:
             direction.off()
@@ -49,9 +48,22 @@ try:
 
     while True:
         print("Moving in circular motion")
-        move_motor(step, direction, test_steps, delay_time, 0)
-        move_motor(step2, direction2, test_steps, delay_time, 2 * math.pi / 3)
-        move_motor(step3, direction3, test_steps, delay_time, 4 * math.pi / 3)
+
+        # Create threads for each motor
+        thread1 = threading.Thread(target=move_motor, args=(step, direction, test_steps, delay_time, 0))
+        thread2 = threading.Thread(target=move_motor, args=(step2, direction2, test_steps, delay_time, 2 * math.pi / 3))
+        thread3 = threading.Thread(target=move_motor, args=(step3, direction3, test_steps, delay_time, 4 * math.pi / 3))
+
+        # Start all threads
+        thread1.start()
+        thread2.start()
+        thread3.start()
+
+        # Wait for all threads to complete
+        thread1.join()
+        thread2.join()
+        thread3.join()
+
         print("Completed one cycle of circular motion")
 
 except KeyboardInterrupt:
