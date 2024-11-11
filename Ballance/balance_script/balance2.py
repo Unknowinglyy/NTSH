@@ -67,45 +67,56 @@ def read_touch_coordinates(device_path='/dev/input/event4'):
 if __name__ == "__main__":
     setpoint_x = 2025  # Desired X coordinate
     setpoint_y = 2045  # Desired Y coordinate
+    try:
+        for x, y in read_touch_coordinates():
+            print(f"X: {x}, Y: {y}")
 
-    for x, y in read_touch_coordinates():
-        print(f"X: {x}, Y: {y}")
+            # Calculate PID output for X and Y
+            output_x = pid_control(setpoint_x, x)
+            output_y = pid_control(setpoint_y, y)
 
-        # Calculate PID output for X and Y
-        output_x = pid_control(setpoint_x, x)
-        output_y = pid_control(setpoint_y, y)
+            # Adjust motor positions based on PID output
+            if output_x > 0:
+                direction.off()
+            else:
+                direction.on()
+            for _ in range(abs(int(output_x))):
+                step.on()
+                time.sleep(0.001)
+                step.off()
+                time.sleep(0.001)
 
-        # Adjust motor positions based on PID output
-        if output_x > 0:
-            direction.off()
-        else:
-            direction.on()
-        for _ in range(abs(int(output_x))):
-            step.on()
-            time.sleep(0.001)
-            step.off()
-            time.sleep(0.001)
+            if output_y > 0:
+                direction2.off()
+            else:
+                direction2.on()
+            for _ in range(abs(int(output_y))):
+                step2.on()
+                time.sleep(0.001)
+                step2.off()
+                time.sleep(0.001)
 
-        if output_y > 0:
-            direction2.ff()
-        else:
-            direction2.on()
-        for _ in range(abs(int(output_y))):
-            step2.on()
-            time.sleep(0.001)
-            step2.off()
-            time.sleep(0.001)
+            # Move the third motor based on the average of X and Y PID outputs
+            output_z = (output_x + output_y) / 2
+            if output_z > 0:
+                direction3.off()
+            else:
+                direction3.on()
+            for _ in range(abs(int(output_z))):
+                step3.on()
+                time.sleep(0.001)
+                step3.off()
+                time.sleep(0.001)
+            
+            print("Motors moved based on PID output")
 
-        # Move the third motor based on the average of X and Y PID outputs
-        output_z = (output_x + output_y) / 2
-        if output_z > 0:
-            direction3.of()
-        else:
-            direction3.on()
-        for _ in range(abs(int(output_z))):
-            step3.on()
-            time.sleep(0.001)
-            step3.off()
-            time.sleep(0.001)
-        
-        print("Motors moved based on PID output")
+    except KeyboardInterrupt:
+        print("Touchscreen control interrupted.")
+
+    finally:
+        step.close()
+        step2.close()
+        step3.close()
+        direction.close()
+        direction2.close()
+        direction3.close()
