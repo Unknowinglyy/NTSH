@@ -10,7 +10,6 @@ step_pin2 = 20
 dir_pin2 = 21
 step_pin3 = 5
 dir_pin3 = 6
-enable_pin = 4
 
 # Motor setup
 step = OutputDevice(step_pin)
@@ -19,7 +18,6 @@ step2 = OutputDevice(step_pin2)
 direction2 = OutputDevice(dir_pin2)
 step3 = OutputDevice(step_pin3)
 direction3 = OutputDevice(dir_pin3)
-enable = OutputDevice(enable_pin, initial_value=False)
 
 # PID setup
 pid_x = PID(1, 0.1, 0.05, setpoint=2025)
@@ -50,7 +48,6 @@ def move_motor(motor, steps, direction_pin, direction):
         time.sleep(0.0005)
 
 if __name__ == "__main__":
-    enable.on()
     try:
         for x, y in read_touch_coordinates():
             error_x = pid_x(x)
@@ -74,7 +71,8 @@ if __name__ == "__main__":
             print(f"X: {x}, Y: {y}, Error X: {error_x}, Error Y: {error_y}")
 
     except KeyboardInterrupt:
-        enable.off()
+        print("Motor control interrupted.")
+        
     finally:
         step.close()
         step2.close()
@@ -82,5 +80,4 @@ if __name__ == "__main__":
         direction.close()
         direction2.close()
         direction3.close()
-        enable.close()
         print("GPIO cleaned up.")
