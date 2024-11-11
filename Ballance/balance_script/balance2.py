@@ -38,14 +38,16 @@ def read_touch_coordinates(device_path='/dev/input/event4'):
                 y = event.value
             if x is not None and y is not None:
                 yield (x, y)
+            elif event.type == evdev.ecodes.EV_KEY:
+                yield (x, y)
 
 def move_motor(motor, steps, direction_pin, direction):
     direction_pin.value = direction
     for _ in range(int(abs(steps))):
         motor.on()
-        time.sleep(0.001)
+        time.sleep(0.0007)
         motor.off()
-        time.sleep(0.001)
+        time.sleep(0.0007)
 
 if __name__ == "__main__":
     enable.on()
@@ -54,15 +56,20 @@ if __name__ == "__main__":
             error_x = pid_x(x)
             error_y = pid_y(y)
 
-            if error_x > 0:
-                move_motor(step2, error_x, direction2, True)
-            else:
-                move_motor(step3, -error_x, direction, False)
+            # if error_x > 0:
+            #     move_motor(step2, error_x, direction2, True)
+            # else:
+            #     move_motor(step3, -error_x, direction2, False)
 
-            if error_y > 0:
-                move_motor(step, error_y, direction, True)
-            else:
-                move_motor(step3, -error_y, direction3, False)
+            # if error_y > 0:
+            #     move_motor(step, error_y, direction, True)
+            # else:
+            #     move_motor(step3, -error_y, direction, False)
+
+            # if error_x < 0 and error_y < 0:
+            #     move_motor(step3, -error_x, direction3, True)
+            # elif error_x > 0 and error_y > 0:
+            #     move_motor(step3, error_x, direction3, False)
 
             print(f"X: {x}, Y: {y}, Error X: {error_x}, Error Y: {error_y}")
 
