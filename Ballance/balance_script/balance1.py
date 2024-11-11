@@ -7,7 +7,7 @@ import math
 # Add the root directory to the sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from touchscreen.touchScreenBasicCoordOutput import read_touch_coordinates
+from touchscreen.touchScreenBasicCoordOutput import read_touch_coordinates, Point
 
 # Motor Pins
 step_pin = 23  # Pin connected to STEP on TMC2208
@@ -108,6 +108,7 @@ def pid(setpointX, setpointY):
             print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
         else:
             time.sleep(0.01)
+            p = read_touch_coordinates()
             if p.x is None:
                 detected = False
     except StopIteration:
