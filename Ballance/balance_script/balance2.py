@@ -91,10 +91,15 @@ if __name__ == "__main__":
             output_y = pid_control(setpoint_y, y)
 
             move_motor(step, direction, output_x)
+
+            print("motor 1 moved")
+
             move_motor(step2, direction2, output_y)
+            print("motor 2 moved")
 
             output_z = (output_x + output_y) / 2
             move_motor(step3, direction3, output_z)
+            print("motor 3 moved")
     
             print("Motors moved based on PID output")
 
