@@ -18,7 +18,7 @@ dir_pin2 = 21   # Pin connected to DIR on 2nd TMC2208
 
 step_pin3 = 5  # Pin connected to STEP on 3rd TMC2208
 dir_pin3 = 6   # Pin connected to DIR on 3rd TMC2208
-
+# ------------------------------------------------------------
 # Motor movement parameters
 angOrig = 206.662752199
 angToStep = 3200 / 360
@@ -38,7 +38,7 @@ detected = False
 # Touch screen offsets
 Xoffset = 2025
 Yoffset = 2045
-
+# ------------------------------------------------------------
 # Setup GPIO
 stepperA = OutputDevice(step_pin)
 directionA = OutputDevice(dir_pin)
@@ -48,7 +48,7 @@ directionB = OutputDevice(dir_pin2)
 
 stepperC = OutputDevice(step_pin3)
 directionC = OutputDevice(dir_pin3)
-
+# ------------------------------------------------------------
 class Machine:
     def __init__(self, d, e, f, g):
         self.d = d
@@ -66,7 +66,7 @@ class Machine:
             return math.atan2(ny, nx) + 4 * math.pi / 3
         else:
             return 0
-
+# ------------------------------------------------------------
 # Initialize the machine
 machine = Machine(2, 3.125, 1.75, 3.669291339)
 
@@ -112,7 +112,7 @@ def pid(setpointX, setpointY):
     timeI = time.time()
     while time.time() - timeI < 0.02:
         move_to(4.25, -out[0], -out[1])
-
+# ------------------------------------------------------------
 def main():
     global detected
     try:
@@ -129,6 +129,6 @@ def main():
         directionB.close()
         directionC.close()
         print("GPIO cleaned up.")
-
+# ------------------------------------------------------------
 if __name__ == "__main__":
     main()
