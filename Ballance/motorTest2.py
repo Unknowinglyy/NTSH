@@ -11,6 +11,8 @@ dir_pin2 = 21   # Pin connected to DIR on 2nd TMC2208
 step_pin3 = 5 # Pin connected to STEP on 3rd TMC2208
 dir_pin3 = 6  # Pin connected to DIR on 3rd TMC2208
 
+enable_pin = 4 # Pin connected to EN on TMC2208
+
 # Motor movement parameters
 test_steps = 200              # Number of steps to move in each direction
 delay_time = 0.005          # Delay in seconds between steps
@@ -25,13 +27,16 @@ direction2 = OutputDevice(dir_pin2)
 step3 = OutputDevice(step_pin3)
 direction3 = OutputDevice(dir_pin3)
 
+enable = OutputDevice(enable_pin, initial_value=False)
+
 try:
     print("Starting motor test...")
+    enable.on()
 
     while True: 
-        # Move clockwise
+        # 2 motors moving clockwise, 1 motor moving counter-clockwise
         direction.on()
-        direction2.on()
+        direction2.off()
         direction3.on()
         print("moving clockwise") 
         for _ in range(test_steps):   
@@ -45,9 +50,9 @@ try:
             time.sleep(delay_time)  # Adjust for speed
         print("just moved clockwise")
 
-        # Move counterclockwise
+        # 2 motors moving counter-clockwise, 1 motor moving clockwise
         direction.off()
-        direction2.off()
+        direction2.on()
         direction3.off()
         print("moving counter-clockwise")
         for _ in range(test_steps):
@@ -65,6 +70,7 @@ except KeyboardInterrupt:
     print("Motor test interrupted.")
 
 finally:
+    enable.off()
     step.close()
     step2.close()
     step3.close()
