@@ -65,19 +65,19 @@ def read_touch_coordinates(device_path='/dev/input/event4'):
                 yield (x, y)
 
 def move_motor(step, direction, output):
-                if output > 0:
-                    direction.off()
-                else:
-                    direction.on()
-                steps = abs(int(output))
-                while steps > 0:
-                    chunk = min(steps, 3)
-                    for _ in range(chunk):
-                        step.on()
-                        time.sleep(0.0009)
-                        step.off()
-                        time.sleep(0.0009)
-                    steps -= chunk
+    if output > 0:
+        direction.off()
+    else:
+        direction.on()
+    steps = min(abs(int(output)), 10)
+    while steps > 0:
+        chunk = min(steps, 2)
+        for _ in range(chunk):
+            step.on()
+            time.sleep(0.0009)
+            step.off()
+            time.sleep(0.0009)
+        steps -= chunk
 
 if __name__ == "__main__":
     setpoint_x = 2025  # Desired X coordinate
