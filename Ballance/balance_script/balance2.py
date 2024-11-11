@@ -25,7 +25,7 @@ enable_pin = 4  # Pin connected to EN on TMC2208
 # Motor movement parameters
 angOrig = 100.662752199
 angToStep = 3200 / 360
-ks = 20  # Speed amplifying constant
+ks = 40  # Speed amplifying constant
 
 # PID variables
 kp = 4E-4
