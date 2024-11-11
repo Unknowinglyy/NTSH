@@ -19,9 +19,9 @@ angToStep = 800 / 360  # Steps per degree
 ks = 20  # Speed amplifying constant
 
 # PID variables
-kp = 4E-4
-ki = 2E-6
-kd = 7E-3
+kp = 1E-3  # Increased proportional gain
+ki = 5E-6  # Adjusted integral gain
+kd = 1E-2  # Adjusted derivative gain
 error = [0, 0]
 errorPrev = [0, 0]
 integr = [0, 0]
@@ -42,6 +42,9 @@ directionB = OutputDevice(dir_pin_B)
 
 stepperC = OutputDevice(step_pin_C)
 directionC = OutputDevice(dir_pin_C)
+
+# Store initial positions
+initial_positions = [0, 0, 0]
 
 class Machine:
     def __init__(self, d, e, f, g):
@@ -72,9 +75,9 @@ def move_motor(step, direction, steps):
         steps = -steps
     for _ in range(steps):
         step.on()
-        time.sleep(0.001)
+        time.sleep(0.0005)  # Reduced delay to make motors move faster
         step.off()
-        time.sleep(0.001)
+        time.sleep(0.0005)  # Reduced delay to make motors move faster
 
 def move_to(hz, nx, ny):
     global detected
@@ -87,11 +90,10 @@ def move_to(hz, nx, ny):
         move_motor(stepperB, directionB, pos[1])
         move_motor(stepperC, directionC, pos[2])
     else:
-        pos = [round((angOrig - machine.theta(i, hz, 0, 0)) * angToStep) for i in range(3)]
-        pos = [max(min(p, 800), 0) for p in pos]
-        move_motor(stepperA, directionA, pos[0])
-        move_motor(stepperB, directionB, pos[1])
-        move_motor(stepperC, directionC, pos[2])
+        # Revert to initial positions if the ball is not detected
+        move_motor(stepperA, directionA, initial_positions[0])
+        move_motor(stepperB, directionB, initial_positions[1])
+        move_motor(stepperC, directionC, initial_positions[2])
 
 def pid(setpointX, setpointY):
     global detected, error, errorPrev, integr, deriv, out
@@ -116,9 +118,11 @@ def pid(setpointX, setpointY):
         move_to(4.25, -out[0], -out[1])
 
 def main():
-    global detected
+    global detected, initial_positions
     try:
         print("Starting motor test...")
+        # Store initial positions
+        initial_positions = [0, 0, 0]
         while True:
             pid(2025, 2045)  # Setpoint is the center coordinate
     except KeyboardInterrupt:
