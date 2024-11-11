@@ -5,7 +5,7 @@ import time
 import math
 
 # Add the root directory to the sys.path
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Import the Point class and read_touch_coordinates function from touchScreenBasicCoordOutput
 from touchScreenBasicCoordOutput import Point, read_touch_coordinates
@@ -19,6 +19,8 @@ dir_pin2 = 21   # Pin connected to DIR on 2nd TMC2208
 
 step_pin3 = 5  # Pin connected to STEP on 3rd TMC2208
 dir_pin3 = 6   # Pin connected to DIR on 3rd TMC2208
+
+enable_pin = 4  # Pin connected to EN on TMC2208
 
 # Motor movement parameters
 angOrig = 206.662752199
@@ -50,6 +52,8 @@ directionB = OutputDevice(dir_pin2)
 stepperC = OutputDevice(step_pin3)
 directionC = OutputDevice(dir_pin3)
 
+enable = OutputDevice(enable_pin, initial_value=False)  # Set initial value to LOW (enabled)
+
 class Machine:
     def __init__(self, d, e, f, g):
         self.d = d
@@ -72,6 +76,11 @@ class Machine:
 machine = Machine(2, 3.125, 1.75, 3.669291339)
 
 def move_motor(step, direction, steps):
+    if steps > 0:
+        direction.on()
+    else:
+        direction.off()
+        steps = -steps
     for _ in range(steps):
         step.on()
         time.sleep(0.001)
@@ -123,11 +132,13 @@ def main():
     global detected
     try:
         print("Starting motor test...")
+        enable.on()  # Enable the motor driver (set to LOW)
         while True:
             pid(0, 0)
     except KeyboardInterrupt:
         print("Motor test interrupted.")
     finally:
+        enable.off()  # Disable the motor driver (set to HIGH)
         stepperA.close()
         stepperB.close()
         stepperC.close()
