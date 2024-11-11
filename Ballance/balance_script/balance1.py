@@ -71,7 +71,7 @@ machine = Machine(2, 3.125, 1.75, 3.669291339)
 def move_motor(step, direction, steps, current_position, motor_name):
     if steps > 0:
         direction.on()
-        if current_position + steps > 200:
+        if current_position + steps == 200:
             steps = 200 - current_position
         print(f"{motor_name} moving CW {steps} steps (current position: {current_position + steps}/200)")
     else:
