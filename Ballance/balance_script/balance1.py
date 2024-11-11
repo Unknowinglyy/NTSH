@@ -114,7 +114,7 @@ def pid(setpointX, setpointY):
             deriv[i] = 0 if math.isnan(deriv[i]) or math.isinf(deriv[i]) else deriv[i]
             out[i] = kp * error[i] + ki * integr[i] + kd * deriv[i]
             out[i] = max(min(out[i], 0.25), -0.25)
-        # print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
+        print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
     else:
         print("No ball detected")
         detected = False
