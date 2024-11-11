@@ -45,9 +45,9 @@ def move_motor(motor, steps, direction_pin, direction):
     direction_pin.value = direction
     for _ in range(int(abs(steps))):
         motor.on()
-        time.sleep(0.0007)
+        time.sleep(0.0005)
         motor.off()
-        time.sleep(0.0007)
+        time.sleep(0.0005)
 
 if __name__ == "__main__":
     enable.on()
@@ -67,9 +67,9 @@ if __name__ == "__main__":
                 move_motor(step, -error_y, direction, False)
 
             if error_x < 0 and error_y < 0:
-                move_motor(step3, -error_x, direction3, False)
+                move_motor(step3, -error_x, direction3, True)
             elif error_x > 0 and error_y > 0:
-                move_motor(step3, error_x, direction3, True)
+                move_motor(step3, error_x, direction3, False)
 
             print(f"X: {x}, Y: {y}, Error X: {error_x}, Error Y: {error_y}")
 
