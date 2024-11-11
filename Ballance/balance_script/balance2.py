@@ -95,3 +95,17 @@ if __name__ == "__main__":
             time.sleep(0.005)
             step2.off()
             time.sleep(0.005)
+
+        # Move the third motor based on the average of X and Y PID outputs
+        output_z = (output_x + output_y) / 2
+        if output_z > 0:
+            direction3.on()
+        else:
+            direction3.off()
+        for _ in range(abs(int(output_z))):
+            step3.on()
+            time.sleep(0.005)
+            step3.off()
+            time.sleep(0.005)
+        
+        print("Motors moved based on PID output")
