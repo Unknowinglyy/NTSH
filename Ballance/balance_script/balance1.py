@@ -75,6 +75,8 @@ def move_motor(step, direction, steps, current_position):
             steps = 200 - current_position
     else:
         direction.off()
+        if current_position + steps < -200:
+            steps = -200 - current_position
         steps = -steps
     for _ in range(steps):
         step.on()
@@ -88,7 +90,7 @@ def move_to(hz, nx, ny):
     if detected:
         pos = [round((angOrig - machine.theta(i, hz, nx, ny)) * angToStep) for i in range(3)]
         # Constrain positions to prevent moving past range of motion
-        pos = [max(min(p, 800), 0) for p in pos]
+        pos = [max(min(p, 200), -200) for p in pos]
         # Move motors to the calculated positions
         current_positions[0] = move_motor(stepperA, directionA, pos[0] - current_positions[0], current_positions[0])
         current_positions[1] = move_motor(stepperB, directionB, pos[1] - current_positions[1], current_positions[1])
@@ -112,7 +114,7 @@ def pid(setpointX, setpointY):
             deriv[i] = 0 if math.isnan(deriv[i]) or math.isinf(deriv[i]) else deriv[i]
             out[i] = kp * error[i] + ki * integr[i] + kd * deriv[i]
             out[i] = max(min(out[i], 0.25), -0.25)
-        print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
+        # print(f"X OUT = {out[0]}   Y OUT = {out[1]}")
     else:
         print("No ball detected")
         detected = False
