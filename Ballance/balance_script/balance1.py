@@ -76,10 +76,10 @@ def set_motor_speed(motor, speed):
 
 def move_motor(step, direction, steps, motor_name):
     if steps > 0:
-        direction.on()
+        direction.off()
         print(f"{motor_name} moving CW {steps} steps")
     else:
-        direction.off()
+        direction.on()
         print(f"{motor_name} moving CCW {abs(steps)} steps")
     
     for _ in range(abs(steps)):
