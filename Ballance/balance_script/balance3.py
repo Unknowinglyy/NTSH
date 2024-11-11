@@ -19,7 +19,7 @@ MOTOR_PINS = [
 ANGLE_ORIGINAL = 206.662752199
 ANGLE_TO_STEP = 3200 / 360
 SPEED_CONSTANT = 20
-STEP_DIVIDER = 2  # Reduce steps by dividing the number of steps by this value
+STEP_DIVIDER = 5  # Reduce steps by dividing the number of steps by this value
 
 # PID Constants
 KP = 4E-4
