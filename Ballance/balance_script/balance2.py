@@ -68,3 +68,13 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         enable.off()
+    finally:
+        finally:
+        step.close()
+        step2.close()
+        step3.close()
+        direction.close()
+        direction2.close()
+        direction3.close()
+        enable.close()
+        print("GPIO cleaned up.")
