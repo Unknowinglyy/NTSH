@@ -76,7 +76,6 @@ def move_motor(step, direction, steps, current_position, motor_name):
         print(f"{motor_name} moving CW {steps} steps (current position: {current_position + steps}/200)")
     else:
         direction.off()
-        steps = -steps
         if current_position + steps < 0:
             steps = -current_position
         print(f"{motor_name} moving CCW {steps} steps (current position: {current_position + steps}/200)")
@@ -85,7 +84,7 @@ def move_motor(step, direction, steps, current_position, motor_name):
         time.sleep(0.0005)  # Reduced delay to make motors move faster
         step.off()
         time.sleep(0.0005)  # Reduced delay to make motors move faster
-    return current_position + steps if direction.value else current_position + steps
+    return current_position + steps if direction.value else current_position - steps
 
 def move_to(hz, nx, ny):
     global detected, current_positions
