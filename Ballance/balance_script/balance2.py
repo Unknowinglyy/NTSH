@@ -66,9 +66,11 @@ def read_touch_coordinates(device_path='/dev/input/event4'):
 
 def move_motor(step, direction, output):
     if output > 0:
-        direction.off()
-    else:
+        #clockwise (makes platform go up)
         direction.on()
+    else:
+        #counter-clockwise (makes platform go down)
+        direction.off()
     steps = min(abs(int(output)), 10)
     while steps > 0:
         chunk = min(steps, 2)
