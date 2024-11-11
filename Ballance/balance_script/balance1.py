@@ -1,7 +1,7 @@
 from gpiozero import OutputDevice
 import time
 import math
-from touchscreen.touchScreenBasicCoordOutput import read_touch_coordinates
+from touchScreenBasicCoordOutput import read_touch_coordinates
 
 # Motor Pins
 step_pin = 23  # Pin connected to STEP on TMC2208
