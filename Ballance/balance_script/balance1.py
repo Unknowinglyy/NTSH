@@ -15,8 +15,8 @@ dir_pin_C = 6    # Pin connected to DIR on TMC2208 for Motor C
 
 # Motor movement parameters
 angOrig = 206.662752199
-angToStep = 200 / 360  # Steps per degree
-ks = 60  # Speed amplifying constant
+angToStep = 800 / 360  # Steps per degree
+ks = 20  # Speed amplifying constant
 
 # PID variables
 kp = 1E-3  # Increased proportional gain
@@ -43,8 +43,9 @@ directionB = OutputDevice(dir_pin_B)
 stepperC = OutputDevice(step_pin_C)
 directionC = OutputDevice(dir_pin_C)
 
-# Store initial positions
+# Store initial positions and current positions
 initial_positions = [0, 0, 0]
+current_positions = [0, 0, 0]
 
 class Machine:
     def __init__(self, d, e, f, g):
@@ -67,9 +68,11 @@ class Machine:
 # Initialize the machine
 machine = Machine(2, 3.125, 1.75, 3.669291339)
 
-def move_motor(step, direction, steps):
+def move_motor(step, direction, steps, current_position):
     if steps > 0:
         direction.on()
+        if current_position + steps > 200:
+            steps = 200 - current_position
     else:
         direction.off()
         steps = -steps
@@ -78,22 +81,23 @@ def move_motor(step, direction, steps):
         time.sleep(0.0005)  # Reduced delay to make motors move faster
         step.off()
         time.sleep(0.0005)  # Reduced delay to make motors move faster
+    return current_position + steps if direction.value else current_position - steps
 
 def move_to(hz, nx, ny):
-    global detected
+    global detected, current_positions
     if detected:
         pos = [round((angOrig - machine.theta(i, hz, nx, ny)) * angToStep) for i in range(3)]
         # Constrain positions to prevent moving past range of motion
         pos = [max(min(p, 800), 0) for p in pos]
         # Move motors to the calculated positions
-        move_motor(stepperA, directionA, pos[0])
-        move_motor(stepperB, directionB, pos[1])
-        move_motor(stepperC, directionC, pos[2])
+        current_positions[0] = move_motor(stepperA, directionA, pos[0] - current_positions[0], current_positions[0])
+        current_positions[1] = move_motor(stepperB, directionB, pos[1] - current_positions[1], current_positions[1])
+        current_positions[2] = move_motor(stepperC, directionC, pos[2] - current_positions[2], current_positions[2])
     else:
         # Revert to initial positions if the ball is not detected
-        move_motor(stepperA, directionA, initial_positions[0])
-        move_motor(stepperB, directionB, initial_positions[1])
-        move_motor(stepperC, directionC, initial_positions[2])
+        current_positions[0] = move_motor(stepperA, directionA, initial_positions[0] - current_positions[0], current_positions[0])
+        current_positions[1] = move_motor(stepperB, directionB, initial_positions[1] - current_positions[1], current_positions[1])
+        current_positions[2] = move_motor(stepperC, directionC, initial_positions[2] - current_positions[2], current_positions[2])
 
 def pid(setpointX, setpointY):
     global detected, error, errorPrev, integr, deriv, out
@@ -118,18 +122,19 @@ def pid(setpointX, setpointY):
         move_to(4.25, -out[0], -out[1])
 
 def main():
-    global detected, initial_positions
+    global detected, initial_positions, current_positions
     try:
         print("Starting motor test...")
         # Store initial positions
         initial_positions = [0, 0, 0]
+        current_positions = [0, 0, 0]
         while True:
             pid(2025, 2045)  # Setpoint is the center coordinate
     except KeyboardInterrupt:
         print("Motor test interrupted.")
-        move_motor(stepperA, directionA, initial_positions[0])
-        move_motor(stepperB, directionB, initial_positions[1])
-        move_motor(stepperC, directionC, initial_positions[2])
+        move_motor(stepperA, directionA, initial_positions[0] - current_positions[0], current_positions[0])
+        move_motor(stepperB, directionB, initial_positions[1] - current_positions[1], current_positions[1])
+        move_motor(stepperC, directionC, initial_positions[2] - current_positions[2], current_positions[2])
     finally:
         stepperA.close()
         stepperB.close()
