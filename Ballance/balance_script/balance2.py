@@ -71,12 +71,12 @@ def move_motor(step, direction, output):
                     direction.on()
                 steps = abs(int(output))
                 while steps > 0:
-                    chunk = min(steps, 20)
+                    chunk = min(steps, 5)
                     for _ in range(chunk):
                         step.on()
-                        time.sleep(0.005)
+                        time.sleep(0.001)
                         step.off()
-                        time.sleep(0.005)
+                        time.sleep(0.001)
                     steps -= chunk
 
 if __name__ == "__main__":
@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
             move_motor(step, direction, output_x)
             move_motor(step2, direction2, output_y)
-            
+
             output_z = (output_x + output_y) / 2
             move_motor(step3, direction3, output_z)
     
