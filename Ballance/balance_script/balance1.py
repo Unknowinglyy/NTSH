@@ -68,16 +68,18 @@ class Machine:
 # Initialize the machine
 machine = Machine(2, 3.125, 1.75, 3.669291339)
 
-def move_motor(step, direction, steps, current_position):
+def move_motor(step, direction, steps, current_position, motor_name):
     if steps > 0:
         direction.on()
         if current_position + steps > 200:
             steps = 200 - current_position
+        print(f"{motor_name} moving CW {steps} steps (current position: {current_position + steps}/200)")
     else:
         direction.off()
         if current_position + steps < -200:
             steps = -200 - current_position
         steps = -steps
+        print(f"{motor_name} moving CCW {steps} steps (current position: {current_position - steps}/200)")
     for _ in range(steps):
         step.on()
         time.sleep(0.0005)  # Reduced delay to make motors move faster
@@ -92,14 +94,14 @@ def move_to(hz, nx, ny):
         # Constrain positions to prevent moving past range of motion
         pos = [max(min(p, 200), -200) for p in pos]
         # Move motors to the calculated positions
-        current_positions[0] = move_motor(stepperA, directionA, pos[0] - current_positions[0], current_positions[0])
-        current_positions[1] = move_motor(stepperB, directionB, pos[1] - current_positions[1], current_positions[1])
-        current_positions[2] = move_motor(stepperC, directionC, pos[2] - current_positions[2], current_positions[2])
+        current_positions[0] = move_motor(stepperA, directionA, pos[0] - current_positions[0], current_positions[0], "Motor A")
+        current_positions[1] = move_motor(stepperB, directionB, pos[1] - current_positions[1], current_positions[1], "Motor B")
+        current_positions[2] = move_motor(stepperC, directionC, pos[2] - current_positions[2], current_positions[2], "Motor C")
     else:
         # Revert to initial positions if the ball is not detected
-        current_positions[0] = move_motor(stepperA, directionA, initial_positions[0] - current_positions[0], current_positions[0])
-        current_positions[1] = move_motor(stepperB, directionB, initial_positions[1] - current_positions[1], current_positions[1])
-        current_positions[2] = move_motor(stepperC, directionC, initial_positions[2] - current_positions[2], current_positions[2])
+        current_positions[0] = move_motor(stepperA, directionA, initial_positions[0] - current_positions[0], current_positions[0], "Motor A")
+        current_positions[1] = move_motor(stepperB, directionB, initial_positions[1] - current_positions[1], current_positions[1], "Motor B")
+        current_positions[2] = move_motor(stepperC, directionC, initial_positions[2] - current_positions[2], current_positions[2], "Motor C")
 
 def pid(setpointX, setpointY):
     global detected, error, errorPrev, integr, deriv, out
@@ -134,9 +136,9 @@ def main():
             pid(2025, 2045)  # Setpoint is the center coordinate
     except KeyboardInterrupt:
         print("Motor test interrupted.")
-        move_motor(stepperA, directionA, initial_positions[0] - current_positions[0], current_positions[0])
-        move_motor(stepperB, directionB, initial_positions[1] - current_positions[1], current_positions[1])
-        move_motor(stepperC, directionC, initial_positions[2] - current_positions[2], current_positions[2])
+        move_motor(stepperA, directionA, initial_positions[0] - current_positions[0], current_positions[0], "Motor A")
+        move_motor(stepperB, directionB, initial_positions[1] - current_positions[1], current_positions[1], "Motor B")
+        move_motor(stepperC, directionC, initial_positions[2] - current_positions[2], current_positions[2], "Motor C")
     finally:
         stepperA.close()
         stepperB.close()
