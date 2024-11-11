@@ -58,7 +58,7 @@ manipulator = ThreeRPSManipulator(2, 3.125, 1.75, 3.669)
 
 def move_motor(stepper, direction, steps):
     direction.off() if steps < 0 else direction.on()
-    steps = abs(steps)
+    steps = abs(steps) // 2
 
     for _ in range(steps):
         stepper.on()
