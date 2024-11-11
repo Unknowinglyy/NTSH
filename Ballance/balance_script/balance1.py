@@ -113,6 +113,7 @@ def pid(setpointX, setpointY):
     timeI = time.time()
     while time.time() - timeI < 0.02:
         # move_to(4.25, -out[0], -out[1])
+        print("Moving motors")
 # ------------------------------------------------------------
 def main():
     global detected
