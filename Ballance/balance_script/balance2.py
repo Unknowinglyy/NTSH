@@ -41,7 +41,7 @@ def read_touch_coordinates(device_path='/dev/input/event4'):
 
 def move_motor(motor, steps, direction_pin, direction):
     direction_pin.value = direction
-    for _ in range(abs(steps)):
+    for _ in range(int(abs(steps))):
         motor.on()
         time.sleep(0.001)
         motor.off()
