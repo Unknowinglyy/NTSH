@@ -2,7 +2,7 @@ import time
 import math
 from gpiozero import OutputDevice
 from touchScreenBasicCoordOutput import read_touch_coordinates, Point
-
+# -----------------------------------------------------------
 # Motor Pins
 step_pin = 23  # Pin connected to STEP on TMC2208
 dir_pin = 24   # Pin connected to DIR on TMC2208
@@ -80,12 +80,15 @@ def move_to(hz, nx, ny):
     global detected
     if detected:
         pos = [round((angOrig - machine.theta(i, hz, nx, ny)) * angToStep) for i in range(3)]
+        # Constrain positions to prevent moving past range of motion
+        pos = [max(min(p, 3200), 0) for p in pos]
         # Move motors to the calculated positions
         move_motor(stepperA, directionA, pos[0])
         move_motor(stepperB, directionB, pos[1])
         move_motor(stepperC, directionC, pos[2])
     else:
         pos = [round((angOrig - machine.theta(i, hz, 0, 0)) * angToStep) for i in range(3)]
+        pos = [max(min(p, 3200), 0) for p in pos]
         move_motor(stepperA, directionA, pos[0])
         move_motor(stepperB, directionB, pos[1])
         move_motor(stepperC, directionC, pos[2])
