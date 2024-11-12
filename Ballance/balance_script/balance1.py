@@ -68,42 +68,37 @@ class Machine:
 # Initialize the machine
 machine = Machine(2, 3.125, 1.75, 3.669291339)
 
-def move_motor(step, direction, steps, current_position, motor_name):
+def move_motor(step, direction, steps, motor_name):
     if steps > 0:
         direction.on()
-        if current_position + steps > 200:
-            steps = 200 - current_position
-        print(f"{motor_name} moving CW {steps} steps (current position: {current_position + steps}/200)")
+        print(f"{motor_name} moving CW {steps} steps")
     else:
         direction.off()
         steps = -steps
-        if current_position - steps < 0:
-            steps = current_position
-        print(f"{motor_name} moving CCW {steps} steps (current position: {current_position - steps}/200)")
-    for _ in range(abs(steps)):
+        print(f"{motor_name} moving CCW {steps} steps")
+    for _ in range(steps):
         step.on()
         time.sleep(0.0005)  # Reduced delay to make motors move faster
         step.off()
         time.sleep(0.0005)  # Reduced delay to make motors move faster
-    return current_position + steps if direction.value else current_position - steps
 
 def move_to(hz, nx, ny):
-    global detected, current_positions
+    global detected
     if detected:
         pos = [round((angOrig - machine.theta(i, hz, nx, ny)) * angToStep) for i in range(3)]
-        # Constrain positions to prevent moving past range of motion
-        pos = [max(min(p, 200), 0) for p in pos]
         # Move motors to the calculated positions incrementally
         for i in range(3):
             steps = pos[i] - current_positions[i]
             if steps != 0:
-                current_positions[i] = move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, current_positions[i], f"Motor {chr(65 + i)}")
+                move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, f"Motor {chr(65 + i)}")
+                current_positions[i] = pos[i]
     else:
         # Revert to initial positions if the ball is not detected
         for i in range(3):
             steps = initial_positions[i] - current_positions[i]
             if steps != 0:
-                current_positions[i] = move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, current_positions[i], f"Motor {chr(65 + i)}")
+                move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, f"Motor {chr(65 + i)}")
+                current_positions[i] = initial_positions[i]
 
 def pid(setpointX, setpointY):
     global detected, error, errorPrev, integr, deriv, out
@@ -141,7 +136,8 @@ def main():
         for i in range(3):
             steps = initial_positions[i] - current_positions[i]
             if steps != 0:
-                current_positions[i] = move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, current_positions[i], f"Motor {chr(65 + i)}")
+                move_motor([stepperA, stepperB, stepperC][i], [directionA, directionB, directionC][i], steps, f"Motor {chr(65 + i)}")
+                current_positions[i] = initial_positions[i]
     finally:
         stepperA.close()
         stepperB.close()
