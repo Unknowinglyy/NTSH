@@ -50,9 +50,9 @@ def move_motor(motor, steps, direction_pin, direction):
     direction_pin.value = direction
     for _ in range(int(abs(steps))):
         motor.on()
-        time.sleep(0.01)
+        time.sleep(0.0005)
         motor.off()
-        time.sleep(0.01)
+        time.sleep(0.0005)
 
 if __name__ == "__main__":
     try:
