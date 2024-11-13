@@ -56,11 +56,11 @@ if __name__ == "__main__":
         move_motor(step3, test_steps, direction3, True)  # Motor 3 clockwise
         time.sleep(1)
 
-        move_motor(step, test_steps, direction, True)  # Motor 1 clockwise
+        move_motor(step, test_steps+20, direction, True)  # Motor 1 clockwise
         time.sleep(1)
-        move_motor(step2, test_steps, direction2, True)  # Motor 2 clockwise
+        move_motor(step2, test_steps+20, direction2, True)  # Motor 2 clockwise
         time.sleep(1)
-        move_motor(step3, test_steps, direction3, True)  # Motor 3 clockwise
+        move_motor(step3, test_steps+20, direction3, True)  # Motor 3 clockwise
         time.sleep(1)
 
         print(f"Clockwise steps - Motor 1: {clockwise_steps_motor1}")
