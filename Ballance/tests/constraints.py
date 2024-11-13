@@ -69,6 +69,9 @@ if __name__ == "__main__":
 
         time.sleep(3)
 
+
+        
+
         print("Now moving back to the starting position...")
         move_motor(step, clockwise_steps_motor1, direction, False)  # Motor 1 counterclockwise
         time.sleep(1)
