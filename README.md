@@ -33,6 +33,11 @@ xinput --disable <touchscreen ID>
 
 ```
 
+# Motor Assignments
+Motor 1 : GPIO 23,24 (3685,200)
+Motor 2 : GPIO 20,21 (3685,3820)
+Motor 3 : GPIO 5,6 (390,1810)
+
 # Resources / Citations
 https://github.com/mattzzw/Arduino-mpu6050
 
