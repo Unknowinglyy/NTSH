@@ -2,8 +2,8 @@ from gpiozero import OutputDevice
 import time
 
 # Pin definitions
-step_pin = 5  # Pin connected to STEP on TMC2208
-dir_pin = 6   # Pin connected to DIR on TMC2208
+step_pin = 23  # Pin connected to STEP on TMC2208
+dir_pin = 24   # Pin connected to DIR on TMC2208
 
 # Motor movement parameters
 test_steps = 200              # Number of steps to move in each direction
