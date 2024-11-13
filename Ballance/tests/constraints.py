@@ -67,6 +67,17 @@ if __name__ == "__main__":
         print(f"Clockwise steps - Motor 2: {clockwise_steps_motor2}")
         print(f"Clockwise steps - Motor 3: {clockwise_steps_motor3}")
 
+        time.sleep(3)
+
+        print("Now moving back to the starting position...")
+        move_motor(step, clockwise_steps_motor1, direction, False)  # Motor 1 counterclockwise
+        time.sleep(1)
+        move_motor(step2, clockwise_steps_motor2, direction2, False)  # Motor 2 counterclockwise
+        time.sleep(1)
+        move_motor(step3, clockwise_steps_motor3, direction3, False)  # Motor 3 counterclockwise
+
+        print("Motor test completed.")
+
     except KeyboardInterrupt:
         print("Motor test interrupted.")
 
