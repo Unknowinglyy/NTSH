@@ -144,10 +144,10 @@ try:
             t1 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 2"))
             t1.start()
             t1.join()
-        elif key == 'a':    
+        elif key == 'o':    
             # Move all motors 100 steps clockwise
             move_all_motors_cw(100, delay_time)
-        elif key == 'z':    
+        elif key == 'p':    
             # Move all motors 100 steps clockwise
             move_all_motors_cww(100, delay_time)
         elif key == 'q':
