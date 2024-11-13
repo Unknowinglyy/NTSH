@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 import math
+from simple_pid import PID
 from touchScreenBasicCoordOutput import read_touch_coordinates, Point
 
 # GPIO setup for stepper motors
@@ -26,51 +27,30 @@ for motor in MOTOR_PINS.values():
     GPIO.setup(motor['step'], GPIO.OUT)
     GPIO.setup(motor['dir'], GPIO.OUT)
 
-# PID parameters (tune these values based on platform characteristics)
-Kp = 0.6   # Proportional gain
-Ki = 0.1   # Integral gain
-Kd = 0.05  # Derivative gain
+# PID controllers for X and Y directions
+pid_x = PID(0.6, 0.1, 0.05, setpoint=CENTER_X)
+pid_y = PID(0.6, 0.1, 0.05, setpoint=CENTER_Y)
 
-# Initialize error values for PID
-prev_error_x, prev_error_y = 0, 0
-integral_error_x, integral_error_y = 0, 0
+# Configure sample time (update frequency) and output limits
+pid_x.sample_time = 0.1  # 100 ms update rate
+pid_y.sample_time = 0.1
+pid_x.output_limits = (-10, 10)  # Limiting output to max ±10 steps
+pid_y.output_limits = (-10, 10)
 
 # Define a function to control a single motor
 def move_motor(motor, steps, clockwise):
     GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH if clockwise else GPIO.LOW)
-    for _ in range(steps):
+    for _ in range(abs(steps)):
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
-        time.sleep(0.001)  # Control speed with sleep duration
+        time.sleep(0.001)
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
         time.sleep(0.001)
 
-# PID calculation for each motor based on ball's position error
-def calculate_motor_steps(ball_x, ball_y, dt=0.1):
-    global prev_error_x, prev_error_y, integral_error_x, integral_error_y
-
-    # Calculate proportional error
-    error_x = CENTER_X - ball_x
-    error_y = CENTER_Y - ball_y
-
-    # Update integral error
-    integral_error_x += error_x * dt
-    integral_error_y += error_y * dt
-
-    # Calculate derivative error
-    derivative_error_x = (error_x - prev_error_x) / dt
-    derivative_error_y = (error_y - prev_error_y) / dt
-
-    # PID output for X and Y directions
-    pid_output_x = Kp * error_x + Ki * integral_error_x + Kd * derivative_error_x
-    pid_output_y = Kp * error_y + Ki * integral_error_y + Kd * derivative_error_y
-
-    # Save current error as previous error for the next loop
-    prev_error_x, prev_error_y = error_x, error_y
-
-    # Scale PID output to steps, limiting to max 10 steps per control cycle
-    max_steps = 10
-    steps_x = max(-max_steps, min(int(pid_output_x), max_steps))
-    steps_y = max(-max_steps, min(int(pid_output_y), max_steps))
+# Function to calculate motor steps based on PID outputs
+def calculate_motor_steps(ball_x, ball_y):
+    # Get PID output steps for X and Y directions
+    steps_x = int(pid_x(ball_x))
+    steps_y = int(pid_y(ball_y))
 
     # Determine steps and direction for each motor based on PID output
     motor_steps = {}
@@ -78,12 +58,12 @@ def calculate_motor_steps(ball_x, ball_y, dt=0.1):
         motor_error_x = CENTER_X - pos[0]
         motor_error_y = CENTER_Y - pos[1]
         
-        # Motor tilt direction based on the error projections
+        # Motor tilt direction based on error projections
         clockwise_x = steps_x > 0 if motor_error_x > 0 else steps_x < 0
         clockwise_y = steps_y > 0 if motor_error_y > 0 else steps_y < 0
         
         # Combine X and Y steps for each motor
-        steps = abs(steps_x) + abs(steps_y)  # Simplified for illustration
+        steps = abs(steps_x) + abs(steps_y)  # Adjust based on each motor's distance influence
         clockwise = clockwise_x if abs(steps_x) > abs(steps_y) else clockwise_y
         motor_steps[motor] = (steps, clockwise)
 
@@ -100,7 +80,7 @@ def balance_ball():
             # Move each motor according to the calculated steps
             for motor, (steps, clockwise) in motor_steps.items():
                 move_motor(motor, steps, clockwise)
-            time.sleep(0.1)  # Update cycle delay (dt)
+            time.sleep(0.1)  # Update cycle delay
     except KeyboardInterrupt:
         GPIO.cleanup()
 
