@@ -110,7 +110,7 @@ try:
             t1.join()
         elif key == '2':
             # Motor 2 steps up 100 steps and then back down
-            t1 = threading.Thread(target=move_motor, args=(step_2, direction_2, 50, .001, "Motor 2"))
+            t1 = threading.Thread(target=move_motor, args=(step_2, direction_2, 133, .001, "Motor 2"))
             t1.start()
             t1.join()
         elif key == '3':
