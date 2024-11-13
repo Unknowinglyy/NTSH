@@ -5,6 +5,8 @@ import termios
 import tty
 import threading
 
+gpio_22 = OutputDevice(22)
+
 # Pin definitions for Motor 1
 step_pin_1 = 23  # Pin connected to STEP on TMC2208 for Motor 1
 dir_pin_1  = 24  # Pin connected to DIR on TMC2208 for Motor 1
@@ -152,6 +154,10 @@ try:
             move_all_motors_cww(100, delay_time)
         elif key == 'q':
             break
+        elif key == 'k':
+            gpio_22.on()
+        elif key == 'l':
+            gpio_22.off()
 
 except KeyboardInterrupt:
     print("Motor test interrupted.")
