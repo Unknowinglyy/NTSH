@@ -21,7 +21,7 @@ direction3 = OutputDevice(dir_pin3)
 
 # Motor movement parameters
 test_steps = 50
-delay_time = 0.005
+delay_time = 0.01
 
 # Step counters
 clockwise_steps_motor1 = 0
