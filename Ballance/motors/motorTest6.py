@@ -46,8 +46,7 @@ def move_motor(step, direction, steps, delay, motor_name):
         time.sleep(delay)
         step.off()
         time.sleep(delay)
-    
-
+# ----------------------------------------------------------------------------------
 try:
     print("Starting motor test...")
 
