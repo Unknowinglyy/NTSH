@@ -53,13 +53,13 @@ try:
     while True:
         # Test Motor 1
         move_motor(step_1, direction_1, test_steps, delay_time, "Motor 1")
-        time.sleep(0.5)
+        time.sleep(0.25)
         # Test Motor 2
         move_motor(step_2, direction_2, test_steps, delay_time, "Motor 2")
-        time.sleep(0.5)
+        time.sleep(0.25)
         # Test Motor 3
         move_motor(step_3, direction_3, test_steps, delay_time, "Motor 3")
-        time.sleep(0.5)
+        time.sleep(0.25)
 
 except KeyboardInterrupt:
     print("Motor test interrupted.")
