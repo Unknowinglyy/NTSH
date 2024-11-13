@@ -1,83 +1,70 @@
-from gpiozero import OutputDevice
 import time
+from gpiozero import OutputDevice
 
-# Pin definitions
-step_pin = 23  # Pin connected to STEP on TMC2208
-dir_pin = 24   # Pin connected to DIR on TMC2208
+# Motor pins
+step_pin = 23
+dir_pin = 24
 
-step_pin2 = 20  # Pin connected to STEP on 2nd TMC2208
-dir_pin2 = 21   # Pin connected to DIR on 2nd TMC2208
+step_pin2 = 20
+dir_pin2 = 21
 
-step_pin3 = 5 # Pin connected to STEP on 3rd TMC2208
-dir_pin3 = 6  # Pin connected to DIR on 3rd TMC2208
+step_pin3 = 5
+dir_pin3 = 6
 
-enable_pin = 4 # Pin connected to EN on TMC2208
-
-# Motor movement parameters
-test_steps = 200              # Number of steps to move in each direction
-delay_time = 0.005          # Delay in seconds between steps
-
-# Setup GPIO
-#motor 1
+# Motor setup
 step = OutputDevice(step_pin)
 direction = OutputDevice(dir_pin)
-
-#motor 2
 step2 = OutputDevice(step_pin2)
 direction2 = OutputDevice(dir_pin2)
-
-#motor 3
 step3 = OutputDevice(step_pin3)
 direction3 = OutputDevice(dir_pin3)
 
-enable = OutputDevice(enable_pin, initial_value=False)
+# Motor movement parameters
+test_steps = 200
+delay_time = 0.005
 
-try:
-    print("Starting motor test...")
-    enable.on()
+# Step counters
+clockwise_steps_motor1 = 0
+clockwise_steps_motor2 = 0
+clockwise_steps_motor3 = 0
 
-    while True: 
-        # 2 motors moving clockwise, 1 motor moving counter-clockwise
-        direction.on()
-        direction2.off()
-        direction3.on()
-        print("moving clockwise") 
-        for _ in range(test_steps):   
-            step.on()
-            step2.on()
-            step3.on()
-            time.sleep(delay_time)  # Adjust for speed
-            step.off()
-            step2.off()
-            step3.off()
-            time.sleep(delay_time)  # Adjust for speed
-        print("just moved clockwise")
+def move_motor(motor, steps, direction_pin, direction):
+    global clockwise_steps_motor1, clockwise_steps_motor2, clockwise_steps_motor3
+    direction_pin.value = direction
+    for _ in range(abs(steps)):
+        motor.on()
+        time.sleep(0.0005)
+        motor.off()
+        time.sleep(0.0005)
+        if direction:  # Clockwise direction
+            if motor == step:
+                clockwise_steps_motor1 += 1
+            elif motor == step2:
+                clockwise_steps_motor2 += 1
+            elif motor == step3:
+                clockwise_steps_motor3 += 1
 
-        # 2 motors moving counter-clockwise, 1 motor moving clockwise
-        direction.off()
-        direction2.on()
-        direction3.off()
-        print("moving counter-clockwise")
-        for _ in range(test_steps):
-            step.on()
-            step2.on()
-            step3.on()
-            time.sleep(delay_time)  # Adjust for speed
-            step.off()
-            step2.off()
-            step3.off()
-            time.sleep(delay_time)  # Adjust for speed
-        print("just moved counter-clockwise")
+if __name__ == "__main__":
+    try:
+        print("Starting motor test...")
 
-except KeyboardInterrupt:
-    print("Motor test interrupted.")
+        # Example movements
+        move_motor(step, test_steps, direction, True)  # Motor 1 clockwise
+        move_motor(step2, test_steps, direction2, True)  # Motor 2 clockwise
+        move_motor(step3, test_steps, direction3, True)  # Motor 3 clockwise
 
-finally:
-    enable.off()
-    step.close()
-    step2.close()
-    step3.close()
-    direction.close()
-    direction2.close()
-    direction3.close()
-    print("GPIO cleaned up.")
+        print(f"Clockwise steps - Motor 1: {clockwise_steps_motor1}")
+        print(f"Clockwise steps - Motor 2: {clockwise_steps_motor2}")
+        print(f"Clockwise steps - Motor 3: {clockwise_steps_motor3}")
+
+    except KeyboardInterrupt:
+        print("Motor test interrupted.")
+
+    finally:
+        step.close()
+        step2.close()
+        step3.close()
+        direction.close()
+        direction2.close()
+        direction3.close()
+        print("GPIO cleaned up.")
