@@ -69,29 +69,29 @@ try:
         key = get_key()
         if key == '1':
             # Motor 1 and Motor 3 step up 100 steps and then back down
-            t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, 200, delay_time, "Motor 1"))
-            t3 = threading.Thread(target=move_motor, args=(step_3, direction_3, 200, delay_time, "Motor 3"))
+            t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, 89, delay_time, "Motor 1"))
+            t3 = threading.Thread(target=move_motor, args=(step_3, direction_3, 89, delay_time, "Motor 3"))
             t1.start()
             t3.start()
             t1.join()
             t3.join()
         elif key == '2':
             # Motor 2 steps up 100 steps and then back down
-            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, 200, delay_time, "Motor 2"))
+            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 2"))
             t2.start()
             t2.join()
         elif key == '3':
             # Motor 2 and Motor 3 step up 100 steps and then back down
-            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, 200, delay_time, "Motor 2"))
-            t3 = threading.Thread(target=move_motor, args=(step_3, direction_3, 200, delay_time, "Motor 3"))
+            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 2"))
+            t3 = threading.Thread(target=move_motor, args=(step_3, direction_3, 89, delay_time, "Motor 3"))
             t2.start()
             t3.start()
             t2.join()
             t3.join()
         elif key == '4':
-            # Motor 1 steps up 200 steps and Motor 2 steps up 100 steps
-            t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, 200, delay_time, "Motor 1"))
-            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, 300, delay_time, "Motor 2"))
+            # Motor 1 steps up 89 steps and Motor 2 steps up 100 steps
+            t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, 89, delay_time, "Motor 1"))
+            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 2"))
             t1.start()
             t2.start()
             t1.join()
