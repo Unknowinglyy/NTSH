@@ -92,58 +92,58 @@ def get_key():
     old_settings = termios.tcgetattr(fd)
     try:
         tty.setraw(fd)
-        key = sys.stdin.read(1)
+        key = sys.stdin.read(3) if sys.stdin.read(1) == '\x1b' else sys.stdin.read(1)
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
     return key
 
 try:
-    print("Starting motor test... Press '1', '2', '3', or '4' to run the motors.")
+    print("Starting motor test... Press '1', '2', '3', or arrow keys to run the motors.")
 
     while True:
         key = get_key()
         if key == '1':
-            t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, 89, delay_time, "Motor 1"))
+            t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, test_steps, delay_time, "Motor 1"))
             t1.start()
             t1.join()
         elif key == '2':
-            # Motor 2 steps up 100 steps and then back down
-            t1 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 2"))
-            t1.start()
-            t1.join()
+            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, test_steps, delay_time, "Motor 2"))
+            t2.start()
+            t2.join()
         elif key == '3':
-            t1 = threading.Thread(target=move_motor, args=(step_3, direction_3, 89, delay_time, "Motor 3"))
-            t1.start()
-            t1.join()
-        elif key == '4':
-            # Motor 1 and Motor 3 step up 100 steps and then back down
-            t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, 89, delay_time, "Motor 1"))
-            t3 = threading.Thread(target=move_motor, args=(step_3, direction_3, 89, delay_time, "Motor 3"))
-            t1.start()
+            t3 = threading.Thread(target=move_motor, args=(step_3, direction_3, test_steps, delay_time, "Motor 3"))
             t3.start()
-            t1.join()
             t3.join()
-        elif key == '5':
-            # Motor 2 and Motor 3 step up 100 steps and then back down
-            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 2"))
-            t3 = threading.Thread(target=move_motor, args=(step_3, direction_3, 89, delay_time, "Motor 3"))
+        elif key == '\x1b[D':  # Left arrow key
+            t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, test_steps, delay_time, "Motor 1"))
+            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, test_steps, delay_time, "Motor 2"))
+            t1.start()
+            t2.start()
+            t1.join()
+            t2.join()
+        elif key == '\x1b[C':  # Right arrow key
+            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, test_steps, delay_time, "Motor 2"))
+            t3 = threading.Thread(target=move_motor, args=(step_3, direction_3, test_steps, delay_time, "Motor 3"))
             t2.start()
             t3.start()
             t2.join()
             t3.join()
-        elif key == '6':
-            # Motor 1 steps up 89 steps and Motor 2 steps up 100 steps
-            t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, 89, delay_time, "Motor 1"))
-            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 2"))
+        elif key == '\x1b[A':  # Up arrow key
+            t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, test_steps, delay_time, "Motor 1"))
+            t3 = threading.Thread(target=move_motor, args=(step_3, direction_3, test_steps, delay_time, "Motor 3"))
             t1.start()
-            t2.start()
+            t3.start()
             t1.join()
+            t3.join()
+        elif key == '\x1b[B':  # Down arrow key
+            t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, test_steps, delay_time, "Motor 2"))
+            t2.start()
             t2.join()
         elif key == 'a':    
             # Move all motors 100 steps clockwise
             move_all_motors_cw(100, delay_time)
         elif key == 'z':    
-            # Move all motors 100 steps clockwise
+            # Move all motors 100 steps counterclockwise
             move_all_motors_cww(100, delay_time)
         elif key == 'q':
             break
