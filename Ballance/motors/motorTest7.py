@@ -81,6 +81,8 @@ try:
             # Motor 1 steps up 200 steps and Motor 2 steps up 100 steps
             move_motor(step_1, direction_1, 200, delay_time, "Motor 1")
             move_motor(step_2, direction_2, 100, delay_time, "Motor 2")
+        elif key == 'q':
+            break
 
 except KeyboardInterrupt:
     print("Motor test interrupted.")
