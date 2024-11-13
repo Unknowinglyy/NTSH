@@ -131,7 +131,7 @@ try:
             t3.start()
             t2.join()
             t3.join()
-        elif key == 'w':
+        elif key == 'a':
             # Motor 1 steps up 89 steps and Motor 2 steps up 100 steps
             t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, 89, delay_time, "Motor 1"))
             t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 2"))
