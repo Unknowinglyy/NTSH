@@ -155,8 +155,10 @@ try:
         elif key == 'q':
             break
         elif key == 'k':
+            print("Turning on GPIO 22 : 1/4")
             gpio_22.on()
         elif key == 'l':
+            print("Turning off GPIO 22 : 1/8")
             gpio_22.off()
 
 except KeyboardInterrupt:
