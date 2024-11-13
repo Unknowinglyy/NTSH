@@ -31,6 +31,23 @@ direction_2 = OutputDevice(dir_pin_2)
 step_3      = OutputDevice(step_pin_3)
 direction_3 = OutputDevice(dir_pin_3)
 
+def move_all_motors_cw(steps, delay):
+    # Move all motors clockwise
+    direction_1.on()
+    direction_2.on()
+    direction_3.on()
+    print(f"All motors moving CW {steps} steps")
+    for _ in range(steps):
+        step_1.on()
+        step_2.on()
+        step_3.on()
+        time.sleep(delay)
+        step_1.off()
+        step_2.off()
+        step_3.off()
+        time.sleep(delay)
+    print("All motors just moved CW")
+
 def move_motor(step, direction, steps, delay, motor_name):
     # Move up
     direction.on()
@@ -96,6 +113,9 @@ try:
             t2.start()
             t1.join()
             t2.join()
+        elif key == 'a':    
+            # Move all motors 100 steps clockwise
+            move_all_motors_cw(100, delay_time)
         elif key == 'q':
             break
 
