@@ -115,7 +115,7 @@ try:
             t1 = threading.Thread(target=move_motor, args=(step_3, direction_3, 89, delay_time, "Motor 3"))
             t1.start()
             t1.join()
-        elif key == '4':
+        elif key == 'w':
             # Motor 1 and Motor 3 step up 100 steps and then back down
             t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, 89, delay_time, "Motor 1"))
             t3 = threading.Thread(target=move_motor, args=(step_3, direction_3, 89, delay_time, "Motor 3"))
@@ -123,7 +123,7 @@ try:
             t3.start()
             t1.join()
             t3.join()
-        elif key == '5':
+        elif key == 'd':
             # Motor 2 and Motor 3 step up 100 steps and then back down
             t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 2"))
             t3 = threading.Thread(target=move_motor, args=(step_3, direction_3, 89, delay_time, "Motor 3"))
@@ -131,7 +131,7 @@ try:
             t3.start()
             t2.join()
             t3.join()
-        elif key == '6':
+        elif key == 'w':
             # Motor 1 steps up 89 steps and Motor 2 steps up 100 steps
             t1 = threading.Thread(target=move_motor, args=(step_1, direction_1, 89, delay_time, "Motor 1"))
             t2 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 2"))
@@ -139,6 +139,11 @@ try:
             t2.start()
             t1.join()
             t2.join()
+        elif key == 's':
+            # Motor 2 steps up 100 steps and then back down
+            t1 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 2"))
+            t1.start()
+            t1.join()
         elif key == 'a':    
             # Move all motors 100 steps clockwise
             move_all_motors_cw(100, delay_time)
