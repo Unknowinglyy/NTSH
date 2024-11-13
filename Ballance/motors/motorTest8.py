@@ -112,7 +112,7 @@ try:
             t1.start()
             t1.join()
         elif key == '3':
-            t1 = threading.Thread(target=move_motor, args=(step_2, direction_2, 89, delay_time, "Motor 3"))
+            t1 = threading.Thread(target=move_motor, args=(step_3, direction_2, 89, delay_time, "Motor 3"))
             t1.start()
             t1.join()
         elif key == '4':
