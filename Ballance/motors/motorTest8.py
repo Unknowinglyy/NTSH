@@ -48,6 +48,24 @@ def move_all_motors_cw(steps, delay):
         time.sleep(delay)
     print("All motors just moved CW")
 
+def move_all_motors_cw(steps, delay):
+    # Move all motors clockwise
+    direction_1.off()
+    direction_2.off()
+    direction_3.off()
+    print(f"All motors moving CW {steps} steps")
+    for _ in range(steps):
+        step_1.on()
+        step_2.on()
+        step_3.on()
+        time.sleep(delay)
+        step_1.off()
+        step_2.off()
+        step_3.off()
+        time.sleep(delay)
+    print("All motors just moved CWW")
+
+
 def move_motor(step, direction, steps, delay, motor_name):
     # Move up
     direction.on()
