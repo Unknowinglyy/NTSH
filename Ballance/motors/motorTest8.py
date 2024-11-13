@@ -48,7 +48,7 @@ def move_all_motors_cw(steps, delay):
         time.sleep(delay)
     print("All motors just moved CW")
 
-def move_all_motors_cw(steps, delay):
+def move_all_motors_cww(steps, delay):
     # Move all motors clockwise
     direction_1.off()
     direction_2.off()
@@ -134,6 +134,9 @@ try:
         elif key == 'a':    
             # Move all motors 100 steps clockwise
             move_all_motors_cw(100, delay_time)
+        elif key == 'z':    
+            # Move all motors 100 steps clockwise
+            move_all_motors_cww(100, delay_time)
         elif key == 'q':
             break
 
