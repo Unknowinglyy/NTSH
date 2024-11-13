@@ -12,15 +12,15 @@ step_pin3 = 5
 dir_pin3 = 6
 
 #motor setup
-#motor 1
+#motor 1 (23 & 24)
 step = OutputDevice(step_pin)
 direction = OutputDevice(dir_pin)
 
-#motor 2
+#motor 2 (20 & 21)
 step2 = OutputDevice(step_pin2)
 direction2 = OutputDevice(dir_pin2)
 
-#motor 3
+#motor 3 (5 & 6)
 step3 = OutputDevice(step_pin3)
 direction3 = OutputDevice(dir_pin3)
 
