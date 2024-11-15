@@ -4,7 +4,7 @@ from gpiozero import OutputDevice
 from simple_pid import PID
 
 # Motor pins
-step_pin = 20
+step_pin = 23
 dir_pin = 24
 step_pin2 = 20
 dir_pin2 = 21
