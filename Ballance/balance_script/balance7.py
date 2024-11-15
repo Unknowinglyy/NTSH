@@ -58,7 +58,7 @@ def balance_ball():
                 error_y = CENTER_Y - ball_y
 
                 # Calculate steps proportional to the error magnitude
-                steps_x = int(abs(error_x) * 0.05)  # Adjust the scaling factor as needed
+                steps_x = int(abs(error_x) * 0.3)  # Adjust the scaling factor as needed
 
                 # Determine which motors to move based on the ball's position
                 if error_x > 0:
