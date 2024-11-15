@@ -125,21 +125,15 @@ def calculate_motor_steps(ball_x, ball_y):
     return motor_steps
 
 def balance_ball():
-    try:
-        for x, y in read_touch_coordinates():
-            motor_steps = calculate_motor_steps(x, y)
-            for motor, (steps, clockwise) in motor_steps.items():
-                move_motor(motor, steps, clockwise)
-            time.sleep(0.001)
-    except KeyboardInterrupt:
-        #move motors back to original position
-        move_all_motors_ccw(abs(clockwise_steps_motor1), 0.001)
-        #then do the cleanup
-        GPIO.cleanup()
+    for x, y in read_touch_coordinates():
+        motor_steps = calculate_motor_steps(x, y)
+        for motor, (steps, clockwise) in motor_steps.items():
+            move_motor(motor, steps, clockwise)
+        time.sleep(0.001)
 
 if __name__ == "__main__":
     try:
-        move_all_motors_cw(100, 0.01)
+        move_all_motors_cw(100, 0.001)
         balance_ball()
     except KeyboardInterrupt:
         print("Ball balancing interrupted.")
