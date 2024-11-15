@@ -64,21 +64,26 @@ def balance_ball():
                 if error_x > 0:
                     t1 = threading.Thread(target=move_motor, args=('motor1', steps_x, False))
                     t2 = threading.Thread(target=move_motor, args=('motor3', steps_x, False))
+                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_x+20, False))
                     t1.start()
                     t2.start()
+                    t3.start()
                     t1.join()
                     t2.join()
                     time.sleep(0.001)
-                    move_motor('motor2', steps_x+20, False)
+                    t3.join()
+                    
                 elif error_x < 0:
                     t1 = threading.Thread(target=move_motor, args=('motor1', steps_x, True))
                     t2 = threading.Thread(target=move_motor, args=('motor3', steps_x, True))
+                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_x+20, True))
                     t1.start()
                     t2.start()
+                    t3.start()
                     t1.join()
                     t2.join()
                     time.sleep(0.001)
-                    move_motor('motor2', steps_x+20, True)
+                    t3.join()
             time.sleep(0.1)  # Update cycle delay
     except KeyboardInterrupt:
         GPIO.cleanup()
