@@ -28,7 +28,7 @@ clockwise_steps_motor1 = 0
 clockwise_steps_motor2 = 0
 clockwise_steps_motor3 = 0
 
-# step constraints (all motors must have their step counters be between 0 and 100)
+# step constraints (all motors must have their step counters be between 0 and 200)
 
 def move_motor(motor, steps, direction_pin, direction):
     global clockwise_steps_motor1, clockwise_steps_motor2, clockwise_steps_motor3
@@ -37,20 +37,20 @@ def move_motor(motor, steps, direction_pin, direction):
     #if it will surpass the 100 step constraint, make it move to the 100th step
     #if it will surpass the 0 step constraint, make it move to the 0th step
     if motor == step:
-        if direction and (clockwise_steps_motor1 + steps) > 100:
-            steps = 100 - clockwise_steps_motor1
+        if direction and (clockwise_steps_motor1 + steps) > 200:
+            steps = 200 - clockwise_steps_motor1
         elif not direction and (clockwise_steps_motor1 - steps) < 0:
             steps = clockwise_steps_motor1
         clockwise_steps_motor1 += steps
     elif motor == step2:
-        if direction and (clockwise_steps_motor2 + steps) > 100:
-            steps = 100 - clockwise_steps_motor2
+        if direction and (clockwise_steps_motor2 + steps) > 200:
+            steps = 200 - clockwise_steps_motor2
         elif not direction and (clockwise_steps_motor2 - steps) < 0:
             steps = clockwise_steps_motor2
         clockwise_steps_motor2 += steps
     elif motor == step3:
-        if direction and (clockwise_steps_motor3 + steps) > 100:
-            steps = 100 - clockwise_steps_motor3
+        if direction and (clockwise_steps_motor3 + steps) > 200:
+            steps = 200 - clockwise_steps_motor3
         elif not direction and (clockwise_steps_motor3 - steps) < 0:
             steps = clockwise_steps_motor3
         clockwise_steps_motor3 += steps
