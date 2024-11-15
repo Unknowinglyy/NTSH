@@ -30,7 +30,7 @@ for motor in MOTOR_PINS.values():
 def move_all_motors_cw(steps, delay):
     # Move all motors CW
     for _ in range(steps):
-        for motor in MOTOR_PINS.values():
+        for motor in MOTOR_PINS.keys():
             GPIO.output(motor['dir'], GPIO.HIGH)
             GPIO.output(motor['step'], GPIO.HIGH)
         time.sleep(delay)
