@@ -39,7 +39,8 @@ def move_all_motors_cw(steps, delay):
         time.sleep(delay)
 
 # Define a function to control a single motor
-def move_motor(motor, steps, clockwise):
+def move_motor(motor, steps, clockwise, delay=0):
+    time.sleep(delay)
     GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH if clockwise else GPIO.LOW)
     for _ in range(abs(steps)):
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
@@ -64,10 +65,9 @@ def balance_ball():
                 if error_x > 0:
                     t1 = threading.Thread(target=move_motor, args=('motor1', steps_x, False))
                     t2 = threading.Thread(target=move_motor, args=('motor3', steps_x, False))
-                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_x+20, False))
+                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_x+20, False, 0.001))
                     t1.start()
                     t2.start()
-                    time.sleep(0.001) 
                     t3.start()
                     t1.join()
                     t2.join()
@@ -76,10 +76,9 @@ def balance_ball():
                 elif error_x < 0:
                     t1 = threading.Thread(target=move_motor, args=('motor1', steps_x, True))
                     t2 = threading.Thread(target=move_motor, args=('motor3', steps_x, True))
-                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_x+20, True))
+                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_x+20, True, 0.001))
                     t1.start()
                     t2.start()
-                    time.sleep(0.001)
                     t3.start()
                     t1.join()
                     t2.join()
