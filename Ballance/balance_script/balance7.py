@@ -82,7 +82,7 @@ def balance_ball():
 
 if __name__ == "__main__":
     # Move all motors 100 Steps CW
-    move_all_motors_cw(200, 0.01)
+    move_all_motors_cw(200, 0.001)
 
     # Begin Balance 
     balance_ball()
