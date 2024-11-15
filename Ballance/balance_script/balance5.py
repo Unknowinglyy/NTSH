@@ -25,8 +25,8 @@ CENTER_X, CENTER_Y = 2005, 2033.5
 # Set up GPIO
 GPIO.setmode(GPIO.BCM)
 for motor in MOTOR_PINS.values():
-    GPIO.setup(motor['step'], GPIO.OUT)
-    GPIO.setup(motor['dir'], GPIO.OUT)
+    GPIO.setup([motor]['step'], GPIO.OUT)
+    GPIO.setup([motor]['dir'], GPIO.OUT)
 
 # PID controllers for X and Y directions
 pid_x = PID(1.2, 0.1, 0.05, setpoint=CENTER_X)
@@ -40,17 +40,17 @@ pid_y.output_limits = (-100, 100)
 # --------------------------------------------------------------------------------------------
 def move_all_motors_cw(steps, delay):
     # Move all motors clockwise
-    MOTOR_PINS['motor1']['dir'].on()
-    MOTOR_PINS['motor2']['dir'].on()
-    MOTOR_PINS['motor3']['dir'].on()
+    GPIO.output(MOTOR_PINS['motor1']['dir'], GPIO.HIGH)
+    GPIO.output(MOTOR_PINS['motor2']['dir'], GPIO.HIGH)
+    GPIO.output(MOTOR_PINS['motor3']['dir'], GPIO.HIGH)
     for _ in range(steps):
-        MOTOR_PINS['motor1']['step'].on()
-        MOTOR_PINS['motor2']['step'].on()
-        MOTOR_PINS['motor3']['step'].on()
+        GPIO.output(MOTOR_PINS['motor1']['step'], GPIO.HIGH)
+        GPIO.output(MOTOR_PINS['motor2']['step'], GPIO.HIGH)
+        GPIO.output(MOTOR_PINS['motor3']['step'], GPIO.HIGH)
         time.sleep(delay)
-        MOTOR_PINS['motor1']['step'].off()
-        MOTOR_PINS['motor2']['step'].off()
-        MOTOR_PINS['motor3']['step'].off()
+        GPIO.output(MOTOR_PINS['motor1']['step'], GPIO.LOW)
+        GPIO.output(MOTOR_PINS['motor2']['step'], GPIO.LOW)
+        GPIO.output(MOTOR_PINS['motor3']['step'], GPIO.LOW)
         time.sleep(delay)
 
 # Define a function to control a single motor
