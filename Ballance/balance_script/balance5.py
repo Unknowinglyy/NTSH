@@ -3,6 +3,7 @@ import time
 import math
 from simple_pid import PID
 from touchScreenBasicCoordOutput import read_touch_coordinates, Point
+import threading
 
 # GPIO setup for stepper motors
 MOTOR_PINS = {
@@ -69,6 +70,16 @@ def calculate_motor_steps(ball_x, ball_y):
 
     return motor_steps
 
+# Function to move motors concurrently
+def move_motors_concurrently(motor_steps):
+    threads = []
+    for motor, (steps, clockwise) in motor_steps.items():
+        t = threading.Thread(target=move_motor, args=(motor, steps, clockwise))
+        threads.append(t)
+        t.start()
+    for t in threads:
+        t.join()
+
 # Main loop
 def balance_ball():
     try:
@@ -77,9 +88,8 @@ def balance_ball():
             ball_x, ball_y = point.x, point.y
             motor_steps = calculate_motor_steps(ball_x, ball_y)
 
-            # Move each motor according to the calculated steps
-            for motor, (steps, clockwise) in motor_steps.items():
-                move_motor(motor, steps, clockwise)
+            # Move each motor according to the calculated steps concurrently
+            move_motors_concurrently(motor_steps)
             time.sleep(0.1)  # Update cycle delay
     except KeyboardInterrupt:
         GPIO.cleanup()
