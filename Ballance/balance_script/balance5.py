@@ -40,17 +40,17 @@ pid_y.output_limits = (-100, 100)
 # --------------------------------------------------------------------------------------------
 def move_all_motors_cw(steps, delay):
     # Move all motors clockwise
-    GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
-    GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
-    GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
+    GPIO.output(MOTOR_PINS['motor1']['step'], GPIO.HIGH)
+    GPIO.output(MOTOR_PINS['motor2']['step'], GPIO.HIGH)
+    GPIO.output(MOTOR_PINS['motor3']['step'], GPIO.HIGH)
     for _ in range(steps):
-        GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.LOW)
-        GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.LOW)
-        GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.LOW)
+        GPIO.output(MOTOR_PINS['motor1']['dir'], GPIO.LOW)
+        GPIO.output(MOTOR_PINS['motor2']['dir'], GPIO.LOW)
+        GPIO.output(MOTOR_PINS['motor3']['dir'], GPIO.LOW)
         time.sleep(delay)
-        GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
-        GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
-        GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
+        GPIO.output(MOTOR_PINS['motor1']['step'], GPIO.LOW)
+        GPIO.output(MOTOR_PINS['motor2']['step'], GPIO.LOW)
+        GPIO.output(MOTOR_PINS['motor3']['step'], GPIO.LOW)
         time.sleep(delay)
 
 # Define a function to control a single motor
