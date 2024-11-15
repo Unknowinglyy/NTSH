@@ -76,14 +76,6 @@ def balance_ball():
                     t2.start()
                     t1.join()
                     t2.join()
-                if error_y > 0:
-                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_y, True))
-                    t3.start()
-                    t3.join()
-                elif error_y < 0:
-                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_y, False))
-                    t3.start()
-                    t3.join()
 
             time.sleep(0.1)  # Update cycle delay
     except KeyboardInterrupt:
