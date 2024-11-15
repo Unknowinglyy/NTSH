@@ -88,7 +88,7 @@ if __name__ == "__main__":
 
 
         #test the constraints
-        move_motor(step, 100, direction, True)
+        move_motor(step, 300, direction, True)
 
         print(f"Clockwise steps - Motor 1: {clockwise_steps_motor1}")
 
