@@ -3,7 +3,7 @@ import time
 import math
 from touchScreenBasicCoordOutput import read_touch_coordinates, Point
 import threading
-
+# --------------------------------------------------------------------------------------------
 # GPIO setup for stepper motors
 MOTOR_PINS = {
     'motor1': {'step': 23, 'dir': 24},
