@@ -65,7 +65,7 @@ def balance_ball():
                 if error_x > 0:
                     t1 = threading.Thread(target=move_motor, args=('motor1', steps_x, False))
                     t2 = threading.Thread(target=move_motor, args=('motor3', steps_x, False))
-                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_x+20, False, 0.1))
+                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_x+50, False, 0.1))
                     t1.start()
                     t2.start()
                     t3.start()
@@ -76,7 +76,7 @@ def balance_ball():
                 elif error_x < 0:
                     t1 = threading.Thread(target=move_motor, args=('motor1', steps_x, True))
                     t2 = threading.Thread(target=move_motor, args=('motor3', steps_x, True))
-                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_x+20, True, 0.1))
+                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_x+50, True, 0.1))
                     t1.start()
                     t2.start()
                     t3.start()
