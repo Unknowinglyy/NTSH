@@ -24,18 +24,18 @@ CENTER_X, CENTER_Y = 2005, 2033.5
 # Set up GPIO
 GPIO.setmode(GPIO.BCM)
 for motor in MOTOR_PINS.keys():
-    GPIO.setup(motor['step'], GPIO.OUT)
-    GPIO.setup(motor['dir'], GPIO.OUT)
+    GPIO.setup(MOTOR_PINS[motor]['step'], GPIO.OUT)
+    GPIO.setup(MOTOR_PINS[motor]['dir'], GPIO.OUT)
 # --------------------------------------------------------------------------------------------
 def move_all_motors_cw(steps, delay):
     # Move all motors CW
     for _ in range(steps):
         for motor in MOTOR_PINS.keys():
-            GPIO.output(motor['dir'], GPIO.HIGH)
-            GPIO.output(motor['step'], GPIO.HIGH)
+            GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH)
+            GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
         time.sleep(delay)
-        for motor in MOTOR_PINS.values():
-            GPIO.output(motor['step'], GPIO.LOW)
+        for motor in MOTOR_PINS.keys():
+            GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
         time.sleep(delay)
 
 # Define a function to control a single motor
