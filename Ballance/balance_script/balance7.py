@@ -26,20 +26,16 @@ GPIO.setmode(GPIO.BCM)
 for motor in MOTOR_PINS.values():
     GPIO.setup(motor['step'], GPIO.OUT)
     GPIO.setup(motor['dir'], GPIO.OUT)
-
+# --------------------------------------------------------------------------------------------
 def move_all_motors_cw(steps, delay):
-    # Move all motors clockwise
-    GPIO.output(MOTOR_PINS['motor1']['dir'], GPIO.HIGH)
-    GPIO.output(MOTOR_PINS['motor2']['dir'], GPIO.HIGH)
-    GPIO.output(MOTOR_PINS['motor3']['dir'], GPIO.HIGH)
+    # Move all motors CW
     for _ in range(steps):
-        GPIO.output(MOTOR_PINS['motor1']['step'], GPIO.HIGH)
-        GPIO.output(MOTOR_PINS['motor2']['step'], GPIO.HIGH)
-        GPIO.output(MOTOR_PINS['motor3']['step'], GPIO.HIGH)
+        for motor in MOTOR_PINS.values():
+            GPIO.output(motor['dir'], GPIO.HIGH)
+            GPIO.output(motor['step'], GPIO.HIGH)
         time.sleep(delay)
-        GPIO.output(MOTOR_PINS['motor1']['step'], GPIO.LOW)
-        GPIO.output(MOTOR_PINS['motor2']['step'], GPIO.LOW)
-        GPIO.output(MOTOR_PINS['motor3']['step'], GPIO.LOW)
+        for motor in MOTOR_PINS.values():
+            GPIO.output(motor['step'], GPIO.LOW)
         time.sleep(delay)
 
 # Define a function to control a single motor
@@ -51,11 +47,6 @@ def move_motor(motor, steps, clockwise):
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
         time.sleep(0.001)
 
-# Function to check if the ball is near a specific motor
-def is_ball_near_motor(ball_x, ball_y, motor_pos, threshold=100):
-    distance = math.sqrt((ball_x - motor_pos[0])**2 + (ball_y - motor_pos[1])**2)
-    return distance < threshold
-
 # Main loop
 def balance_ball():
     try:
@@ -63,13 +54,16 @@ def balance_ball():
             point = read_touch_coordinates()
             if point is not None:
                 ball_x, ball_y = point.x, point.y
+                error_x = CENTER_X - ball_x
+                error_y = CENTER_Y - ball_y
+                if (error_x > 0):
+                    move_motor('motor1', 100, True)
+                    move_motor('motor3', 100, True)
+                elif (error_x < 0):
+                    move_motor('motor1', 100, False)
+                    move_motor('motor3', 100, False)  
 
-                # Check if the ball is near any motor and move that motor
-                for motor, pos in MOTOR_POSITIONS.items():
-                    if is_ball_near_motor(ball_x, ball_y, pos):
-                        move_motor(motor, 100, True)  # Move 100 steps clockwise
-                        break  # Only move one motor at a time
-            time.sleep(0.1)  # Update cycle delay
+
     except KeyboardInterrupt:
         GPIO.cleanup()
 
