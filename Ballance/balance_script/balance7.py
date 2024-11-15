@@ -43,9 +43,9 @@ def move_motor(motor, steps, clockwise):
     GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH if clockwise else GPIO.LOW)
     for _ in range(abs(steps)):
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
-        time.sleep(0.005)
+        time.sleep(0.002)
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
-        time.sleep(0.005)
+        time.sleep(0.002)
 
 # Main loop
 def balance_ball():
@@ -59,7 +59,6 @@ def balance_ball():
 
                 # Calculate steps proportional to the error magnitude
                 steps_x = int(abs(error_x) * 0.05)  # Adjust the scaling factor as needed
-                steps_y = int(abs(error_y) * 0.05)  # Adjust the scaling factor as needed
 
                 # Determine which motors to move based on the ball's position
                 if error_x > 0:
@@ -83,7 +82,7 @@ def balance_ball():
 
 if __name__ == "__main__":
     # Move all motors 100 Steps CW
-    move_all_motors_cw(100, 0.01)
+    move_all_motors_cw(200, 0.01)
 
     # Begin Balance 
     balance_ball()
