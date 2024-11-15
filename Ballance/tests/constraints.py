@@ -70,7 +70,7 @@ if __name__ == "__main__":
         time.sleep(3)
 
         #testing how much the motors can move from their current position
-        move_motor(step, 200, direction, True)  # Motor 1 clockwise
+        move_motor(step2, 100, direction, True)  # Motor 1 clockwise
         time.sleep(1)
 
 
