@@ -21,7 +21,7 @@ MOTOR_POSITIONS = {
 
 # Center position of the touchscreen
 CENTER_X, CENTER_Y = 2005, 2033.5
-
+# --------------------------------------------------------------------------------------------
 # Set up GPIO
 GPIO.setmode(GPIO.BCM)
 for motor in MOTOR_PINS.values():
@@ -35,8 +35,8 @@ pid_y = PID(1.2, 0.1, 0.05, setpoint=CENTER_Y)
 # Configure sample time (update frequency) and output limits
 pid_x.sample_time = 0.001  # 100 ms update rate
 pid_y.sample_time = 0.001
-pid_x.output_limits = (-10, 10)  # Limiting output to max ±10 steps
-pid_y.output_limits = (-10, 10)
+pid_x.output_limits = (-100, 100)  # Limiting output to max ±10 steps
+pid_y.output_limits = (-100, 100)
 # --------------------------------------------------------------------------------------------
 def move_all_motors_cw(steps, delay):
     # Move all motors clockwise
