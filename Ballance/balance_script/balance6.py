@@ -63,38 +63,30 @@ def move_motor(motor, steps, clockwise):
         # Update the step count for the motor
         if clockwise:
             if motor == 'motor1':
-                global clockwise_steps_motor1
                 clockwise_steps_motor1 += 1
             elif motor == 'motor2':
-                global clockwise_steps_motor2
                 clockwise_steps_motor2 += 1
             elif motor == 'motor3':
-                global clockwise_steps_motor3
                 clockwise_steps_motor3 += 1
         else:
             if motor == 'motor1':
-                global clockwise_steps_motor1
                 clockwise_steps_motor1 -= 1
             elif motor == 'motor2':
-                global clockwise_steps_motor2
                 clockwise_steps_motor2 -= 1
             elif motor == 'motor3':
-                global clockwise_steps_motor3
                 clockwise_steps_motor3 -= 1
 
 def move_all_motors_cw(steps, delay):
     global clockwise_steps_motor1, clockwise_steps_motor2, clockwise_steps_motor3
-    # Move all motors clockwise
     for _ in range(steps):
-        for motor in MOTOR_PINS.values():
-            GPIO.output(motor['dir'], GPIO.HIGH)
-            GPIO.output(motor['step'], GPIO.HIGH)
+        for motor in MOTOR_PINS.keys():
+            GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH)
+            GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
         time.sleep(delay)
-        for motor in MOTOR_PINS.values():
-            GPIO.output(motor['step'], GPIO.LOW)
+        for motor in MOTOR_PINS.keys():
+            GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
         time.sleep(delay)
         
-    #increase the steps for the motors
     clockwise_steps_motor1 += steps
     clockwise_steps_motor2 += steps
     clockwise_steps_motor3 += steps
@@ -138,7 +130,7 @@ def balance_ball():
             motor_steps = calculate_motor_steps(x, y)
             for motor, (steps, clockwise) in motor_steps.items():
                 move_motor(motor, steps, clockwise)
-            time.sleep(0.1)
+            time.sleep(0.001)
     except KeyboardInterrupt:
         #move motors back to original position
         move_all_motors_ccw(abs(clockwise_steps_motor1), 0.001)
@@ -151,3 +143,9 @@ if __name__ == "__main__":
         balance_ball()
     except KeyboardInterrupt:
         print("Ball balancing interrupted.")
+    finally:
+        move_motor('motor1', clockwise_steps_motor1, False)
+        move_motor('motor2', clockwise_steps_motor2, False)
+        move_motor('motor3', clockwise_steps_motor3, False)
+        GPIO.cleanup()
+        print("Motors reset to initial position and GPIO cleaned up.")
