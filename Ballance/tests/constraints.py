@@ -69,15 +69,19 @@ if __name__ == "__main__":
 
         time.sleep(3)
 
+        #testing how much the motors can move from their current position
+        move_motor(step, 200, direction, True)  # Motor 1 clockwise
+        time.sleep(1)
+
 
         
 
-        print("Now moving back to the starting position...")
-        move_motor(step, clockwise_steps_motor1, direction, False)  # Motor 1 counterclockwise
-        time.sleep(1)
-        move_motor(step2, clockwise_steps_motor2, direction2, False)  # Motor 2 counterclockwise
-        time.sleep(1)
-        move_motor(step3, clockwise_steps_motor3, direction3, False)  # Motor 3 counterclockwise
+        # print("Now moving back to the starting position...")
+        # move_motor(step, clockwise_steps_motor1, direction, False)  # Motor 1 counterclockwise
+        # time.sleep(1)
+        # move_motor(step2, clockwise_steps_motor2, direction2, False)  # Motor 2 counterclockwise
+        # time.sleep(1)
+        # move_motor(step3, clockwise_steps_motor3, direction3, False)  # Motor 3 counterclockwise
 
         print("Motor test completed.")
 

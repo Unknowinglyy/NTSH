@@ -1,124 +1,145 @@
-import evdev
+import RPi.GPIO as GPIO
 import time
-from gpiozero import OutputDevice
+import math
 from simple_pid import PID
+from evdev import InputDevice, ecodes
 
-# Motor pins
-step_pin = 23
-dir_pin = 24
-step_pin2 = 20
-dir_pin2 = 21
-step_pin3 = 5
-dir_pin3 = 6
+# GPIO setup for stepper motors
+MOTOR_PINS = {
+    'motor1': {'step': 23, 'dir': 24},
+    'motor2': {'step': 20, 'dir': 21},
+    'motor3': {'step': 5, 'dir': 6}
+}
 
-# Motor setup
-step = OutputDevice(step_pin)
-direction = OutputDevice(dir_pin)
-step2 = OutputDevice(step_pin2)
-direction2 = OutputDevice(dir_pin2)
-step3 = OutputDevice(step_pin3)
-direction3 = OutputDevice(dir_pin3)
+# Motor corner positions
+MOTOR_POSITIONS = {
+    'motor1': (3685, 200),
+    'motor2': (3685, 3820),
+    'motor3': (390, 1810)
+}
 
-# Motor movement parameters
-test_steps = 200
-delay_time = 0.005
+# Center position of the touchscreen
+CENTER_X, CENTER_Y = 2025, 2045
 
-# Step counters
 clockwise_steps_motor1 = 0
 clockwise_steps_motor2 = 0
 clockwise_steps_motor3 = 0
 
+# Set up GPIO
+GPIO.setmode(GPIO.BCM)
+for motor in MOTOR_PINS.values():
+    GPIO.setup(motor['step'], GPIO.OUT)
+    GPIO.setup(motor['dir'], GPIO.OUT)
+
+# PID controllers for X and Y directions
+pid_x = PID(0.6, 0.1, 0.05, setpoint=CENTER_X)
+pid_y = PID(0.6, 0.1, 0.05, setpoint=CENTER_Y)
+pid_x.sample_time = 0.1  # 100 ms update rate
+pid_y.sample_time = 0.1
+pid_x.output_limits = (-10, 10)  # Limiting output to max ±10 steps
+pid_y.output_limits = (-10, 10)
+
+
 def read_touch_coordinates(device_path='/dev/input/event3'):
-    device = evdev.InputDevice(device_path)
+    device = InputDevice(device_path)
     x, y = None, None
     for event in device.read_loop():
-        if event.type == evdev.ecodes.EV_ABS:
-            if event.code == evdev.ecodes.ABS_X or event.code == evdev.ecodes.ABS_MT_POSITION_X:
+        if event.type == ecodes.EV_ABS:
+            if event.code == ecodes.ABS_X or event.code == ecodes.ABS_MT_POSITION_X:
                 x = event.value
-            elif event.code == evdev.ecodes.ABS_Y or event.code == evdev.ecodes.ABS_MT_POSITION_Y:
+            elif event.code == ecodes.ABS_Y or event.code == ecodes.ABS_MT_POSITION_Y:
                 y = event.value
             if x is not None and y is not None:
-                yield (x, y, time.time())
+                yield (x, y)
 
-def move_motor(motor, steps, direction_pin, direction):
+def move_motor(motor, steps, clockwise):
     global clockwise_steps_motor1, clockwise_steps_motor2, clockwise_steps_motor3
-    direction_pin.value = direction
+    GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH if clockwise else GPIO.LOW)
     for _ in range(abs(steps)):
-        motor.on()
-        time.sleep(0.0005)
-        motor.off()
-        time.sleep(0.0005)
-        if direction:  # Clockwise direction
-            if motor == step:
+        GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
+        time.sleep(0.001)
+        GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
+        time.sleep(0.001)
+        # Update the step count for the motor
+        if clockwise:
+            if motor == 'motor1':
                 clockwise_steps_motor1 += 1
-            elif motor == step2:
+            elif motor == 'motor2':
                 clockwise_steps_motor2 += 1
-            elif motor == step3:
+            elif motor == 'motor3':
                 clockwise_steps_motor3 += 1
-        else:  # Counterclockwise direction
-            if motor == step:
+        else:
+            if motor == 'motor1':
                 clockwise_steps_motor1 -= 1
-            elif motor == step2:
+            elif motor == 'motor2':
                 clockwise_steps_motor2 -= 1
-            elif motor == step3:
+            elif motor == 'motor3':
                 clockwise_steps_motor3 -= 1
 
-def calculate_motor_steps(x, y):
-    # Placeholder function to calculate motor steps based on x, y coordinates
+def move_all_motors_cw(steps, delay):
+    global clockwise_steps_motor1, clockwise_steps_motor2, clockwise_steps_motor3
+    for _ in range(steps):
+        for motor in MOTOR_PINS.keys():
+            GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH)
+            GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
+        time.sleep(delay)
+        for motor in MOTOR_PINS.keys():
+            GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
+        time.sleep(delay)
+        
+    clockwise_steps_motor1 += steps
+    clockwise_steps_motor2 += steps
+    clockwise_steps_motor3 += steps
+    print(f"All motors moved CW {steps} steps")
+
+def move_all_motors_ccw(steps, delay):
+    global clockwise_steps_motor1, clockwise_steps_motor2, clockwise_steps_motor3
+    # Move all motors counterclockwise
+    for _ in range(steps):
+        for motor in MOTOR_PINS.values():
+            GPIO.output(motor['dir'], GPIO.LOW)
+            GPIO.output(motor['step'], GPIO.HIGH)
+        time.sleep(delay)
+        for motor in MOTOR_PINS.values():
+            GPIO.output(motor['step'], GPIO.LOW)
+        time.sleep(delay)
+        
+    #decrease the steps for the motors
+    clockwise_steps_motor1 -= steps
+    clockwise_steps_motor2 -= steps
+    clockwise_steps_motor3 -= steps
+    print(f"All motors moved CCW {steps} steps")
+
+def calculate_motor_steps(ball_x, ball_y):
+    steps_x = int(pid_x(ball_x))
+    steps_y = int(pid_y(ball_y))
     motor_steps = {}
-    steps_x = x - 2025
-    steps_y = y - 2045
-    motor_error_x = steps_x
-    motor_error_y = steps_y
-    clockwise_x = steps_x > 0 if motor_error_x > 0 else steps_x < 0
-    clockwise_y = steps_y > 0 if motor_error_y > 0 else steps_y < 0
-    steps = abs(steps_x) + abs(steps_y)
-    clockwise = clockwise_x if abs(steps_x) > abs(steps_y) else clockwise_y
-    motor_steps[step] = (steps, clockwise)
+    for motor, pos in MOTOR_POSITIONS.items():
+        motor_error_x = CENTER_X - pos[0]
+        motor_error_y = CENTER_Y - pos[1]
+        clockwise_x = steps_x > 0 if motor_error_x > 0 else steps_x < 0
+        clockwise_y = steps_y > 0 if motor_error_y > 0 else steps_y < 0
+        steps = abs(steps_x) + abs(steps_y)
+        clockwise = clockwise_x if abs(steps_x) > abs(steps_y) else clockwise_y
+        motor_steps[motor] = (steps, clockwise)
     return motor_steps
 
-def move_all_motors_cw(steps, delay):
-    # Move all motors clockwise
-    direction.on()
-    direction2.on()
-    direction3.on()
-    print(f"All motors moving CW {steps} steps")
-    for _ in range(steps):
-        step.on()
-        step2.on()
-        step3.on()
-        time.sleep(delay)
-        step.off()
-        step2.off()
-        step3.off()
-        time.sleep(delay)
-    print("All motors just moved CW")
-
 def balance_ball():
-    try:
-        for x, y, _ in read_touch_coordinates():
-            motor_steps = calculate_motor_steps(x, y)
-            for motor, (steps, clockwise) in motor_steps.items():
-                move_motor(motor, steps, clockwise)
-            time.sleep(0.001)
-    except KeyboardInterrupt:
-        # Reset all motors to initial position
-        move_motor(step, clockwise_steps_motor1, direction, False)
-        move_motor(step2, clockwise_steps_motor2, direction2, False)
-        move_motor(step3, clockwise_steps_motor3, direction3, False)
-        print("Motors reset to initial position.")
-
-        step.close()
-        step2.close()
-        step3.close()
-        direction.close()
-        direction2.close()
-        direction3.close()
-        print("GPIO cleaned up.")
+    for x, y in read_touch_coordinates():
+        motor_steps = calculate_motor_steps(x, y)
+        for motor, (steps, clockwise) in motor_steps.items():
+            move_motor(motor, steps, clockwise)
+        time.sleep(0.001)
 
 if __name__ == "__main__":
     try:
         move_all_motors_cw(100, 0.001)
         balance_ball()
     except KeyboardInterrupt:
-        print("Motor test interrupted.")
+        print("Ball balancing interrupted.")
+    finally:
+        move_motor('motor1', clockwise_steps_motor1, False)
+        move_motor('motor2', clockwise_steps_motor2, False)
+        move_motor('motor3', clockwise_steps_motor3, False)
+        GPIO.cleanup()
+        print("Motors reset to initial position and GPIO cleaned up.")
