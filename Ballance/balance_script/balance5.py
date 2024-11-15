@@ -4,7 +4,7 @@ import math
 from simple_pid import PID
 from touchScreenBasicCoordOutput import read_touch_coordinates, Point
 import threading
-
+# --------------------------------------------------------------------------------------------
 # GPIO setup for stepper motors
 MOTOR_PINS = {
     'motor1': {'step': 23, 'dir': 24},
@@ -37,6 +37,21 @@ pid_x.sample_time = 0.1  # 100 ms update rate
 pid_y.sample_time = 0.1
 pid_x.output_limits = (-10, 10)  # Limiting output to max ±10 steps
 pid_y.output_limits = (-10, 10)
+
+def move_all_motors_cw(steps, delay):
+    # Move all motors clockwise
+    MOTOR_PINS['motor1']['dir'].on()
+    MOTOR_PINS['motor2']['dir'].on()
+    MOTOR_PINS['motor3']['dir'].on()
+    for _ in range(steps):
+        MOTOR_PINS['motor1']['step'].on()
+        MOTOR_PINS['motor2']['step'].on()
+        MOTOR_PINS['motor3']['step'].on()
+        time.sleep(delay)
+        MOTOR_PINS['motor1']['step'].off()
+        MOTOR_PINS['motor2']['step'].off()
+        MOTOR_PINS['motor3']['step'].off()
+        time.sleep(delay)
 
 # Define a function to control a single motor
 def move_motor(motor, steps, clockwise):
@@ -90,9 +105,13 @@ def balance_ball():
 
             # Move each motor according to the calculated steps concurrently
             move_motors_concurrently(motor_steps)
-            time.sleep(0.1)  # Update cycle delay
+            time.sleep(0.001)  # Update cycle delay
     except KeyboardInterrupt:
         GPIO.cleanup()
-
+# --------------------------------------------------------------------------------------------
 if __name__ == "__main__":
+    # Mvove all motors 100 Steps CW
+    move_all_motors_cw(100, 0.05)
+
+    # Begin Balance 
     balance_ball()
