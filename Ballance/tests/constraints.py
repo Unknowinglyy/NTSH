@@ -92,6 +92,7 @@ if __name__ == "__main__":
 
         print(f"Clockwise steps - Motor 1: {clockwise_steps_motor1}")
 
+        time.sleep(2)
         print("now going ccw")
         move_motor(step, 300, direction, False)
 
