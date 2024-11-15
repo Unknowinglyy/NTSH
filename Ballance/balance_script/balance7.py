@@ -57,19 +57,25 @@ def balance_ball():
                 error_x = CENTER_X - ball_x
                 error_y = CENTER_Y - ball_y
                 if (error_x > 0):
-                    t1 = threading.Thread(target=move_motor, args=('motor1', 100, False))
-                    t2 = threading.Thread(target=move_motor, args=('motor3', 100, False))
+                    t1 = threading.Thread(target=move_motor, args=('motor1', 50, False))
+                    t2 = threading.Thread(target=move_motor, args=('motor3', 50, False))
+                    t3 = threading.Thread(target=move_motor, args=('motor2', 25, True))
                     t1.start()
                     t2.start()
+                    t3.start()
                     t1.join()
                     t2.join()
+                    t3.join()
                 elif (error_x < 0):
-                    t1 = threading.Thread(target=move_motor, args=('motor1', 100, True))
-                    t2 = threading.Thread(target=move_motor, args=('motor3', 100, True))
+                    t1 = threading.Thread(target=move_motor, args=('motor1', 50, True))
+                    t2 = threading.Thread(target=move_motor, args=('motor3', 50, True))
+                    t3 = threading.Thread(target=move_motor, args=('motor2', 25, False))
                     t1.start()
                     t2.start()
+                    t3.start()
                     t1.join()
                     t2.join()
+                    t3.join()
 
 
     except KeyboardInterrupt:
