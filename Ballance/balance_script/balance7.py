@@ -3,7 +3,7 @@ import time
 import math
 from touchScreenBasicCoordOutput import read_touch_coordinates, Point
 import threading
-# --------------------------------------------------------------------------------------------
+
 # GPIO setup for stepper motors
 MOTOR_PINS = {
     'motor1': {'step': 23, 'dir': 24},
@@ -26,9 +26,9 @@ GPIO.setmode(GPIO.BCM)
 for motor in MOTOR_PINS.keys():
     GPIO.setup(MOTOR_PINS[motor]['step'], GPIO.OUT)
     GPIO.setup(MOTOR_PINS[motor]['dir'], GPIO.OUT)
-# --------------------------------------------------------------------------------------------
+
+# Function to move all motors clockwise
 def move_all_motors_cw(steps, delay):
-    # Move all motors CW
     for _ in range(steps):
         for motor in MOTOR_PINS.keys():
             GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH)
@@ -56,35 +56,42 @@ def balance_ball():
                 ball_x, ball_y = point.x, point.y
                 error_x = CENTER_X - ball_x
                 error_y = CENTER_Y - ball_y
-                if (error_x > 0):
-                    t1 = threading.Thread(target=move_motor, args=('motor1', 50, False))
-                    t2 = threading.Thread(target=move_motor, args=('motor3', 50, False))
-                    t3 = threading.Thread(target=move_motor, args=('motor2', 25, True))
+
+                # Calculate steps proportional to the error magnitude
+                steps_x = int(abs(error_x) * 0.1)  # Adjust the scaling factor as needed
+                steps_y = int(abs(error_y) * 0.1)  # Adjust the scaling factor as needed
+
+                # Determine which motors to move based on the ball's position
+                if error_x > 0:
+                    t1 = threading.Thread(target=move_motor, args=('motor1', steps_x, False))
+                    t2 = threading.Thread(target=move_motor, args=('motor3', steps_x, False))
                     t1.start()
                     t2.start()
-                    t3.start()
                     t1.join()
                     t2.join()
-                    t3.join()
-                elif (error_x < 0):
-                    t1 = threading.Thread(target=move_motor, args=('motor1', 50, True))
-                    t2 = threading.Thread(target=move_motor, args=('motor3', 50, True))
-                    t3 = threading.Thread(target=move_motor, args=('motor2', 25, False))
+                elif error_x < 0:
+                    t1 = threading.Thread(target=move_motor, args=('motor1', steps_x, True))
+                    t2 = threading.Thread(target=move_motor, args=('motor3', steps_x, True))
                     t1.start()
                     t2.start()
-                    t3.start()
                     t1.join()
                     t2.join()
+                if error_y > 0:
+                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_y, True))
+                    t3.start()
+                    t3.join()
+                elif error_y < 0:
+                    t3 = threading.Thread(target=move_motor, args=('motor2', steps_y, False))
+                    t3.start()
                     t3.join()
 
-
+            time.sleep(0.1)  # Update cycle delay
     except KeyboardInterrupt:
         GPIO.cleanup()
 
-# --------------------------------------------------------------------------------------------
 if __name__ == "__main__":
     # Move all motors 100 Steps CW
-    move_all_motors_cw(100, 0.001)
+    move_all_motors_cw(100, 0.01)
 
     # Begin Balance 
     balance_ball()
