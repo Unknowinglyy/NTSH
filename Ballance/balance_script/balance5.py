@@ -14,13 +14,13 @@ MOTOR_PINS = {
 
 # Motor corner positions
 MOTOR_POSITIONS = {
-    'motor1': (3685, 200),
-    'motor2': (3685, 3820),
-    'motor3': (390, 1810)
+    'motor1': (3670, 210),
+    'motor2': (397, 2033.5),
+    'motor3': (3670, 3800)
 }
 
 # Center position of the touchscreen
-CENTER_X, CENTER_Y = 2037.5, 2010
+CENTER_X, CENTER_Y = 2005, 2033.5
 
 # Set up GPIO
 GPIO.setmode(GPIO.BCM)
@@ -33,8 +33,8 @@ pid_x = PID(1.2, 0.1, 0.05, setpoint=CENTER_X)
 pid_y = PID(1.2, 0.1, 0.05, setpoint=CENTER_Y)
 
 # Configure sample time (update frequency) and output limits
-pid_x.sample_time = 0.1  # 100 ms update rate
-pid_y.sample_time = 0.1
+pid_x.sample_time = 0.001  # 100 ms update rate
+pid_y.sample_time = 0.001
 pid_x.output_limits = (-10, 10)  # Limiting output to max ±10 steps
 pid_y.output_limits = (-10, 10)
 # --------------------------------------------------------------------------------------------
