@@ -30,8 +30,8 @@ for motor in MOTOR_PINS.values():
 # PID controllers for X and Y directions
 pid_x = PID(0.6, 0.1, 0.05, setpoint=CENTER_X)
 pid_y = PID(0.6, 0.1, 0.05, setpoint=CENTER_Y)
-pid_x.sample_time = 0.1  # 100 ms update rate
-pid_y.sample_time = 0.1
+pid_x.sample_time = 0.01  # 100 ms update rate
+pid_y.sample_time = 0.01
 pid_x.output_limits = (-10, 10)  # Limiting output to max ±10 steps
 pid_y.output_limits = (-10, 10)
 
