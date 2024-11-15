@@ -28,21 +28,40 @@ clockwise_steps_motor1 = 0
 clockwise_steps_motor2 = 0
 clockwise_steps_motor3 = 0
 
+# step constraints (all motors must have their step counters be between 0 and 100)
+
 def move_motor(motor, steps, direction_pin, direction):
     global clockwise_steps_motor1, clockwise_steps_motor2, clockwise_steps_motor3
     direction_pin.value = direction
+    #check if the motor will move out of bounds
+    #if it will surpass the 100 step constraint, make it move to the 100th step
+    #if it will surpass the 0 step constraint, make it move to the 0th step
+    if motor == step:
+        if direction and (clockwise_steps_motor1 + steps) > 100:
+            steps = 100 - clockwise_steps_motor1
+        elif not direction and (clockwise_steps_motor1 - steps) < 0:
+            steps = clockwise_steps_motor1
+        clockwise_steps_motor1 += steps
+    elif motor == step2:
+        if direction and (clockwise_steps_motor2 + steps) > 100:
+            steps = 100 - clockwise_steps_motor2
+        elif not direction and (clockwise_steps_motor2 - steps) < 0:
+            steps = clockwise_steps_motor2
+        clockwise_steps_motor2 += steps
+    elif motor == step3:
+        if direction and (clockwise_steps_motor3 + steps) > 100:
+            steps = 100 - clockwise_steps_motor3
+        elif not direction and (clockwise_steps_motor3 - steps) < 0:
+            steps = clockwise_steps_motor3
+        clockwise_steps_motor3 += steps
+    
+
+    #move the motor now that bounds are safe
     for _ in range(abs(steps)):
         motor.on()
         time.sleep(0.0005)
         motor.off()
         time.sleep(0.0005)
-        if direction:  # Clockwise direction
-            if motor == step:
-                clockwise_steps_motor1 += 1
-            elif motor == step2:
-                clockwise_steps_motor2 += 1
-            elif motor == step3:
-                clockwise_steps_motor3 += 1
 
 if __name__ == "__main__":
     try:
@@ -67,12 +86,14 @@ if __name__ == "__main__":
         print(f"Clockwise steps - Motor 2: {clockwise_steps_motor2}")
         print(f"Clockwise steps - Motor 3: {clockwise_steps_motor3}")
 
-        time.sleep(3)
 
-        #testing how much the motors can move from their current position
-        move_motor(step2, 100, direction, True)  # Motor 1 clockwise
-        time.sleep(1)
+        #test the constraints
+        move_motor(step, 100, direction, True)
 
+        print(f"Clockwise steps - Motor 1: {clockwise_steps_motor1}")
+
+        print("now going ccw")
+        move_motor(step, 300, direction, False)
 
         
 
