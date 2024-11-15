@@ -23,7 +23,7 @@ CENTER_X, CENTER_Y = 2005, 2033.5
 
 # Set up GPIO
 GPIO.setmode(GPIO.BCM)
-for motor in MOTOR_PINS.key():
+for motor in MOTOR_PINS.keys():
     GPIO.setup(motor['step'], GPIO.OUT)
     GPIO.setup(motor['dir'], GPIO.OUT)
 # --------------------------------------------------------------------------------------------
