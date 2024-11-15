@@ -18,6 +18,8 @@ in the CLI type:
 xinput
 xinput --disable <touchscreen ID>
 
+
+COORDINATE SYSTEM
 ```
 
     --------------------------------
