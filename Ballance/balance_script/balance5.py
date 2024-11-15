@@ -20,7 +20,7 @@ MOTOR_POSITIONS = {
 }
 
 # Center position of the touchscreen
-CENTER_X, CENTER_Y = 2025, 2045
+CENTER_X, CENTER_Y = 2037.5, 2010
 
 # Set up GPIO
 GPIO.setmode(GPIO.BCM)
@@ -37,7 +37,7 @@ pid_x.sample_time = 0.1  # 100 ms update rate
 pid_y.sample_time = 0.1
 pid_x.output_limits = (-10, 10)  # Limiting output to max ±10 steps
 pid_y.output_limits = (-10, 10)
-
+# --------------------------------------------------------------------------------------------
 def move_all_motors_cw(steps, delay):
     # Move all motors clockwise
     MOTOR_PINS['motor1']['dir'].on()
@@ -79,7 +79,7 @@ def calculate_motor_steps(ball_x, ball_y):
         clockwise_y = steps_y > 0 if motor_error_y > 0 else steps_y < 0
         
         # Combine X and Y steps for each motor
-        steps = abs(steps_x) + abs(steps_y)  # Adjust based on each motor's distance influence
+        steps     = abs(steps_x) + abs(steps_y)  # Adjust based on each motor's distance influence
         clockwise = clockwise_x if abs(steps_x) > abs(steps_y) else clockwise_y
         motor_steps[motor] = (steps, clockwise)
 
@@ -95,13 +95,12 @@ def move_motors_concurrently(motor_steps):
     for t in threads:
         t.join()
 
-# Main loop
 def balance_ball():
     try:
         while True:
-            point = read_touch_coordinates()
+            point          = read_touch_coordinates()
             ball_x, ball_y = point.x, point.y
-            motor_steps = calculate_motor_steps(ball_x, ball_y)
+            motor_steps    = calculate_motor_steps(ball_x, ball_y)
 
             # Move each motor according to the calculated steps concurrently
             move_motors_concurrently(motor_steps)
