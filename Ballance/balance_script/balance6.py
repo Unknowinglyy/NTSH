@@ -93,5 +93,5 @@ def balance_ball():
         GPIO.cleanup()
 
 if __name__ == "__main__":
-    move_all_motors_cw(100, 0.01)
+    move_all_motors_cw(100, 0.001)
     balance_ball()
