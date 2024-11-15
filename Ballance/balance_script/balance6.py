@@ -53,6 +53,7 @@ def read_touch_coordinates(device_path='/dev/input/event3'):
                 yield (x, y)
 
 def move_motor(motor, steps, clockwise):
+    global clockwise_steps_motor1, clockwise_steps_motor2, clockwise_steps_motor3
     GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH if clockwise else GPIO.LOW)
     for _ in range(abs(steps)):
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
@@ -82,6 +83,7 @@ def move_motor(motor, steps, clockwise):
                 clockwise_steps_motor3 -= 1
 
 def move_all_motors_cw(steps, delay):
+    global clockwise_steps_motor1, clockwise_steps_motor2, clockwise_steps_motor3
     # Move all motors clockwise
     for _ in range(steps):
         for motor in MOTOR_PINS.values():
@@ -99,6 +101,7 @@ def move_all_motors_cw(steps, delay):
     print(f"All motors moved CW {steps} steps")
 
 def move_all_motors_ccw(steps, delay):
+    global clockwise_steps_motor1, clockwise_steps_motor2, clockwise_steps_motor3
     # Move all motors counterclockwise
     for _ in range(steps):
         for motor in MOTOR_PINS.values():
