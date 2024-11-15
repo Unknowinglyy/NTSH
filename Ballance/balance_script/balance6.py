@@ -96,7 +96,7 @@ def move_all_motors_cw(steps, delay):
 
 def balance_ball():
     try:
-        for x, y in read_touch_coordinates():
+        for x, y, _ in read_touch_coordinates():
             motor_steps = calculate_motor_steps(x, y)
             for motor, (steps, clockwise) in motor_steps.items():
                 move_motor(motor, steps, clockwise)
