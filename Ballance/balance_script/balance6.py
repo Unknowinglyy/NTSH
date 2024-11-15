@@ -28,7 +28,7 @@ clockwise_steps_motor1 = 0
 clockwise_steps_motor2 = 0
 clockwise_steps_motor3 = 0
 
-def read_touch_coordinates(device_path='/dev/input/event4'):
+def read_touch_coordinates(device_path='/dev/input/event3'):
     device = evdev.InputDevice(device_path)
     x, y = None, None
     for event in device.read_loop():
