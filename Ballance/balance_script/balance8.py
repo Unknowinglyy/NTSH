@@ -25,8 +25,8 @@ for motor in MOTOR_PINS.values():
     GPIO.setup(motor['dir'], GPIO.OUT)
 
 # PID controllers for X and Y directions
-pid_x = PID(3, 0.1, .1, setpoint=CENTER_X)
-pid_y = PID(3, 0.1, .1, setpoint=CENTER_Y)
+pid_x = PID(.01, 0.1, .01, setpoint=CENTER_X)
+pid_y = PID(.01, 0.1, .01, setpoint=CENTER_Y)
 
 # Configure sample time (update frequency) and output limits
 pid_x.sample_time = 0.01  # 10 ms update rate
@@ -128,9 +128,9 @@ if __name__ == "__main__":
     # Centering motors before starting
     print("Centering motors...")
     for _ in range(100):  # Arbitrary 100 steps to center
-        move_motor('motor1', 1, True)
-        move_motor('motor2', 1, True)
-        move_motor('motor3', 1, True)
+        move_motor('motor1', 100, True)
+        move_motor('motor2', 100, True)
+        move_motor('motor3', 100, True)
     print("Motors centered. Starting balance loop...")
 
     balance_ball()
