@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 import time
-from simple_pid import PID
+from pid import PID
 from touchScreenBasicCoordOutput import read_touch_coordinates
 import threading
 
@@ -15,7 +15,7 @@ MOTOR_PINS = {
 # Center position of the touchscreen
 CENTER_X, CENTER_Y = 2025, 2045
 # Ball detection thresholds
-BALL_DETECTION_THRESHOLD = 1
+BALL_DETECTION_THRESHOLD = 20  # Relaxed the threshold for better detection range
 
 # --------------------------------------------------------------------------------------------
 # GPIO Setup
@@ -25,14 +25,14 @@ for motor in MOTOR_PINS.values():
     GPIO.setup(motor['dir'], GPIO.OUT)
 
 # PID controllers for X and Y directions
-pid_x = PID(1, 0.1, .05, setpoint=CENTER_X)
-pid_y = PID(1, 0.1, .05, setpoint=CENTER_Y)
+pid_x = PID(1.0, 0.1, 0.05, setpoint=CENTER_X)
+pid_y = PID(1.0, 0.1, 0.05, setpoint=CENTER_Y)
 
 # Configure sample time (update frequency) and output limits
-pid_x.sample_time = 0.01  # ms update rate
-pid_y.sample_time = 0.01
-pid_x.output_limits = (-10, 10)  # Limit ±steps
-pid_y.output_limits = (-10, 10)
+pid_x.set_sample_time(0.01)  # ms update rate
+pid_y.set_sample_time(0.01)
+pid_x.set_output_limits(-10, 10)  # Limit ±steps
+pid_y.set_output_limits(-10, 10)
 
 # --------------------------------------------------------------------------------------------
 def move_motor(motor, steps, clockwise):
@@ -57,7 +57,8 @@ def calculate_motor_steps(ball_x, ball_y):
     steps_x = int(pid_x(ball_x))
     steps_y = int(pid_y(ball_y))
     print(f"Steps to move: {steps_x}, {steps_y}")
-    # Determine motor steps and directions
+    
+    # Determine motor steps and directions (adjusted for better coordination)
     motor_steps = {
         'motor1': (abs(steps_x), steps_x < 0),  # Clockwise if steps_x < 0
         'motor2': (abs(steps_y), steps_y < 0),
