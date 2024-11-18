@@ -15,7 +15,7 @@ MOTOR_PINS = {
 # Center position of the touchscreen
 CENTER_X, CENTER_Y = 2005, 2033.5
 # Ball detection thresholds
-BALL_DETECTION_THRESHOLD = 50
+BALL_DETECTION_THRESHOLD = 10
 
 # --------------------------------------------------------------------------------------------
 # GPIO Setup
@@ -105,7 +105,7 @@ def balance_ball():
 if __name__ == "__main__":
     # Centering motors before starting
     print("Centering motors...")
-    for _ in range(100):  # Arbitrary 100 steps to center
+    for _ in range(200):  # Arbitrary 100 steps to center
         move_motor('motor1', 1, True)
         move_motor('motor2', 1, True)
         move_motor('motor3', 1, True)
