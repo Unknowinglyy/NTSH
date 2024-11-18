@@ -25,8 +25,8 @@ for motor in MOTOR_PINS.values():
     GPIO.setup(motor['dir'], GPIO.OUT)
 
 # PID controllers for X and Y directions
-pid_x = PID(2.5, 0.1, .05, setpoint=CENTER_X)
-pid_y = PID(2.5, 0.1, .05, setpoint=CENTER_Y)
+pid_x = PID(2.5, 0.1, .07, setpoint=CENTER_X)
+pid_y = PID(2.5, 0.1, .07, setpoint=CENTER_Y)
 
 # Configure sample time (update frequency) and output limits
 pid_x.sample_time = 0.01  # ms update rate
@@ -98,7 +98,9 @@ def balance_ball():
             time.sleep(0.01)  # Update cycle delay (10 ms)
     except KeyboardInterrupt:
         print("Exiting program...")
-        move_motors_concurrently(motor(steps=100, clockwise=False) for motor in MOTOR_PINS)
+        # Move all motors CCW 100 steps
+        for motor in MOTOR_PINS.keys():
+            move_motor(motor, 100, False)
     finally:
         GPIO.cleanup()
 
