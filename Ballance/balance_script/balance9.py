@@ -13,7 +13,7 @@ MOTOR_PINS = {
 }
 
 # Center position of the touchscreen
-CENTER_X, CENTER_Y = 435,179
+CENTER_X, CENTER_Y = 2025, 2045
 # Ball detection thresholds
 BALL_DETECTION_THRESHOLD = 1
 
@@ -56,7 +56,7 @@ def calculate_motor_steps(ball_x, ball_y):
     # Compute PID outputs
     steps_x = int(pid_x(ball_x))
     steps_y = int(pid_y(ball_y))
-
+    print(f"Steps to move: {steps_x}, {steps_y}")
     # Determine motor steps and directions
     motor_steps = {
         'motor1': (abs(steps_x), steps_x < 0),  # Clockwise if steps_x < 0
@@ -105,7 +105,7 @@ def balance_ball():
 if __name__ == "__main__":
     # Centering motors before starting
     print("Centering motors...")
-    for _ in range(200):  # Arbitrary 100 steps to center
+    for _ in range(300):  # Arbitrary 100 steps to center
         move_motor('motor1', 1, True)
         move_motor('motor2', 1, True)
         move_motor('motor3', 1, True)
