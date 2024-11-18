@@ -115,4 +115,7 @@ if __name__ == "__main__":
         move_motor('motor3', 1, True)
     print("Motors centered. Starting balance loop...")
     move_motor('motor2', 2, False)
+    time.sleep(1)
+    move_motor('motor2', 2, False)
+    move_motor('motor2', 2, True)
     balance_ball()
