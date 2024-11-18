@@ -29,8 +29,8 @@ pid_x = PID(.5, 0.9, 0.07, setpoint=CENTER_X)
 pid_y = PID(.5, 0.9, 0.07, setpoint=CENTER_Y)
 
 # Configure sample time (update frequency) and output limits
-pid_x.sample_time = 0.001  # ms update rate
-pid_y.sample_time = 0.001
+pid_x.sample_time = 0.01  # ms update rate
+pid_y.sample_time = 0.01
 pid_x.output_limits = (-2, 2)  # Limit ±steps
 pid_y.output_limits = (-2, 2)
 
