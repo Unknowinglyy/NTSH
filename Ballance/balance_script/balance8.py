@@ -13,7 +13,7 @@ MOTOR_PINS = {
 }
 
 # Center position of the touchscreen
-CENTER_X, CENTER_Y = 445, 3805 #2005, 2033.5
+CENTER_X, CENTER_Y = 2025, 2045 #2005, 2033.5
 # Ball detection thresholds
 BALL_DETECTION_THRESHOLD = 10
 
