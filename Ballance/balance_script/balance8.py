@@ -15,7 +15,7 @@ MOTOR_PINS = {
 # Center position of the touchscreen
 CENTER_X, CENTER_Y = 2005, 2033.5
 # Ball detection thresholds
-BALL_DETECTION_THRESHOLD = 50
+BALL_DETECTION_THRESHOLD = 10
 
 # --------------------------------------------------------------------------------------------
 # GPIO Setup
