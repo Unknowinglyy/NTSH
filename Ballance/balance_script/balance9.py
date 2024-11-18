@@ -31,8 +31,8 @@ pid_y = PID(2.1, 0.1, .05, setpoint=CENTER_Y)
 # Configure sample time (update frequency) and output limits
 pid_x.sample_time = 0.01  # ms update rate
 pid_y.sample_time = 0.01
-pid_x.output_limits = (-1, 1)  # Limit ±steps
-pid_y.output_limits = (-1, 1)
+pid_x.output_limits = (-2, 2)  # Limit ±steps
+pid_y.output_limits = (-2, 2)
 
 # --------------------------------------------------------------------------------------------
 def move_motor(motor, steps, clockwise):
