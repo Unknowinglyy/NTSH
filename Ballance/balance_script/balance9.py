@@ -13,9 +13,9 @@ MOTOR_PINS = {
 }
 
 # Center position of the touchscreen
-CENTER_X, CENTER_Y = 3707, 181
+CENTER_X, CENTER_Y = 2025,2045
 # Ball detection thresholds
-BALL_DETECTION_THRESHOLD = 5
+BALL_DETECTION_THRESHOLD = 1
 
 # --------------------------------------------------------------------------------------------
 # GPIO Setup
@@ -25,8 +25,8 @@ for motor in MOTOR_PINS.values():
     GPIO.setup(motor['dir'], GPIO.OUT)
 
 # PID controllers for X and Y directions
-pid_x = PID(2, 0.9, 0.05, setpoint=CENTER_X)
-pid_y = PID(2, 0.9, 0.05, setpoint=CENTER_Y)
+pid_x = PID(3, 0.9, 0.05, setpoint=CENTER_X)
+pid_y = PID(3, 0.9, 0.05, setpoint=CENTER_Y)
 
 # Configure sample time (update frequency) and output limits
 pid_x.sample_time = 0.01  # 10 ms update rate
