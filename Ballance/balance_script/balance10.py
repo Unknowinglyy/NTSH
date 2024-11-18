@@ -87,7 +87,13 @@ def machine_theta(i, hz, nx, ny):
     Placeholder function for machine.theta(i, hz, nx, ny).
     Replace this with the actual inverse kinematics calculation.
     """
-    return math.atan2(ny, nx) * 180 / math.pi
+    # Simple inverse kinematics calculation for demonstration purposes
+    if i == 0:
+        return math.atan2(ny, nx) * 180 / math.pi
+    elif i == 1:
+        return math.atan2(ny, nx) * 180 / math.pi + 120
+    elif i == 2:
+        return math.atan2(ny, nx) * 180 / math.pi - 120
 
 def pid_control(setpointX, setpointY):
     """
@@ -103,6 +109,7 @@ def pid_control(setpointX, setpointY):
         integr = [0, 0]
         deriv = [0, 0]
         out = [0, 0]
+        pos = [0, 0, 0]
 
         for i in range(2):
             errorPrev[i] = error[i]
