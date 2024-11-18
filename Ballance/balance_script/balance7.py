@@ -72,7 +72,6 @@ def balance_ball():
                     t1.join()
                     t2.join()
                     t3.join()
-                    
                 elif error_x < 0:
                     t1 = threading.Thread(target=move_motor, args=('motor1', steps_x, True))
                     t2 = threading.Thread(target=move_motor, args=('motor3', steps_x, True))
