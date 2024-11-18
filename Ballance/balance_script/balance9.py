@@ -98,6 +98,7 @@ def balance_ball():
             time.sleep(0.01)  # Update cycle delay (10 ms)
     except KeyboardInterrupt:
         print("Exiting program...")
+        move_motors_concurrently(motor(steps=100, clockwise=False) for motor in MOTOR_PINS)
     finally:
         GPIO.cleanup()
 
