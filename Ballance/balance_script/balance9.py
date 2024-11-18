@@ -117,6 +117,6 @@ if __name__ == "__main__":
     move_motor('motor2', 2, False)
     time.sleep(1)
     print("Motor 2 test")
-    move_motor('motor2', 2, False)
-    move_motor('motor2', 2, True)
+    move_motor('motor2', 5, False)
+    move_motor('motor2', 5, True)
     # balance_ball()
