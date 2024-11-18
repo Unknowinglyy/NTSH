@@ -99,6 +99,7 @@ def balance_ball():
     except KeyboardInterrupt:
         print("Exiting program...")
         # Move all motors CCW 100 steps
+        print("Resetting motors...")
         for motor in MOTOR_PINS.keys():
             move_motor(motor, 100, False)
     finally:
