@@ -25,8 +25,8 @@ for motor in MOTOR_PINS.values():
     GPIO.setup(motor['dir'], GPIO.OUT)
 
 # PID controllers for X and Y directions
-pid_x = PID(.01, 0.1, 1.5, setpoint=CENTER_X)
-pid_y = PID(.01, 0.1, 1.5, setpoint=CENTER_Y)
+pid_x = PID(1, 0.8, 1.5, setpoint=CENTER_X)
+pid_y = PID(1, 0.8, 1.5, setpoint=CENTER_Y)
 
 # Configure sample time (update frequency) and output limits
 pid_x.sample_time = 0.01  # ms update rate
