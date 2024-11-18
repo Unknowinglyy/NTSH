@@ -25,14 +25,14 @@ for motor in MOTOR_PINS.values():
     GPIO.setup(motor['dir'], GPIO.OUT)
 
 # PID controllers for X and Y directions
-pid_x = PID(3, 0.9, 0.05, setpoint=CENTER_X)
-pid_y = PID(3, 0.9, 0.05, setpoint=CENTER_Y)
+pid_x = PID(.05, 0.9, 0.05, setpoint=CENTER_X)
+pid_y = PID(.05, 0.9, 0.05, setpoint=CENTER_Y)
 
 # Configure sample time (update frequency) and output limits
 pid_x.sample_time = 0.01  # 10 ms update rate
 pid_y.sample_time = 0.01
-pid_x.output_limits = (-44, 44)  # Limit to ±10 steps
-pid_y.output_limits = (-44, 44)
+pid_x.output_limits = (-5, 5)  # Limit to ±10 steps
+pid_y.output_limits = (-5, 5)
 
 # --------------------------------------------------------------------------------------------
 def move_motor(motor, steps, clockwise):
