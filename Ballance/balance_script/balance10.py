@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 import time
-from pid import PID
+import control
 from touchScreenBasicCoordOutput import read_touch_coordinates
 import threading
 
@@ -15,7 +15,7 @@ MOTOR_PINS = {
 # Center position of the touchscreen
 CENTER_X, CENTER_Y = 2025, 2045
 # Ball detection thresholds
-BALL_DETECTION_THRESHOLD = 20  # Relaxed the threshold for better detection range
+BALL_DETECTION_THRESHOLD = 1
 
 # --------------------------------------------------------------------------------------------
 # GPIO Setup
@@ -25,14 +25,12 @@ for motor in MOTOR_PINS.values():
     GPIO.setup(motor['dir'], GPIO.OUT)
 
 # PID controllers for X and Y directions
-pid_x = PID(1.0, 0.1, 0.05, setpoint=CENTER_X)
-pid_y = PID(1.0, 0.1, 0.05, setpoint=CENTER_Y)
+pid_x = control.TransferFunction([1], [1, 0.1, 0.05])
+pid_y = control.TransferFunction([1], [1, 0.1, 0.05])
 
 # Configure sample time (update frequency) and output limits
-pid_x.set_sample_time(0.01)  # ms update rate
-pid_y.set_sample_time(0.01)
-pid_x.set_output_limits(-10, 10)  # Limit ±steps
-pid_y.set_output_limits(-10, 10)
+sample_time = 0.01  # 10 ms update rate
+output_limits = (-10, 10)  # Limit to ±10 steps
 
 # --------------------------------------------------------------------------------------------
 def move_motor(motor, steps, clockwise):
@@ -54,11 +52,13 @@ def calculate_motor_steps(ball_x, ball_y):
         return {motor: (0, True) for motor in MOTOR_PINS}  # No movement if ball is near center.
 
     # Compute PID outputs
-    steps_x = int(pid_x(ball_x))
-    steps_y = int(pid_y(ball_y))
+    steps_x = int(control.forced_response(pid_x, T=[0, sample_time], U=[ball_x, CENTER_X])[1][-1])
+    steps_y = int(control.forced_response(pid_y, T=[0, sample_time], U=[ball_y, CENTER_Y])[1][-1])
+    steps_x = max(min(steps_x, output_limits[1]), output_limits[0])
+    steps_y = max(min(steps_y, output_limits[1]), output_limits[0])
     print(f"Steps to move: {steps_x}, {steps_y}")
-    
-    # Determine motor steps and directions (adjusted for better coordination)
+
+    # Determine motor steps and directions
     motor_steps = {
         'motor1': (abs(steps_x), steps_x < 0),  # Clockwise if steps_x < 0
         'motor2': (abs(steps_y), steps_y < 0),
@@ -96,7 +96,7 @@ def balance_ball():
             # Move each motor according to the calculated steps
             move_motors_concurrently(motor_steps)
 
-            time.sleep(0.01)  # Update cycle delay (10 ms)
+            time.sleep(sample_time)  # Update cycle delay (10 ms)
     except KeyboardInterrupt:
         print("Exiting program...")
     finally:
@@ -106,7 +106,7 @@ def balance_ball():
 if __name__ == "__main__":
     # Centering motors before starting
     print("Centering motors...")
-    for _ in range(300):  # Arbitrary 100 steps to center
+    for _ in range(300):  # Arbitrary 300 steps to center
         move_motor('motor1', 1, True)
         move_motor('motor2', 1, True)
         move_motor('motor3', 1, True)
