@@ -31,8 +31,8 @@ pid_y = PID(5, 0.1, .05, setpoint=CENTER_Y)
 # Configure sample time (update frequency) and output limits
 pid_x.sample_time = 0.01  # ms update rate
 pid_y.sample_time = 0.01
-pid_x.output_limits = (-2, 2)  # Limit ±steps
-pid_y.output_limits = (-2, 2)
+pid_x.output_limits = (-44, 44)  # Limit ±steps
+pid_y.output_limits = (-44, 44)
 
 # --------------------------------------------------------------------------------------------
 def move_motor(motor, steps, clockwise):
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     move_motor('motor2', 5, False)
     time.sleep(1)
     print("Motor 2 test")
-    move_motor('motor2', 50, False)
-    time.sleep(0.5)
     move_motor('motor2', 50, True)
+    time.sleep(0.5)
+    move_motor('motor2', 50, False)
     # balance_ball()
