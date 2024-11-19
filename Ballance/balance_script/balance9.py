@@ -120,4 +120,5 @@ if __name__ == "__main__":
     move_motor('motor2', 50, True)
     time.sleep(0.5)
     move_motor('motor2', 50, False)
+    time.sleep(5)
     balance_ball()
