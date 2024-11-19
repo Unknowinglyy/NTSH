@@ -42,9 +42,9 @@ def move_motor(motor, steps, clockwise):
     GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH if clockwise else GPIO.LOW)
     for _ in range(abs(steps)):
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
-        time.sleep(0.0015)
+        time.sleep(0.001)
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
-        time.sleep(0.0015)
+        time.sleep(0.001)
 
 def calculate_motor_steps(ball_x, ball_y):
     """
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     time.sleep(1)
     print("Motor 2 test")
     move_motor('motor2', 100, True)
-    time.sleep(0.25)
+    time.sleep(0.1)
     move_motor('motor2', 100, False)
     time.sleep(5)
     balance_ball()
