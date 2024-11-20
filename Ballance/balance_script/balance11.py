@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+import threading
 from touchScreenBasicCoordOutput import read_touch_coordinates
 
 # --------------------------------------------------------------------------------------------
