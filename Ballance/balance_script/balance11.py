@@ -68,9 +68,9 @@ def calculate_motor_steps(ball_x, ball_y):
     steps_y = max(MIN_STEPS, min(steps_y, MAX_STEPS))
 
     # Determine motor directions
-    direction_motor1 = distance_x < 0  # Motor1 tilts up if ball is left of center
-    direction_motor2 = distance_y > 0  # Motor2 tilts down if ball is below center
-    direction_motor3 = distance_x > 0  # Motor3 tilts up if ball is right of center
+    direction_motor1 = distance_x > 0  # Motor1 tilts up if ball is left of center
+    direction_motor2 = distance_y < 0  # Motor2 tilts down if ball is below center
+    direction_motor3 = distance_x < 0  # Motor3 tilts up if ball is right of center
 
     # Motor steps mapping
     motor_steps = {
