@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 import time
 import threading
 from touchScreenBasicCoordOutput import read_touch_coordinates, Point
+from simple_pid import PID  # Import the PID class from the simple_pid library
 
 # --------------------------------------------------------------------------------------------
 # GPIO setup for stepper motors
@@ -16,9 +17,9 @@ CENTER_X, CENTER_Y = 2025, 2045
 
 # Define step limits for each motor
 STEP_LIMITS = {
-    'motor1': (-100, 1000),  # Motor 1: -1000 to 1000 steps
-    'motor2': (-100, 1000),  # Motor 2: -1000 to 1000 steps
-    'motor3': (-100, 1000)   # Motor 3: -1000 to 1000 steps
+    'motor1': (-500, 1000),  # Motor 1: -1000 to 1000 steps
+    'motor2': (-500, 1000),  # Motor 2: -1000 to 1000 steps
+    'motor3': (-500, 1000)   # Motor 3: -1000 to 1000 steps
 }
 
 # Track current motor positions
@@ -27,17 +28,6 @@ current_steps = {
     'motor2': 0,
     'motor3': 0
 }
-
-# PID constants
-Kp = 0.1  # Proportional gain
-Ki = 0.01  # Integral gain
-Kd = 0.05  # Derivative gain
-
-# Error terms
-previous_error_x = 0
-previous_error_y = 0
-integral_x = 0
-integral_y = 0
 
 # --------------------------------------------------------------------------------------------
 # GPIO Setup
@@ -80,38 +70,40 @@ def move_motor(motor, steps, clockwise):
         # Update the current step count
         current_steps[motor] = new_position
 
-def calculate_pid_output(error, previous_error, integral, Kp, Ki, Kd):
+def setup_pid():
     """
-    Calculates the PID output given the error, previous error, and integral term.
+    Sets up the PID controllers for X and Y axis.
     """
-    integral += error
-    derivative = error - previous_error
-    output = Kp * error + Ki * integral + Kd * derivative
-    return output, integral
+    # Create PID controllers for X and Y axis
+    pid_x = PID(0.1, 0.01, 0.05, setpoint=0)  # Kp, Ki, Kd for X axis
+    pid_y = PID(0.1, 0.01, 0.05, setpoint=0)  # Kp, Ki, Kd for Y axis
 
-def calculate_motor_steps(ball_x, ball_y):
-    """
-    Calculates the motor movements required to tilt the platform based on ball position using PID control.
-    """
-    global previous_error_x, previous_error_y, integral_x, integral_y
+    pid_x.output_limits = (-1000, 1000)  # Step limits for motor 2 (X axis)
+    pid_y.output_limits = (-1000, 1000)  # Step limits for motor 1 (Y axis)
 
-    # Calculate errors in X and Y direction
+    return pid_x, pid_y
+
+def calculate_motor_steps(ball_x, ball_y, pid_x, pid_y):
+    """
+    Calculates the motor movements required to tilt the platform based on ball position
+    using PID control.
+    """
+    # Calculate the errors for X and Y
     error_x = ball_x - CENTER_X
     error_y = ball_y - CENTER_Y
 
-    # Get PID outputs and update integral terms
-    pid_output_x, integral_x = calculate_pid_output(error_x, previous_error_x, integral_x, Kp, Ki, Kd)
-    pid_output_y, integral_y = calculate_pid_output(error_y, previous_error_y, integral_y, Kp, Ki, Kd)
+    # Use PID to compute the required steps for each motor
+    pid_x.setpoint = 0  # We want to return to the center (X-axis)
+    pid_y.setpoint = 0  # We want to return to the center (Y-axis)
 
-    # Save current errors for next calculation
-    previous_error_x = error_x
-    previous_error_y = error_y
+    motor_x_steps = pid_x(error_x)  # Get PID output for X-axis
+    motor_y_steps = pid_y(error_y)  # Get PID output for Y-axis
 
-    # Convert PID outputs to motor steps (adjust these values for your system's sensitivity)
+    # Combine the PID output for motors
     motor_steps = {
-        'motor1': (int(abs(pid_output_y)), pid_output_y > 0),  # Motor1 handles Y-axis
-        'motor2': (int(abs(pid_output_x)), pid_output_x > 0),  # Motor2 handles X-axis
-        'motor3': (int(abs((pid_output_x + pid_output_y) // 2)), (pid_output_x + pid_output_y) > 0)  # Combined effect
+        'motor1': (int(abs(motor_y_steps)), motor_y_steps > 0),  # Motor1 handles Y-axis
+        'motor2': (int(abs(motor_x_steps)), motor_x_steps > 0),  # Motor2 handles X-axis
+        'motor3': (int(abs((motor_x_steps + motor_y_steps) // 2)), (motor_x_steps + motor_y_steps) > 0)  # Combined effect for Motor3
     }
 
     return motor_steps
@@ -133,6 +125,8 @@ def balance_ball():
     """
     Main loop to balance the ball using PID-controlled motor movements.
     """
+    pid_x, pid_y = setup_pid()  # Setup PID controllers for X and Y axis
+
     try:
         while True:
             point = read_touch_coordinates()
@@ -142,7 +136,7 @@ def balance_ball():
             ball_x, ball_y = point.x, point.y
 
             # Calculate motor steps based on ball position using PID
-            motor_steps = calculate_motor_steps(ball_x, ball_y)
+            motor_steps = calculate_motor_steps(ball_x, ball_y, pid_x, pid_y)
 
             # Move each motor according to the calculated PID-controlled steps
             move_motors_concurrently(motor_steps)
