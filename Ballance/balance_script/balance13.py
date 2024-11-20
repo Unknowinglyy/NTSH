@@ -16,9 +16,9 @@ CENTER_X, CENTER_Y = 2025, 2045
 
 # Define step limits for each motor
 STEP_LIMITS = {
-    'motor1': (-2000, 2000),  # Motor 1: -2000 to 2000 steps
-    'motor2': (-2000, 2000),  # Motor 2: -2000 to 2000 steps
-    'motor3': (-2000, 2000)   # Motor 3: -2000 to 2000 steps
+    'motor1': (-1000, 1000),  # Motor 1: -2000 to 2000 steps
+    'motor2': (-1000, 1000),  # Motor 2: -2000 to 2000 steps
+    'motor3': (-1000, 1000)   # Motor 3: -2000 to 2000 steps
 }
 
 # Velocity tracking variables
