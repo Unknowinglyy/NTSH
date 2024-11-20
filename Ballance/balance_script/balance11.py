@@ -1,6 +1,5 @@
 import RPi.GPIO as GPIO
 import time
-import threading
 from touchScreenBasicCoordOutput import read_touch_coordinates
 
 # --------------------------------------------------------------------------------------------
@@ -14,6 +13,10 @@ MOTOR_PINS = {
 # Center position of the platform
 CENTER_X, CENTER_Y = 2025, 2045
 STEP_DELAY = 0.001  # 1 ms delay for microstepping
+
+# Maximum and minimum step limits
+MAX_STEPS = 200  # Maximum steps to take in a single move
+MIN_STEPS = 5    # Minimum steps to avoid unnecessary adjustments
 
 # GPIO Setup
 GPIO.setmode(GPIO.BCM)
@@ -46,10 +49,41 @@ def move_motors_concurrently(motor_steps):
     for t in threads:
         t.join()
 
+def calculate_motor_steps(ball_x, ball_y):
+    """
+    Calculates motor steps and directions based on the ball's position.
+    The step size is proportional to the ball's distance from the center.
+    """
+    # Calculate distances from the center
+    distance_x = ball_x - CENTER_X
+    distance_y = ball_y - CENTER_Y
+
+    # Normalize distances to determine step proportions
+    steps_x = int(MAX_STEPS * abs(distance_x) / CENTER_X)
+    steps_y = int(MAX_STEPS * abs(distance_y) / CENTER_Y)
+
+    # Enforce minimum and maximum step limits
+    steps_x = max(MIN_STEPS, min(steps_x, MAX_STEPS))
+    steps_y = max(MIN_STEPS, min(steps_y, MAX_STEPS))
+
+    # Determine motor directions
+    direction_motor1 = distance_x < 0  # Motor1 tilts up if ball is left of center
+    direction_motor2 = distance_y > 0  # Motor2 tilts down if ball is below center
+    direction_motor3 = distance_x > 0  # Motor3 tilts up if ball is right of center
+
+    # Motor steps mapping
+    motor_steps = {
+        'motor1': (steps_x, direction_motor1),
+        'motor2': (steps_y, direction_motor2),
+        'motor3': (steps_x, direction_motor3)
+    }
+
+    return motor_steps
+
 # --------------------------------------------------------------------------------------------
 def balance_ball():
     """
-    Main loop to balance the ball based on quadrant position.
+    Main loop to balance the ball by proportional adjustment.
     """
     try:
         while True:
@@ -59,44 +93,10 @@ def balance_ball():
 
             ball_x, ball_y = point.x, point.y
 
-            # Determine quadrant
-            if ball_x >= CENTER_X and ball_y <= CENTER_Y:  # Q1
-                print(ball_x, ball_y)
-                motor_steps = {
-                    'motor1': (100, True),  # Motor1 tilts down (CWW)
-                    'motor2': (100, False),  # Motor2 tilts up (CW)
-                    'motor3': (50, False)    # Motor3 tilts up (CW)
-                }
-            elif ball_x >= CENTER_X and ball_y <= CENTER_Y:  # Q2
-                print(ball_x, ball_y)
-                motor_steps = {
-                    'motor1': (100, False),  # Motor1 tilts up (CW)
-                    'motor2': (50, False),  # Motor2 tilts up (CW)
-                    'motor3': (100, True) # Motor3 tilts down (CWW)
-                }
-            elif ball_x <= CENTER_X and ball_y <= CENTER_Y:  # Q3
-                print(ball_x, ball_y)
-                motor_steps = {
-                    'motor1': (50, False),   # Motor1 tilts up (CW)
-                    'motor2': (100, True), # Motor2 tilts down (CWW)
-                    'motor3': (100, False)   # Motor3 tilts up (CW)
-                }
-            elif ball_x >= CENTER_X and ball_y >= CENTER_Y:  # Q4
-                print(ball_x, ball_y)
-                motor_steps = {
-                    'motor1': (100, True), # Motor1 tilts down (CWW)
-                    'motor2': (50, False),   # Motor2 tilts up (CW)
-                    'motor3': (100, False)   # Motor3 tilts up (CW)
-                }
-            else:
-                # Centered; no movement needed
-                motor_steps = {
-                    'motor1': (0, True),
-                    'motor2': (0, True),
-                    'motor3': (0, True)
-                }
+            # Calculate motor steps based on the ball's position
+            motor_steps = calculate_motor_steps(ball_x, ball_y)
 
-            # Move the motors according to the determined steps
+            # Move the motors accordingly
             move_motors_concurrently(motor_steps)
 
             time.sleep(0.02)  # Delay for next update
