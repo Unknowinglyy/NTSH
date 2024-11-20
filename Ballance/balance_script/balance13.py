@@ -78,8 +78,8 @@ def setup_pid():
     pid_x = PID(0.1, 0.01, 0.05, setpoint=0)  # Kp, Ki, Kd for X axis
     pid_y = PID(0.1, 0.01, 0.05, setpoint=0)  # Kp, Ki, Kd for Y axis
 
-    pid_x.output_limits = (-1000, 1000)  # Step limits for motor 2 (X axis)
-    pid_y.output_limits = (-1000, 1000)  # Step limits for motor 1 (Y axis)
+    pid_x.output_limits = (-500, 1000)  # Step limits for motor 2 (X axis)
+    pid_y.output_limits = (-500, 1000)  # Step limits for motor 1 (Y axis)
 
     return pid_x, pid_y
 
