@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import time
-from touchScreenBasicCoordOutput import read_touch_coordinates, Point
 import threading
+from touchScreenBasicCoordOutput import read_touch_coordinates, Point
 
 # --------------------------------------------------------------------------------------------
 # GPIO setup for stepper motors
@@ -16,14 +16,28 @@ CENTER_X, CENTER_Y = 2025, 2045
 
 # Define step limits for each motor
 STEP_LIMITS = {
-    'motor1': (-1000, 1000),  # Motor 1: -2000 to 2000 steps
-    'motor2': (-1000, 1000),  # Motor 2: -2000 to 2000 steps
-    'motor3': (-1000, 1000)   # Motor 3: -2000 to 2000 steps
+    'motor1': (-500, 1000),  # Motor 1: -1000 to 1000 steps
+    'motor2': (-500, 1000),  # Motor 2: -1000 to 1000 steps
+    'motor3': (-500, 1000)   # Motor 3: -1000 to 1000 steps
 }
 
-# Velocity tracking variables
-prev_time = time.time()
-prev_x, prev_y = CENTER_X, CENTER_Y
+# Track current motor positions
+current_steps = {
+    'motor1': 0,
+    'motor2': 0,
+    'motor3': 0
+}
+
+# PID constants
+Kp = 0.1  # Proportional gain
+Ki = 0.01  # Integral gain
+Kd = 0.05  # Derivative gain
+
+# Error terms
+previous_error_x = 0
+previous_error_y = 0
+integral_x = 0
+integral_y = 0
 
 # --------------------------------------------------------------------------------------------
 # GPIO Setup
@@ -32,41 +46,72 @@ for motor in MOTOR_PINS.values():
     GPIO.setup(motor['step'], GPIO.OUT)
     GPIO.setup(motor['dir'], GPIO.OUT)
 
-# --------------------------------------------------------------------------------------------
 def move_motor(motor, steps, clockwise):
     """
     Moves a single motor a specified number of steps in a specified direction,
-    respecting the motor's range limits.
+    ensuring it stays within defined limits.
     """
-    step_limit_min, step_limit_max = STEP_LIMITS[motor]
+    global current_steps
 
-    # Clamp steps to within the limits
-    steps_to_move = min(max(steps, step_limit_min), step_limit_max)
+    # Determine the new position
+    if clockwise:
+        new_position = current_steps[motor] + steps
+    else:
+        new_position = current_steps[motor] - steps
 
-    GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH if clockwise else GPIO.LOW)
-    for _ in range(abs(steps_to_move)):
-        GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
-        time.sleep(0.001)
-        GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
-        time.sleep(0.001)
+    # Clamp the position within the limits
+    min_limit, max_limit = STEP_LIMITS[motor]
+    if new_position < min_limit:
+        steps = current_steps[motor] - min_limit  # Reduce steps to hit the minimum limit
+        new_position = min_limit
+    elif new_position > max_limit:
+        steps = max_limit - current_steps[motor]  # Reduce steps to hit the maximum limit
+        new_position = max_limit
 
-def calculate_motor_steps(ball_x, ball_y, velocity_x, velocity_y):
+    # Move the motor if steps are non-zero
+    if steps != 0:
+        GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH if clockwise else GPIO.LOW)
+        for _ in range(abs(steps)):
+            GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
+            time.sleep(0.001)
+            GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
+            time.sleep(0.001)
+
+        # Update the current step count
+        current_steps[motor] = new_position
+
+def calculate_pid_output(error, previous_error, integral, Kp, Ki, Kd):
     """
-    Calculates the motor movements required to tilt the platform based on ball position and speed.
-    Steps are proportional to both distance and speed.
+    Calculates the PID output given the error, previous error, and integral term.
     """
-    dx = ball_x - CENTER_X
-    dy = ball_y - CENTER_Y
+    integral += error
+    derivative = error - previous_error
+    output = Kp * error + Ki * integral + Kd * derivative
+    return output, integral
 
-    # Proportional step calculation
-    steps_x = int((dx + velocity_x * 10) / 10)  # Scale velocity contribution
-    steps_y = int((dy + velocity_y * 10) / 10)
+def calculate_motor_steps(ball_x, ball_y):
+    """
+    Calculates the motor movements required to tilt the platform based on ball position using PID control.
+    """
+    global previous_error_x, previous_error_y, integral_x, integral_y
 
-    # Determine motor steps and directions
+    # Calculate errors in X and Y direction
+    error_x = ball_x - CENTER_X
+    error_y = ball_y - CENTER_Y
+
+    # Get PID outputs and update integral terms
+    pid_output_x, integral_x = calculate_pid_output(error_x, previous_error_x, integral_x, Kp, Ki, Kd)
+    pid_output_y, integral_y = calculate_pid_output(error_y, previous_error_y, integral_y, Kp, Ki, Kd)
+
+    # Save current errors for next calculation
+    previous_error_x = error_x
+    previous_error_y = error_y
+
+    # Convert PID outputs to motor steps (adjust these values for your system's sensitivity)
     motor_steps = {
-        'motor1': (abs(steps_y), steps_y > 0),  # Motor1 handles Y-axis
-        'motor2': (abs(steps_x), steps_x > 0),  # Motor2 handles X-axis
-        'motor3': (abs((steps_x + steps_y) // 2), (steps_x + steps_y) > 0)  # Combined effect
+        'motor1': (int(abs(pid_output_y)), pid_output_y > 0),  # Motor1 handles Y-axis
+        'motor2': (int(abs(pid_output_x)), pid_output_x > 0),  # Motor2 handles X-axis
+        'motor3': (int(abs((pid_output_x + pid_output_y) // 2)), (pid_output_x + pid_output_y) > 0)  # Combined effect
     }
 
     return motor_steps
@@ -86,10 +131,8 @@ def move_motors_concurrently(motor_steps):
 
 def balance_ball():
     """
-    Main loop to balance the ball using proportional control based on distance and speed.
+    Main loop to balance the ball using PID-controlled motor movements.
     """
-    global prev_time, prev_x, prev_y
-
     try:
         while True:
             point = read_touch_coordinates()
@@ -98,20 +141,10 @@ def balance_ball():
 
             ball_x, ball_y = point.x, point.y
 
-            # Calculate velocity
-            current_time = time.time()
-            dt = current_time - prev_time if current_time != prev_time else 0.02
-            velocity_x = (ball_x - prev_x) / dt
-            velocity_y = (ball_y - prev_y) / dt
+            # Calculate motor steps based on ball position using PID
+            motor_steps = calculate_motor_steps(ball_x, ball_y)
 
-            # Update previous values
-            prev_x, prev_y = ball_x, ball_y
-            prev_time = current_time
-
-            # Calculate motor steps based on position and velocity
-            motor_steps = calculate_motor_steps(ball_x, ball_y, velocity_x, velocity_y)
-
-            # Move each motor according to the calculated steps
+            # Move each motor according to the calculated PID-controlled steps
             move_motors_concurrently(motor_steps)
 
             time.sleep(0.02)  # Update cycle delay (20 ms)
