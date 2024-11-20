@@ -12,7 +12,7 @@ MOTOR_PINS = {
 }
 
 # Center position of the touchscreen
-CENTER_X, CENTER_Y = 2025, 2045
+CENTER_X = 2025
 # Ball detection thresholds
 BALL_DETECTION_THRESHOLD = 10
 
@@ -28,7 +28,7 @@ for motor in MOTOR_PINS.values():
 
 # Velocity tracking variables
 prev_time = time.time()
-prev_x, prev_y = CENTER_X, CENTER_Y
+prev_x = CENTER_X
 
 # --------------------------------------------------------------------------------------------
 def move_motor(motor, steps, clockwise):
@@ -42,19 +42,18 @@ def move_motor(motor, steps, clockwise):
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
         time.sleep(0.001)
 
-def calculate_motor_steps(velocity_x, velocity_y):
+def calculate_motor_steps(velocity_x):
     """
-    Calculates the motor movements required to tilt the plane based on ball velocity.
+    Calculates the motor movements required to tilt the plane based on ball velocity along the x-axis.
     """
     # Compute steps proportional to velocity
     steps_x = int(Kp_velocity * velocity_x)
-    steps_y = int(Kp_velocity * velocity_y)
 
     # Determine motor steps and directions
     motor_steps = {
         'motor1': (abs(steps_x), steps_x < 0),  # Clockwise if steps_x < 0
-        'motor2': (abs(steps_y), steps_y < 0),
-        'motor3': (abs((steps_x + steps_y) // 2), (steps_x + steps_y) < 0)
+        'motor2': (abs(steps_x), steps_x < 0),
+        'motor3': (abs(steps_x), steps_x < 0)
     }
 
     return motor_steps
@@ -74,9 +73,9 @@ def move_motors_concurrently(motor_steps):
 
 def balance_ball():
     """
-    Main loop to balance the ball using velocity control.
+    Main loop to balance the ball along the x-axis using velocity control.
     """
-    global prev_time, prev_x, prev_y
+    global prev_time, prev_x
 
     try:
         while True:
@@ -84,20 +83,19 @@ def balance_ball():
             if point is None:
                 continue
 
-            ball_x, ball_y = point.x, point.y
+            ball_x = point.x
             current_time = time.time()
 
             # Calculate velocity
             dt = current_time - prev_time if current_time != prev_time else 0.02
             velocity_x = (ball_x - prev_x) / dt
-            velocity_y = (ball_y - prev_y) / dt
 
             # Update previous values
-            prev_x, prev_y = ball_x, ball_y
+            prev_x = ball_x
             prev_time = current_time
 
             # Calculate motor steps based on velocity
-            motor_steps = calculate_motor_steps(velocity_x, velocity_y)
+            motor_steps = calculate_motor_steps(velocity_x)
 
             # Move each motor according to the calculated steps
             move_motors_concurrently(motor_steps)
