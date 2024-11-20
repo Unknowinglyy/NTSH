@@ -101,8 +101,8 @@ def calculate_motor_steps(ball_x, ball_y, pid_x, pid_y):
 
     # Combine the PID output for motors
     motor_steps = {
-        'motor1': (int(abs(motor_y_steps)), motor_y_steps > 0),  # Motor1 handles Y-axis
-        'motor2': (int(abs(motor_x_steps)), motor_x_steps > 0),  # Motor2 handles X-axis
+        'motor1': (int(abs(motor_y_steps)), motor_y_steps < 0),  # Motor1 handles Y-axis
+        'motor2': (int(abs(motor_x_steps)), motor_x_steps < 0),  # Motor2 handles X-axis
         'motor3': (int(abs((motor_x_steps + motor_y_steps) // 2)), (motor_x_steps + motor_y_steps) > 0)  # Combined effect for Motor3
     }
 
