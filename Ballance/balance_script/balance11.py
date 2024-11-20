@@ -1,29 +1,44 @@
 import RPi.GPIO as GPIO
 import time
-import threading
-from touchScreenBasicCoordOutput import read_touch_coordinates
+from simple_pid import PID
+from touchScreenBasicCoordOutput import read_touch_coordinates, Point
 
 # --------------------------------------------------------------------------------------------
 # GPIO setup for stepper motors
 MOTOR_PINS = {
-    'motor1': {'step': 23, 'dir': 24},  # (3670, 210)
-    'motor2': {'step': 20, 'dir': 21},  # (397, 2005)
-    'motor3': {'step': 5, 'dir': 6}     # (3670, 3800)
+    'motor1': {'step': 23, 'dir': 24},
+    'motor2': {'step': 20, 'dir': 21},
+    'motor3': {'step': 5, 'dir': 6}
 }
 
-# Center position of the platform
+# Stepper motor constants
+STEPS_PER_REV = 3200  # 16 microstepping
+ANG_TO_STEP = STEPS_PER_REV / 360  # Steps per degree
+
+# Touchscreen center offsets
 CENTER_X, CENTER_Y = 2025, 2045
-STEP_DELAY = 0.001  # 1 ms delay for microstepping
 
-# Maximum and minimum step limits
-MAX_STEPS = 200  # Maximum steps to take in a single move
-MIN_STEPS = 5    # Minimum steps to avoid unnecessary adjustments
+# PID constants
+PID_KP = 4E-4
+PID_KI = 2E-6
+PID_KD = 7E-3
 
-# GPIO Setup
+# Enable GPIO
+ENABLE_PIN = 18
 GPIO.setmode(GPIO.BCM)
+GPIO.setup(ENABLE_PIN, GPIO.OUT)
+GPIO.output(ENABLE_PIN, GPIO.HIGH)  # Enable drivers
+
+# Stepper motor setup
 for motor in MOTOR_PINS.values():
     GPIO.setup(motor['step'], GPIO.OUT)
     GPIO.setup(motor['dir'], GPIO.OUT)
+
+# PID controllers for X and Y directions
+pid_x = PID(PID_KP, PID_KI, PID_KD, setpoint=CENTER_X)
+pid_y = PID(PID_KP, PID_KI, PID_KD, setpoint=CENTER_Y)
+pid_x.sample_time = 0.02  # Update every 20ms
+pid_y.sample_time = 0.02
 
 # --------------------------------------------------------------------------------------------
 def move_motor(motor, steps, clockwise):
@@ -33,80 +48,61 @@ def move_motor(motor, steps, clockwise):
     GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH if clockwise else GPIO.LOW)
     for _ in range(abs(steps)):
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
-        time.sleep(STEP_DELAY)
+        time.sleep(0.001)
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
-        time.sleep(STEP_DELAY)
+        time.sleep(0.001)
 
-def move_motors_concurrently(motor_steps):
+def calculate_steps(ball_x, ball_y):
     """
-    Moves the motors concurrently using threading.
+    Calculate stepper movements based on ball position relative to the center.
     """
-    threads = []
-    for motor, (steps, clockwise) in motor_steps.items():
-        if steps > 0:
-            t = threading.Thread(target=move_motor, args=(motor, steps, clockwise))
-            threads.append(t)
-            t.start()
-    for t in threads:
-        t.join()
+    dx = ball_x - CENTER_X
+    dy = ball_y - CENTER_Y
 
-def calculate_motor_steps(ball_x, ball_y):
-    """
-    Calculates motor steps and directions based on the ball's position.
-    The step size is proportional to the ball's distance from the center.
-    """
-    # Calculate distances from the center
-    distance_x = ball_x - CENTER_X
-    distance_y = ball_y - CENTER_Y
+    # Calculate proportional steps based on distance
+    steps_x = int(pid_x(dx) * ANG_TO_STEP)
+    steps_y = int(pid_y(dy) * ANG_TO_STEP)
 
-    # Normalize distances to determine step proportions
-    steps_x = int(MAX_STEPS * abs(distance_x) / CENTER_X)
-    steps_y = int(MAX_STEPS * abs(distance_y) / CENTER_Y)
-
-    # Enforce minimum and maximum step limits
-    steps_x = max(MIN_STEPS, min(steps_x, MAX_STEPS))
-    steps_y = max(MIN_STEPS, min(steps_y, MAX_STEPS))
-
-    # Determine motor directions
-    direction_motor1 = distance_x > 0  # Motor1 tilts up if ball is left of center
-    direction_motor2 = distance_y < 0  # Motor2 tilts down if ball is below center
-    direction_motor3 = distance_x < 0  # Motor3 tilts up if ball is right of center
-
-    # Motor steps mapping
+    # Determine motor directions and steps
     motor_steps = {
-        'motor1': (steps_x, direction_motor1),
-        'motor2': (steps_y, direction_motor2),
-        'motor3': (steps_x, direction_motor3)
+        'motor1': (steps_x, steps_x < 0),
+        'motor2': (steps_y, steps_y < 0),
+        'motor3': (steps_x + steps_y, (steps_x + steps_y) < 0)
     }
 
     return motor_steps
 
-# --------------------------------------------------------------------------------------------
+def move_motors(motor_steps):
+    """
+    Moves all motors concurrently.
+    """
+    for motor, (steps, clockwise) in motor_steps.items():
+        if steps != 0:
+            move_motor(motor, abs(steps), clockwise)
+
 def balance_ball():
     """
-    Main loop to balance the ball by proportional adjustment.
+    Main balancing loop.
     """
     try:
         while True:
+            # Read ball position from touchscreen
             point = read_touch_coordinates()
-            if point is None:
-                continue
-
             ball_x, ball_y = point.x, point.y
 
-            # Calculate motor steps based on the ball's position
-            motor_steps = calculate_motor_steps(ball_x, ball_y)
+            # Calculate stepper motor movements
+            motor_steps = calculate_steps(ball_x, ball_y)
 
-            # Move the motors accordingly
-            move_motors_concurrently(motor_steps)
+            # Move the motors to balance the ball
+            move_motors(motor_steps)
 
-            time.sleep(0.02)  # Delay for next update
+            time.sleep(0.02)  # PID update interval
     except KeyboardInterrupt:
-        print("Exiting program...")
+        print("Exiting...")
     finally:
         GPIO.cleanup()
 
 # --------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    print("Starting balance loop...")
+    print("Starting ball balancing...")
     balance_ball()
