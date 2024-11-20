@@ -61,24 +61,28 @@ def balance_ball():
 
             # Determine quadrant
             if ball_x >= CENTER_X and ball_y <= CENTER_Y:  # Q1
+                print(ball_x, ball_y)
                 motor_steps = {
                     'motor1': (100, False),  # Motor1 tilts down (CWW)
                     'motor2': (100, True),  # Motor2 tilts up (CW)
                     'motor3': (50, True)    # Motor3 tilts up (CW)
                 }
             elif ball_x <= CENTER_X and ball_y <= CENTER_Y:  # Q2
+                print(ball_x, ball_y)
                 motor_steps = {
                     'motor1': (100, True),  # Motor1 tilts up (CW)
                     'motor2': (50, True),  # Motor2 tilts up (CW)
                     'motor3': (100, False) # Motor3 tilts down (CWW)
                 }
             elif ball_x <= CENTER_X and ball_y >= CENTER_Y:  # Q3
+                print(ball_x, ball_y)
                 motor_steps = {
                     'motor1': (50, True),   # Motor1 tilts up (CW)
                     'motor2': (100, False), # Motor2 tilts down (CWW)
                     'motor3': (100, True)   # Motor3 tilts up (CW)
                 }
             elif ball_x >= CENTER_X and ball_y >= CENTER_Y:  # Q4
+                print(ball_x, ball_y)
                 motor_steps = {
                     'motor1': (100, False), # Motor1 tilts down (CWW)
                     'motor2': (50, True),   # Motor2 tilts up (CW)
