@@ -1,7 +1,6 @@
-import math
 import RPi.GPIO as GPIO
 import time
-from kine2 import Kinematics  # Import the Kinematics class
+from simple_pid import PID
 from touchScreenBasicCoordOutput import read_touch_coordinates
 import threading
 
@@ -13,41 +12,33 @@ MOTOR_PINS = {
     'motor3': {'step': 5, 'dir': 6}
 }
 
-# Parameters
-CENTER_X, CENTER_Y = 2025, 2045  # Touchscreen center offsets
-BALL_DETECTION_THRESHOLD = 20    # Ball detection range
-angOrig = 160          # Original angle
-angToStep = 3200 / 360           # Steps per degree
-ks = 20                          # Speed amplifying constant
-kp, ki, kd = 4E-4, 2E-6, 7E-3    # PID constants
+# Center position of the touchscreen
+CENTER_X, CENTER_Y = 2025, 2045
+# Ball detection thresholds
+BALL_DETECTION_THRESHOLD = 10
 
-# Kinematics parameters
-d, e, f, g = 2, 3.125, 1.75, 3.669291339
-kinematics = Kinematics(d, e, f, g)
-
-# Initialize stepper variables
-pos = [0, 0, 0]
-speed = [0, 0, 0]
-speedPrev = [0, 0, 0]
-error = [0, 0]
-integr = [0, 0]
-deriv = [0, 0]
-out = [0, 0]
-detected = False
-
-# GPIO setup
+# --------------------------------------------------------------------------------------------
+# GPIO Setup
 GPIO.setmode(GPIO.BCM)
 for motor in MOTOR_PINS.values():
     GPIO.setup(motor['step'], GPIO.OUT)
     GPIO.setup(motor['dir'], GPIO.OUT)
 
-# --------------------------------------------------------------------------------------------
-def debug_log(msg):
-    """
-    Helper function to print debugging messages with a timestamp.
-    """
-    print(f"[{time.time():.2f}] {msg}")
+# PID controllers for X and Y directions
+pid_x = PID(0.01, 0.1, 0.01, setpoint=CENTER_X)
+pid_y = PID(0.01, 0.1, 0.01, setpoint=CENTER_Y)
 
+# Configure sample time (update frequency) and output limits
+pid_x.sample_time = 0.01  # 10 ms update rate
+pid_y.sample_time = 0.01
+pid_x.output_limits = (-10, 10)  # Limit to ±10 steps
+pid_y.output_limits = (-10, 10)
+
+# Velocity tracking variables
+prev_time = time.time()
+prev_x, prev_y = CENTER_X, CENTER_Y
+
+# --------------------------------------------------------------------------------------------
 def move_motor(motor, steps, clockwise):
     """
     Moves a single motor a specified number of steps in a specified direction.
@@ -59,50 +50,55 @@ def move_motor(motor, steps, clockwise):
         GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
         time.sleep(0.001)
 
+def calculate_motor_steps(ball_x, ball_y, velocity_x, velocity_y):
+    """
+    Calculates the motor movements required to tilt the plane based on ball position and velocity.
+    """
+    if abs(ball_x - CENTER_X) < BALL_DETECTION_THRESHOLD and abs(ball_y - CENTER_Y) < BALL_DETECTION_THRESHOLD:
+        return {motor: (0, True) for motor in MOTOR_PINS}  # No movement if ball is near center.
+
+    # Calculate distance from the center
+    distance_x = abs(ball_x - CENTER_X)
+    distance_y = abs(ball_y - CENTER_Y)
+
+    # Adjust PID gains based on distance and velocity
+    pid_x.Kp = 0.01 + 0.01 * distance_x / CENTER_X + 0.01 * abs(velocity_x) / 100
+    pid_x.Kd = 0.01 + 0.01 * abs(velocity_x) / 100
+    pid_y.Kp = 0.01 + 0.01 * distance_y / CENTER_Y + 0.01 * abs(velocity_y) / 100
+    pid_y.Kd = 0.01 + 0.01 * abs(velocity_y) / 100
+
+    # Compute PID outputs
+    steps_x = int(pid_x(ball_x))
+    steps_y = int(pid_y(ball_y))
+
+    # Determine motor steps and directions
+    motor_steps = {
+        'motor1': (abs(steps_x), steps_x < 0),  # Clockwise if steps_x < 0
+        'motor2': (abs(steps_y), steps_y < 0),
+        'motor3': (abs((steps_x + steps_y) // 2), (steps_x + steps_y) < 0)
+    }
+
+    return motor_steps
+
 def move_motors_concurrently(motor_steps):
     """
     Moves the motors concurrently using threading.
     """
     threads = []
     for motor, (steps, clockwise) in motor_steps.items():
-        if steps > 0:  # Only move motors with non-zero steps
+        if steps > 0:
             t = threading.Thread(target=move_motor, args=(motor, steps, clockwise))
             threads.append(t)
             t.start()
     for t in threads:
         t.join()
 
-def calculate_motor_steps(ball_x, ball_y):
-    """
-    Calculates the motor movements required to tilt the plane based on ball position.
-    """
-    global detected, error, integr, deriv, out, speed
-
-    if abs(ball_x - CENTER_X) < BALL_DETECTION_THRESHOLD and abs(ball_y - CENTER_Y) < BALL_DETECTION_THRESHOLD:
-        return {motor: (0, True) for motor in MOTOR_PINS}  # No movement if ball is near center.
-
-    detected = True
-    for i in range(2):
-        error[i] = (CENTER_X - ball_x) if i == 0 else (CENTER_Y - ball_y)
-        integr[i] += error[i]
-        deriv[i] = error[i] - error[i - 1] if i > 0 else 0
-        out[i] = kp * error[i] + ki * integr[i] + kd * deriv[i]
-        out[i] = max(min(out[i], 0.25), -0.25)  # Constrain output
-        debug_log(f"PID output {['X', 'Y'][i]}: error={error[i]}, integr={integr[i]}, deriv={deriv[i]}, out={out[i]}")
-
-    motor_steps = {
-        'motor1': (abs(int(out[0] * angToStep)), out[0] < 0),
-        'motor2': (abs(int(out[1] * angToStep)), out[1] < 0),
-        'motor3': (abs(int((out[0] + out[1]) * angToStep // 2)), (out[0] + out[1]) < 0)
-    }
-
-    return motor_steps
-
 def balance_ball():
     """
-    Main loop to balance the ball using PID and motor control.
+    Main loop to balance the ball using PID, motor control, and velocity calculations.
     """
-    debug_log("Starting balance loop...")
+    global prev_time, prev_x, prev_y
+
     try:
         while True:
             point = read_touch_coordinates()
@@ -110,28 +106,37 @@ def balance_ball():
                 continue
 
             ball_x, ball_y = point.x, point.y
-            motor_steps = calculate_motor_steps(ball_x, ball_y)
+            current_time = time.time()
+
+            # Calculate velocity
+            dt = current_time - prev_time if current_time != prev_time else 0.01
+            velocity_x = (ball_x - prev_x) / dt
+            velocity_y = (ball_y - prev_y) / dt
+
+            # Update previous values
+            prev_x, prev_y = ball_x, ball_y
+            prev_time = current_time
+
+            # Calculate motor steps based on position and velocity
+            motor_steps = calculate_motor_steps(ball_x, ball_y, velocity_x, velocity_y)
 
             # Move each motor according to the calculated steps
             move_motors_concurrently(motor_steps)
 
             time.sleep(0.01)  # Update cycle delay (10 ms)
     except KeyboardInterrupt:
-        debug_log("Exiting program...")
-        # Move all motors CCW 100 steps
-        debug_log("Resetting motors...")
-        for motor in MOTOR_PINS.keys():
-            move_motor(motor, 100, False)
+        print("Exiting program...")
     finally:
         GPIO.cleanup()
 
 # --------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    debug_log("Centering motors...")
-    for _ in range(300):  # Arbitrary 100 steps to center
+    # Centering motors before starting
+    print("Centering motors...")
+    for _ in range(200):  # Arbitrary 100 steps to center
         move_motor('motor1', 1, True)
         move_motor('motor2', 1, True)
         move_motor('motor3', 1, True)
-    debug_log("Motors centered. Starting balance loop...")
+    print("Motors centered. Starting balance loop...")
 
     balance_ball()
