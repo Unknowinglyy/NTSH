@@ -75,8 +75,8 @@ def setup_pid():
     Sets up the PID controllers for X and Y axis.
     """
     # Create PID controllers for X and Y axis
-    pid_x = PID(0.08, 0.01, 0.08, setpoint=0)  # Kp, Ki, Kd for X axis
-    pid_y = PID(0.08, 0.01, 0.08, setpoint=0)  # Kp, Ki, Kd for Y axis
+    pid_x = PID(0.08, 0.01, 0.08, setpoint=2000)  # Kp, Ki, Kd for X axis
+    pid_y = PID(0.08, 0.01, 0.08, setpoint=2000)  # Kp, Ki, Kd for Y axis
 
     pid_x.output_limits = (-200, 200)  # Step limits for motor 2 (X axis)
     pid_y.output_limits = (-200, 200)  # Step limits for motor 1 (Y axis)
