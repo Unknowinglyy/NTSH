@@ -16,9 +16,9 @@ CENTER_X, CENTER_Y = 2025, 2045
 
 # Define step limits for each motor
 STEP_LIMITS = {
-    'motor1': (-800, 1200),  # Motor 1: -1000 to 1000 steps
-    'motor2': (-800, 1200),  # Motor 2: -1200 to 1000 steps
-    'motor3': (-800, 1200)   # Motor 3: -1200 to 1000 steps
+    'motor1': (-500, 1200),  # Motor 1: -1000 to 1000 steps
+    'motor2': (-500, 1200),  # Motor 2: -1200 to 1000 steps
+    'motor3': (-500, 1200)   # Motor 3: -1200 to 1000 steps
 }
 
 # Track current motor positions
