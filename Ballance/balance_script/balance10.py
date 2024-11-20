@@ -1,15 +1,15 @@
 import RPi.GPIO as GPIO
 import time
 from simple_pid import PID
-from touchScreenBasicCoordOutput import read_touch_coordinates
+from touchScreenBasicCoordOutput import read_touch_coordinates, Point
 import threading
 
 # --------------------------------------------------------------------------------------------
 # GPIO setup for stepper motors
 MOTOR_PINS = {
-    'motor1': {'step': 5, 'dir': 6},
+    'motor1': {'step': 23, 'dir': 24},
     'motor2': {'step': 20, 'dir': 21},
-    'motor3': {'step': 23, 'dir': 24}
+    'motor3': {'step': 5, 'dir': 6}
 }
 
 # Center position of the touchscreen
@@ -29,8 +29,8 @@ pid_x = PID(0.01, 0.1, 0.01, setpoint=CENTER_X)
 pid_y = PID(0.01, 0.1, 0.01, setpoint=CENTER_Y)
 
 # Configure sample time (update frequency) and output limits
-pid_x.sample_time = 0.01  # 10 ms update rate
-pid_y.sample_time = 0.01
+pid_x.sample_time = 0.02  # 20 ms update rate
+pid_y.sample_time = 0.02
 pid_x.output_limits = (-10, 10)  # Limit to ±10 steps
 pid_y.output_limits = (-10, 10)
 
@@ -109,7 +109,7 @@ def balance_ball():
             current_time = time.time()
 
             # Calculate velocity
-            dt = current_time - prev_time if current_time != prev_time else 0.01
+            dt = current_time - prev_time if current_time != prev_time else 0.02
             velocity_x = (ball_x - prev_x) / dt
             velocity_y = (ball_y - prev_y) / dt
 
@@ -123,7 +123,7 @@ def balance_ball():
             # Move each motor according to the calculated steps
             move_motors_concurrently(motor_steps)
 
-            time.sleep(0.01)  # Update cycle delay (10 ms)
+            time.sleep(0.02)  # Update cycle delay (20 ms)
     except KeyboardInterrupt:
         print("Exiting program...")
     finally:
@@ -133,7 +133,7 @@ def balance_ball():
 if __name__ == "__main__":
     # Centering motors before starting
     print("Centering motors...")
-    for _ in range(200):  # Arbitrary 100 steps to center
+    for _ in range(200):  # Arbitrary 200 steps to center
         move_motor('motor1', 1, True)
         move_motor('motor2', 1, True)
         move_motor('motor3', 1, True)
