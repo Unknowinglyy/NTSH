@@ -16,9 +16,9 @@ CENTER_X, CENTER_Y = 2025, 2045
 
 # Define step limits for each motor
 STEP_LIMITS = {
-    'motor1': (-500, 1200),  # Motor 1: -1000 to 1000 steps
-    'motor2': (-500, 1200),  # Motor 2: -1200 to 1000 steps
-    'motor3': (-500, 1200)   # Motor 3: -1200 to 1000 steps
+    'motor1': (-100, 1000),  # Motor 1: -1000 to 1000 steps
+    'motor2': (-100, 1000),  # Motor 2: -1000 to 1000 steps
+    'motor3': (-100, 1000)   # Motor 3: -1000 to 1000 steps
 }
 
 # Track current motor positions
@@ -157,7 +157,7 @@ def balance_ball():
 if __name__ == "__main__":
     # Centering motors before starting
     print("Centering motors...")
-    for _ in range(300):  # Arbitrary 200 steps to center
+    for _ in range(200):  # Arbitrary 200 steps to center
         move_motor('motor1', 1, True)
         move_motor('motor2', 1, True)
         move_motor('motor3', 1, True)
