@@ -78,8 +78,8 @@ def setup_pid():
     pid_x = PID(0.1, 0.01, 0.05, setpoint=0)  # Kp, Ki, Kd for X axis
     pid_y = PID(0.1, 0.01, 0.05, setpoint=0)  # Kp, Ki, Kd for Y axis
 
-    pid_x.output_limits = (-500, 1000)  # Step limits for motor 2 (X axis)
-    pid_y.output_limits = (-500, 1000)  # Step limits for motor 1 (Y axis)
+    pid_x.output_limits = (-200, 200)  # Step limits for motor 2 (X axis)
+    pid_y.output_limits = (-200, 200)  # Step limits for motor 1 (Y axis)
 
     return pid_x, pid_y
 
@@ -101,7 +101,7 @@ def calculate_motor_steps(ball_x, ball_y, pid_x, pid_y):
 
     # Combine the PID output for motors
     motor_steps = {
-        'motor1': (int(abs(motor_y_steps)), motor_y_steps < 0),  # Motor1 handles Y-axis
+        'motor1': (int(abs(motor_y_steps)), motor_y_steps < 0),  # Motor1 handles Y-axis #DC ~ Changed signs here to fix wrong direction tilt
         'motor2': (int(abs(motor_x_steps)), motor_x_steps < 0),  # Motor2 handles X-axis
         'motor3': (int(abs((motor_x_steps + motor_y_steps) // 2)), (motor_x_steps + motor_y_steps) > 0)  # Combined effect for Motor3
     }
