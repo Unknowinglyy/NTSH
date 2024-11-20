@@ -157,7 +157,7 @@ def balance_ball():
 if __name__ == "__main__":
     # Centering motors before starting
     print("Centering motors...")
-    for _ in range(200):  # Arbitrary 200 steps to center
+    for _ in range(300):  # Arbitrary 200 steps to center
         move_motor('motor1', 1, True)
         move_motor('motor2', 1, True)
         move_motor('motor3', 1, True)
