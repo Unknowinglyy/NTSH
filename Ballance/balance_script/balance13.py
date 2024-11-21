@@ -63,9 +63,9 @@ def move_motor(motor, steps, clockwise):
         GPIO.output(MOTOR_PINS[motor]['dir'], GPIO.HIGH if clockwise else GPIO.LOW)
         for _ in range(abs(steps)):
             GPIO.output(MOTOR_PINS[motor]['step'], GPIO.HIGH)
-            time.sleep(0.0005)
+            time.sleep(0.0008)
             GPIO.output(MOTOR_PINS[motor]['step'], GPIO.LOW)
-            time.sleep(0.0005)
+            time.sleep(0.0008)
 
         # Update the current step count
         current_steps[motor] = new_position
@@ -75,8 +75,8 @@ def setup_pid():
     Sets up the PID controllers for X and Y axis.
     """
     # Create PID controllers for X and Y axis
-    pid_x = PID(0.06, 0.2, 0.2, setpoint=2000)  # Kp, Ki, Kd for X axis
-    pid_y = PID(0.06, 0.2, 0.2, setpoint=2000)  # Kp, Ki, Kd for Y axis
+    pid_x = PID(0.06, 0.2, 0.1, setpoint=2000)  # Kp, Ki, Kd for X axis
+    pid_y = PID(0.06, 0.2, 0.1, setpoint=2000)  # Kp, Ki, Kd for Y axis
 
     pid_x.output_limits = (-10, 10)  # Step limits for motor 2 (X axis)
     pid_y.output_limits = (-10, 10)  # Step limits for motor 1 (Y axis)
