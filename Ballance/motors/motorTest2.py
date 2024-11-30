@@ -5,11 +5,13 @@ import time
 step_pin = 23  # Pin connected to STEP on TMC2208
 dir_pin = 24   # Pin connected to DIR on TMC2208
 
-step_pin2 = 20  # Pin connected to STEP on 2nd TMC2208
-dir_pin2 = 21   # Pin connected to DIR on 2nd TMC2208
+step_pin2 = 13  # Pin connected to STEP on 2nd TMC2208
+dir_pin2 = 19   # Pin connected to DIR on 2nd TMC2208
 
 step_pin3 = 5 # Pin connected to STEP on 3rd TMC2208
 dir_pin3 = 6  # Pin connected to DIR on 3rd TMC2208
+
+enable_pin = 17
 
 # Motor movement parameters
 test_steps = 200              # Number of steps to move in each direction
@@ -28,7 +30,15 @@ direction2 = OutputDevice(dir_pin2)
 step3 = OutputDevice(step_pin3)
 direction3 = OutputDevice(dir_pin3)
 
+#enable
+enable = OutputDevice(enable_pin)
+
+#turn off motors for now
+enable.on()
+
 try:
+    #turn on enable
+    enable.off()
     print("Starting motor test...")
 
     while True: 
@@ -74,4 +84,5 @@ finally:
     direction.close()
     direction2.close()
     direction3.close()
+    enable.close()
     print("GPIO cleaned up.")
