@@ -23,6 +23,8 @@ pygame.display.set_caption('MPU6050 Orientation')
 # Variables to store orientation
 pitch = roll = yaw = 0.0
 zoom_level = 3.0  # Initial zoom level
+camera_x = 0.0  # Initial camera x position
+camera_y = 0.5  # Initial camera y position
 
 points = []
 current_position = (0, 0)
@@ -161,7 +163,7 @@ def draw_text(x, y, text):
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
 def main():
-    global zoom_level, yaw, pitch
+    global zoom_level, yaw, pitch, camera_x, camera_y
 
     # Set initial window size
     initial_width, initial_height = 800, 600
@@ -222,7 +224,7 @@ def main():
 
         # Display the current position at the bottom of the screen
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        draw_text(10, screen_height - 30, f"Current Position: {camera_x}, {camera_y}, {camera_z}")
+        draw_text(10, screen_height - 30, f"Current Position: {camera_x}, {camera_y}, {zoom_level}")
 
         pygame.display.flip()
 
