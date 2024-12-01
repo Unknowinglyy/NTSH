@@ -10,6 +10,7 @@ import adafruit_mpu6050
 import math
 import time
 from touchScreenBasicCoordOutput import read_touch_coordinates
+import threading
 
 # Initialize I2C and MPU6050
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -23,6 +24,11 @@ pygame.display.set_caption('MPU6050 Orientation')
 # Variables to store orientation
 pitch = roll = yaw = 0.0
 zoom_level = 3.0  # Initial zoom level
+
+# Camera position variables
+camera_x = 0.0
+camera_y = 0.5
+camera_z = zoom_level
 
 points = []
 current_position = (0, 0)
@@ -39,7 +45,7 @@ def resize(width, height):
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     # Set the initial camera position and orientation
-    gluLookAt(0, 0.5, zoom_level,  # Camera position (adjusted by zoom_level)
+    gluLookAt(camera_x, camera_y, camera_z,  # Camera position (adjusted by zoom_level)
               0, 0, 0,    # Look at the origin
               0, 1, 0)    # Up direction
 
@@ -160,16 +166,26 @@ def draw_text(x, y, text):
     glWindowPos2d(x, y)
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
+def user_input_thread():
+    global camera_x, camera_y, camera_z
+    while True:
+        try:
+            camera_x = float(input("Enter camera x position: "))
+            camera_y = float(input("Enter camera y position: "))
+            camera_z = float(input("Enter camera z position: "))
+        except ValueError:
+            print("Invalid input. Please enter numeric values.")
+
 def main():
-    global zoom_level
+    global zoom_level, yaw, pitch, roll
 
     # Set initial window size
     initial_width, initial_height = 800, 600
     resize(initial_width, initial_height)
     init()
 
-    import threading
     threading.Thread(target=update_points, daemon=True).start()
+    threading.Thread(target=user_input_thread, daemon=True).start()
 
     clock = pygame.time.Clock()
 
@@ -195,14 +211,14 @@ def main():
         glLoadIdentity()
 
         # Set the camera position and orientation
-        gluLookAt(0, 0.5, zoom_level,  # Camera position (adjusted by zoom_level)
+        gluLookAt(camera_x, camera_y, camera_z,  # Camera position (adjusted by user input)
                   0, 0, 0,    # Look at the origin
-                  -0.1, 1, 1)    # Up direction
+                  0, 1, 0)    # Up direction
 
         glTranslatef(0, 0, -5.0)
-        glRotatef(pitch, 1, 0.0, 0.0)
-        glRotatef(yaw, 0.0, -1, 0.0)
-        glRotatef(roll, 0.0, 0.0, -1)
+        glRotatef(pitch, -1, 0.0, 0.0)
+        glRotatef(yaw + 3, 0.0, 1, 0.0)
+        glRotatef(roll, 0.0, 0.0, 1)
         
         draw_rect()
         draw_points()
