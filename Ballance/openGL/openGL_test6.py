@@ -199,22 +199,19 @@ def main():
                 0, 0, 0,    # Look at the origin
                 0, 1, 0)    # Up direction
 
-        glTranslatef(0.0, 0.0, -5.0)  
-        glRotatef(90, 1.0, 0.0, 0.0) # hard coded pitch tilt
+        glTranslatef(0, 0, -5.0)
+        # glRotatef(90, 1.0, 0.0, 0.0) # hard coded pitch tilt (top down view)
         glRotatef(10, -1.0, 0.0, 0.0) # hard coded pitch tilt
         glRotatef(10, 0.0, 0.0, -1.0) # hard coded roll tilt
         glRotatef(3, 0.0, 1.0, 0.0)
 
+        glRotatef(pitch, 1, 0.0, 0.0)
+        glRotatef(yaw, 0.0, -1, 0.0)
+        glRotatef(roll, 0.0, 0.0, -1)
         
-        
-
-        glRotatef(pitch, 1, 0.0, 0.0) # up down
-        glRotatef(yaw, 0.0, -1, 0.0) # side to side
-        glRotatef(roll, 0.0, 0.0, -1) # tilt
         draw_rect()
         draw_points()
-        draw_text(-0.95, 0.9, f"Current Position: {current_position[0]}, {current_position[1]}")
-        pygame.display.flip()
+
         # Display the current position at the bottom of the screen
         screen_width, screen_height = pygame.display.get_surface().get_size()
         draw_text(10, screen_height - 30, f"Current Position: {current_position}")
