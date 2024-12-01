@@ -225,3 +225,6 @@ def main():
         draw_text(10, screen_height - 30, f"Current Position: {camera_x}, {camera_y}, {camera_z}")
 
         pygame.display.flip()
+
+if __name__ == '__main__':
+    main()
