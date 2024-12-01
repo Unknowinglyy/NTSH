@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame
@@ -7,7 +9,7 @@ import busio
 import adafruit_mpu6050
 import math
 import time
-from touchScreenBasicCoordOutput import read_touch_coordinates
+from touchscreen.touchScreenBasicCoordOutput import read_touch_coordinates
 
 # Initialize I2C and MPU6050
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -146,7 +148,7 @@ def get_orientation(dt):
     gyro_x, gyro_y, gyro_z = gyro_data
     pitch += gyro_x * dt
     roll += gyro_y * dt
-    yaw += (gyro_z * dt) + 10
+    yaw += gyro_z * dt
 
     alpha = 0.9
     pitch = alpha * pitch + (1 - alpha) * accel_pitch
@@ -159,7 +161,7 @@ def draw_text(x, y, text):
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
 def main():
-    global zoom_level, yaw, pitch, roll
+    global zoom_level
 
     # Set initial window size
     initial_width, initial_height = 800, 600
@@ -185,14 +187,6 @@ def main():
                     zoom_level -= 0.1
                 elif event.key == K_MINUS:  # '-' key
                     zoom_level += 0.1
-                elif event.key == K_LEFT:  # Left arrow key
-                    yaw += 5  # Rotate left
-                elif event.key == K_RIGHT:  # Right arrow key
-                    yaw -= 5  # Rotate right
-                elif event.key == K_UP:  # Up arrow key
-                    pitch += 5  # Tilt up
-                elif event.key == K_DOWN:  # Down arrow key
-                    pitch -= 5  # Tilt down
 
         dt = clock.tick(60) / 1000.0
         get_orientation(dt)
@@ -206,23 +200,18 @@ def main():
                   0, 1, 0)    # Up direction
 
         glTranslatef(0, 0, -5.0)
-        # glRotatef(90, 1.0, 0.0, 0.0) # hard coded pitch tilt (top down view)
-        glRotatef(10, -1.0, 0.0, 0.0) # hard coded pitch tilt
-        glRotatef(10, 0.0, 0.0, -1.0) # hard coded roll tilt
-        glRotatef(3, 0.0, 1.0, 0.0)
-
         glRotatef(pitch, 1, 0.0, 0.0)
-        glRotatef(yaw, 0.0, -1, 0.0)
+        glRotatef(yaw + 3, 0.0, -1, 0.0)
         glRotatef(roll, 0.0, 0.0, -1)
         
         draw_rect()
         draw_points()
 
-        # Display the current orientation at the bottom of the screen
+        # Display the current position at the bottom of the screen
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        draw_text(10, screen_height - 30, f"Orientation: Pitch={pitch}, Yaw={yaw}, Roll={roll}")
+        draw_text(10, screen_height - 30, f"Current Position: {current_position}")
 
         pygame.display.flip()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
