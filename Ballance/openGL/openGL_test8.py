@@ -123,6 +123,7 @@ def draw_points():
             glPushMatrix()
             # Reset the model view matrix to ensure the point faces the camera
             glTranslatef(point[0], point[1], point[2])
+            # Reset rotations to make the circle face the camera
             glRotatef(-yaw, 0.0, 1.0, 0.0)
             glRotatef(-pitch, 1.0, 0.0, 0.0)
             glRotatef(-roll, 0.0, 0.0, 1.0)
