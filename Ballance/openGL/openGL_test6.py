@@ -201,7 +201,7 @@ def main():
 
         glTranslatef(0, 0, -5.0)
         glRotatef(pitch, -1, 0.0, 0.0)
-        glRotatef(yaw + 90, 0.0, 1, 0.0)
+        glRotatef(yaw, 0.0, 1, 0.0)
         glRotatef(roll + 10, 0.0, 0.0, 1)
         
         draw_rect()
