@@ -27,7 +27,7 @@ zoom_level = 3.0  # Initial zoom level
 
 # Camera position variables
 camera_x = 0.0
-camera_y = 0.2
+camera_y = 0.0
 camera_z = zoom_level
 
 # Mouse control variables
@@ -127,7 +127,7 @@ def draw_points():
             glRotatef(-yaw, 0.0, 1.0, 0.0)
             glRotatef(-pitch, 1.0, 0.0, 0.0)
             glRotatef(-roll, 0.0, 0.0, 1.0)
-            draw_circle(0, 0, 0, radius=0.05, num_segments=7)
+            draw_circle(0, 0, 0, radius=0.07, num_segments=7)
             # Restore the model view matrix
             glPopMatrix()
 
