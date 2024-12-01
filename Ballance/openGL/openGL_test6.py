@@ -203,8 +203,8 @@ def main():
         glRotatef(90, 1.0, 0.0, 0.0) # hard coded pitch tilt
         glRotatef(10, -1.0, 0.0, 0.0) # hard coded pitch tilt
         glRotatef(10, 0.0, 0.0, -1.0) # hard coded roll tilt
-        glRotatef(3, 0.0, 1.0, 0.0)
-        
+        # glRotatef(3, 0.0, 1.0, 0.0)
+
         glRotatef(pitch, 1, 0.0, 0.0)
         glRotatef(yaw, 0.0, -1, 0.0)
         glRotatef(roll, 0.0, 0.0, -1)
