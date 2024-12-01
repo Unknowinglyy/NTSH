@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame
