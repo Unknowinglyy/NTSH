@@ -188,13 +188,13 @@ def main():
                 elif event.key == K_MINUS:  # '-' key
                     zoom_level += 0.1
                 elif event.key == K_LEFT:  # Left arrow key
-                    yaw += 5  # Increase yaw to rotate left (CCW)
+                    camera_x -= 0.1  # Move camera left
                 elif event.key == K_RIGHT:  # Right arrow key
-                    yaw -= 5  # Decrease yaw to rotate right (CW)
+                    camera_x += 0.1  # Move camera right
                 elif event.key == K_UP:  # Up arrow key
-                    pitch += 5  # Increase pitch to look up
+                    camera_y += 0.1  # Move camera up
                 elif event.key == K_DOWN:  # Down arrow key
-                    pitch -= 5  # Decrease pitch to look down
+                    camera_y -= 0.1  # Move camera down
 
         dt = clock.tick(60) / 1000.0
         get_orientation(dt)
@@ -203,7 +203,7 @@ def main():
         glLoadIdentity()
 
         # Set the camera position and orientation
-        gluLookAt(0, 0.5, zoom_level,  # Camera position (adjusted by zoom_level)
+        gluLookAt(camera_x, camera_y, zoom_level,  # Camera position (adjusted by zoom_level)
                   0, 0, 0,    # Look at the origin
                   0, 1, 0)    # Up direction
 
@@ -222,9 +222,6 @@ def main():
 
         # Display the current position at the bottom of the screen
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        draw_text(10, screen_height - 30, f"Current Position: {current_position}")
+        draw_text(10, screen_height - 30, f"Current Position: {camera_x}, {camera_y}, {camera_z}")
 
         pygame.display.flip()
-
-if __name__ == "__main__":
-    main()
