@@ -23,8 +23,6 @@ pygame.display.set_caption('MPU6050 Orientation')
 # Variables to store orientation
 pitch = roll = yaw = 0.0
 zoom_level = 3.0  # Initial zoom level
-camera_x = 0.0  # Initial camera x position
-camera_y = 0.5  # Initial camera y position
 
 points = []
 current_position = (0, 0)
@@ -163,7 +161,7 @@ def draw_text(x, y, text):
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
 def main():
-    global zoom_level, yaw, pitch, camera_x, camera_y
+    global zoom_level, yaw, pitch, roll
 
     # Set initial window size
     initial_width, initial_height = 800, 600
@@ -190,13 +188,13 @@ def main():
                 elif event.key == K_MINUS:  # '-' key
                     zoom_level += 0.1
                 elif event.key == K_LEFT:  # Left arrow key
-                    camera_x -= 0.1  # Move camera left
+                    yaw += 5  # Rotate left
                 elif event.key == K_RIGHT:  # Right arrow key
-                    camera_x += 0.1  # Move camera right
+                    yaw -= 5  # Rotate right
                 elif event.key == K_UP:  # Up arrow key
-                    camera_y += 0.1  # Move camera up
+                    pitch += 5  # Tilt up
                 elif event.key == K_DOWN:  # Down arrow key
-                    camera_y -= 0.1  # Move camera down
+                    pitch -= 5  # Tilt down
 
         dt = clock.tick(60) / 1000.0
         get_orientation(dt)
@@ -205,7 +203,7 @@ def main():
         glLoadIdentity()
 
         # Set the camera position and orientation
-        gluLookAt(camera_x, camera_y, zoom_level,  # Camera position (adjusted by zoom_level)
+        gluLookAt(0, 0.5, zoom_level,  # Camera position (adjusted by zoom_level)
                   0, 0, 0,    # Look at the origin
                   0, 1, 0)    # Up direction
 
@@ -222,9 +220,9 @@ def main():
         draw_rect()
         draw_points()
 
-        # Display the current position at the bottom of the screen
+        # Display the current orientation at the bottom of the screen
         screen_width, screen_height = pygame.display.get_surface().get_size()
-        draw_text(10, screen_height - 30, f"Current Position: {camera_x}, {camera_y}, {zoom_level}")
+        draw_text(10, screen_height - 30, f"Orientation: Pitch={pitch}, Yaw={yaw}, Roll={roll}")
 
         pygame.display.flip()
 
