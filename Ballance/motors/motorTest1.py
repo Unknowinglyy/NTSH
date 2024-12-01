@@ -2,8 +2,8 @@ import RPi.GPIO as GPIO
 import time
 
 # Pin definitions
-step_pin = 23  # Pin connected to STEP on TMC2208
-dir_pin = 24   # Pin connected to DIR on TMC2208
+step_pin = 13  # Pin connected to STEP on TMC2208
+dir_pin = 19   # Pin connected to DIR on TMC2208
 #en_pin = 25
 
 # Motor movement parameters
