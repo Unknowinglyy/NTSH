@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-import os
-import sys
+
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame
@@ -10,10 +9,8 @@ import busio
 import adafruit_mpu6050
 import math
 import time
-# Add the root directory to the sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from touchscreen.touchScreenBasicCoordOutput import read_touch_coordinates
+from touchScreenBasicCoordOutput import read_touch_coordinates
+import threading
 
 # Initialize I2C and MPU6050
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -21,12 +18,22 @@ mpu = adafruit_mpu6050.MPU6050(i2c)
 
 # Initialize Pygame
 pygame.init()
-screen = pygame.display.set_mode((800, 600), DOUBLEBUF | OPENGL)
+screen = pygame.display.set_mode((1600, 1200), DOUBLEBUF | OPENGL | RESIZABLE)
 pygame.display.set_caption('MPU6050 Orientation')
-
 
 # Variables to store orientation
 pitch = roll = yaw = 0.0
+zoom_level = 3.0  # Initial zoom level
+
+# Camera position variables
+camera_x = 0.0
+camera_y = 0.5
+camera_z = zoom_level
+
+# Mouse control variables
+mouse_down = False
+last_mouse_x = 0
+last_mouse_y = 0
 
 points = []
 current_position = (0, 0)
@@ -35,12 +42,17 @@ font = pygame.font.SysFont('arial', 24)
 def resize(width, height):
     if height == 0:
         height = 1
+    aspect_ratio = width / height
     glViewport(0, 0, width, height)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(45, 1.0 * width / height, 0.1, 100.0)
+    gluPerspective(45, aspect_ratio, 0.1, 100.0)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
+    # Set the initial camera position and orientation
+    gluLookAt(camera_x, camera_y, camera_z,  # Camera position (adjusted by zoom_level)
+              0, 0, 0,    # Look at the origin
+              0, 1, 0)    # Up direction
 
 def init():
     glShadeModel(GL_SMOOTH)
@@ -53,86 +65,85 @@ def init():
     glPointSize(5.0)
 
 def draw_rect():
+    glBegin(GL_QUADS)    
+    glColor3f(0.0, 1.0, 0.0)
+    glVertex3f( 1.0, 0.2, -1.0)
+    glVertex3f(-1.0, 0.2, -1.0)        
+    glVertex3f(-1.0, 0.2,  1.0)        
+    glVertex3f( 1.0, 0.2,  1.0)        
 
-    glBegin(GL_QUADS)	
-    glColor3f(0.0,1.0,0.0)
-    glVertex3f( 1.0, 0.2,-1.0)
-    glVertex3f(-1.0, 0.2,-1.0)		
-    glVertex3f(-1.0, 0.2, 1.0)		
-    glVertex3f( 1.0, 0.2, 1.0)		
+    glColor3f(1.0, 0.5, 0.0)    
+    glVertex3f( 1.0, -0.2,  1.0)
+    glVertex3f(-1.0, -0.2,  1.0)        
+    glVertex3f(-1.0, -0.2, -1.0)        
+    glVertex3f( 1.0, -0.2, -1.0)        
 
-    glColor3f(1.0,0.5,0.0)	
-    glVertex3f( 1.0,-0.2, 1.0)
-    glVertex3f(-1.0,-0.2, 1.0)		
-    glVertex3f(-1.0,-0.2,-1.0)		
-    glVertex3f( 1.0,-0.2,-1.0)		
+    glColor3f(1.0, 0.0, 0.0)        
+    glVertex3f( 1.0, 0.2,  1.0)
+    glVertex3f(-1.0, 0.2,  1.0)        
+    glVertex3f(-1.0, -0.2,  1.0)        
+    glVertex3f( 1.0, -0.2,  1.0)        
 
-    glColor3f(1.0,0.0,0.0)		
-    glVertex3f( 1.0, 0.2, 1.0)
-    glVertex3f(-1.0, 0.2, 1.0)		
-    glVertex3f(-1.0,-0.2, 1.0)		
-    glVertex3f( 1.0,-0.2, 1.0)		
+    glColor3f(1.0, 1.0, 0.0)    
+    glVertex3f( 1.0, -0.2, -1.0)
+    glVertex3f(-1.0, -0.2, -1.0)
+    glVertex3f(-1.0, 0.2, -1.0)        
+    glVertex3f( 1.0, 0.2, -1.0)        
 
-    glColor3f(1.0,1.0,0.0)	
-    glVertex3f( 1.0,-0.2,-1.0)
-    glVertex3f(-1.0,-0.2,-1.0)
-    glVertex3f(-1.0, 0.2,-1.0)		
-    glVertex3f( 1.0, 0.2,-1.0)		
+    glColor3f(0.0, 0.0, 1.0)    
+    glVertex3f(-1.0, 0.2,  1.0)
+    glVertex3f(-1.0, 0.2, -1.0)        
+    glVertex3f(-1.0, -0.2, -1.0)        
+    glVertex3f(-1.0, -0.2,  1.0)        
 
-    glColor3f(0.0,0.0,1.0)	
-    glVertex3f(-1.0, 0.2, 1.0)
-    glVertex3f(-1.0, 0.2,-1.0)		
-    glVertex3f(-1.0,-0.2,-1.0)		
-    glVertex3f(-1.0,-0.2, 1.0)		
+    glColor3f(1.0, 0.0, 1.0)    
+    glVertex3f( 1.0, 0.2, -1.0)
+    glVertex3f( 1.0, 0.2,  1.0)
+    glVertex3f( 1.0, -0.2,  1.0)        
+    glVertex3f( 1.0, -0.2, -1.0)        
+    glEnd()
 
-    glColor3f(1.0,0.0,1.0)	
-    glVertex3f( 1.0, 0.2,-1.0)
-    glVertex3f( 1.0, 0.2, 1.0)
-    glVertex3f( 1.0,-0.2, 1.0)		
-    glVertex3f( 1.0,-0.2,-1.0)		
-    glEnd()	
-
-    #display()
+def draw_circle(x, y, z, radius, num_segments):
+    glBegin(GL_TRIANGLE_FAN)
+    glVertex3f(x, y, z)  # Center of the circle
+    for i in range(num_segments + 1):
+        angle = 2.0 * math.pi * i / num_segments
+        dx = radius * math.cos(angle)
+        dy = radius * math.sin(angle)
+        glVertex3f(x + dx, y + dy, z)
+    glEnd()
 
 def draw_points():
     current_time = time.time()
     glColor3f(0.0, 0.0, 1.0)
-    glBegin(GL_POINTS)
     for point, timestamp in points:
         if current_time - timestamp < 2:
             print(f"currently drawing point at {point[0]}, {point[1]}, {point[2]}")
-            glVertex3f(point[0], point[1], point[2])
-    glEnd()
-
-    # Draw three static points for testing
-    # glBegin(GL_POINTS)
-    # glVertex3f(0.0, 0.3, 0.0)  # Point 1
-    # glVertex3f(0.5, 0.3, 0.0)  # Point 2
-    # glVertex3f(-0.5, 0.3, 0.0) # Point 3
-    # glEnd()
-
-
-    #pygame.display.flip()
+            # Save the current model view matrix
+            glPushMatrix()
+            # Reset the model view matrix to ensure the point faces the camera
+            glTranslatef(point[0], point[1], point[2])
+            glRotatef(-yaw, 0.0, 1.0, 0.0)
+            glRotatef(-pitch, 1.0, 0.0, 0.0)
+            glRotatef(-roll, 0.0, 0.0, 1.0)
+            draw_circle(0, 0, 0, radius=0.05, num_segments=7)
+            # Restore the model view matrix
+            glPopMatrix()
 
 def update_points():
     global points, current_position
     for x, y in read_touch_coordinates():
         print(f"reading touch coordinates: {x}, {y}")
         print("converting to gl coordinates...")
-        gl_x = ((y-150) / (3940 - 150)) * 2 - 1
+        gl_x = ((y - 150) / (3940 - 150)) * 2 - 1
         gl_y = 0.3  
-        gl_z = -(((x-250) / (3800 - 250)) * 2 - 1)
+        gl_z = -(((x - 250) / (3800 - 250)) * 2 - 1)
         print(f"corresponding gl coordinates: {gl_x}, {gl_y}, {gl_z}")
-        #if the length of the points list is 100, remove the oldest point
-        #else just append the new point
         if len(points) == 100:
             points.pop(0)
         points.append(((gl_x, gl_y, gl_z), time.time()))
 
         current_position = (gl_x, gl_z)
-
-        # pygame.event.post(pygame.event.Event(pygame.USEREVENT))
-
 
 def get_orientation(dt):
     global pitch, roll, yaw
@@ -160,12 +171,14 @@ def draw_text(x, y, text):
     glWindowPos2d(x, y)
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
-
 def main():
-    resize(800, 600)
+    global zoom_level, yaw, pitch, roll, mouse_down, last_mouse_x, last_mouse_y
+
+    # Set initial window size
+    initial_width, initial_height = 800, 600
+    resize(initial_width, initial_height)
     init()
 
-    import threading
     threading.Thread(target=update_points, daemon=True).start()
 
     clock = pygame.time.Clock()
@@ -176,13 +189,28 @@ def main():
                 pygame.quit()
                 return
             elif event.type == VIDEORESIZE:
+                # Update the OpenGL viewport and perspective on window resize
                 resize(event.w, event.h)
-            # elif event.type == pygame.USEREVENT:
-            #     display()
-        
-        #display()
-        time.sleep(0.01/2)
-        
+                screen = pygame.display.set_mode((event.w, event.h), DOUBLEBUF | OPENGL | RESIZABLE)
+            elif event.type == KEYDOWN:
+                if event.key == K_PLUS or event.key == K_EQUALS:  # '+' key
+                    zoom_level -= 0.1
+                elif event.key == K_MINUS:  # '-' key
+                    zoom_level += 0.1
+            elif event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:  # Left mouse button
+                    mouse_down = True
+                    last_mouse_x, last_mouse_y = event.pos
+            elif event.type == MOUSEBUTTONUP:
+                if event.button == 1:  # Left mouse button
+                    mouse_down = False
+            elif event.type == MOUSEMOTION:
+                if mouse_down:
+                    dx = event.pos[0] - last_mouse_x
+                    dy = event.pos[1] - last_mouse_y
+                    yaw += dx * 0.1
+                    pitch -= dy * 0.1
+                    last_mouse_x, last_mouse_y = event.pos
 
         dt = clock.tick(60) / 1000.0
         get_orientation(dt)
@@ -190,21 +218,24 @@ def main():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
-        # prism_top_center = (0.0, 0.2, 0.0)
         # Set the camera position and orientation
-        # gluLookAt(0, 0.5, 5,  # Camera position
-        #           prism_top_center[0], prism_top_center[1], prism_top_center[2],  # Look at point
-        #           0, 1, 0)  # Up direction
+        gluLookAt(camera_x, camera_y, zoom_level,  # Camera position (adjusted by zoom_level)
+                  0, 0, 0,    # Look at the origin
+                  0, 1, 0)    # Up direction
+
         glTranslatef(0, 0, -5.0)
         glRotatef(pitch, 1, 0.0, 0.0)
         glRotatef(yaw, 0.0, -1, 0.0)
         glRotatef(roll, 0.0, 0.0, -1)
+        
         draw_rect()
         draw_points()
 
-        draw_text(-0.95, 0.9, f"Current Position: {current_position[0]}, {current_position[1]}")
+        # Display the current position at the bottom of the screen
+        screen_width, screen_height = pygame.display.get_surface().get_size()
+        draw_text(10, screen_height - 30, f"Current Position: {current_position}")
+
         pygame.display.flip()
-        #clock.tick(60)
 
 if __name__ == "__main__":
     main()
