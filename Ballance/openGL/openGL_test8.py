@@ -27,7 +27,7 @@ zoom_level = 3.0  # Initial zoom level
 
 # Camera position variables
 camera_x = 0.0
-camera_y = 0.5
+camera_y = 0.4
 camera_z = zoom_level
 
 # Mouse control variables
