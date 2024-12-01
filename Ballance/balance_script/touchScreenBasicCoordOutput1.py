@@ -7,10 +7,6 @@ class Point:
 
 def read_touch_coordinates(device_path='/dev/input/event6'):
     device = evdev.InputDevice(device_path)
-
-    # print(f"Device: {device.name}")
-    # print(f"Listening for touch events on {device.path}...")
-    
     x, y = None, None
 
     # Read touch events in a loop
@@ -23,8 +19,6 @@ def read_touch_coordinates(device_path='/dev/input/event6'):
                 y = event.value
             # Return coordinates when both X and Y are captured
             if x is not None and y is not None:
-                return Point(x, y)
-            elif event.type == evdev.ecodes.EV_KEY:
                 return Point(x, y)
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ delay_time = 0.0001           # Delay in seconds between steps
           # Delay in seconds between steps
 
 # Setup GPIO
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 GPIO.setup(step_pin, GPIO.OUT)
 GPIO.setup(dir_pin, GPIO.OUT)
 #GPIO.setup(en_pin, GPIO.OUT)
