@@ -219,7 +219,7 @@ def main():
         glLoadIdentity()
 
         # Set the camera position and orientation
-        gluLookAt(camera_x, camera_y, camera_z,  # Camera position (adjusted by user input)
+        gluLookAt(camera_x, camera_y, zoom_level,  # Camera position (adjusted by zoom_level)
                   0, 0, 0,    # Look at the origin
                   0, 1, 0)    # Up direction
 
