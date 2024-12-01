@@ -161,7 +161,7 @@ def draw_text(x, y, text):
     glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
 
 def main():
-    global zoom_level, yaw
+    global zoom_level, yaw, pitch
 
     # Set initial window size
     initial_width, initial_height = 800, 600
@@ -191,6 +191,10 @@ def main():
                     yaw += 5  # Increase yaw to rotate left (CCW)
                 elif event.key == K_RIGHT:  # Right arrow key
                     yaw -= 5  # Decrease yaw to rotate right (CW)
+                elif event.key == K_UP:  # Up arrow key
+                    pitch += 5  # Increase pitch to look up
+                elif event.key == K_DOWN:  # Down arrow key
+                    pitch -= 5  # Decrease pitch to look down
 
         dt = clock.tick(60) / 1000.0
         get_orientation(dt)
