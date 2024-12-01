@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import pygame
@@ -148,7 +146,7 @@ def get_orientation(dt):
     gyro_x, gyro_y, gyro_z = gyro_data
     pitch += gyro_x * dt
     roll += gyro_y * dt
-    yaw += gyro_z * dt
+    yaw += (gyro_z * dt) + 10
 
     alpha = 0.9
     pitch = alpha * pitch + (1 - alpha) * accel_pitch
