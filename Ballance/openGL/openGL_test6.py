@@ -195,14 +195,14 @@ def main():
         glLoadIdentity()
 
         # Set the camera position and orientation
-        gluLookAt(0, -1, zoom_level,  # Camera position (adjusted by zoom_level)
+        gluLookAt(0, 0.5, zoom_level,  # Camera position (adjusted by zoom_level)
                   0, 0, 0,    # Look at the origin
                   -0.1, 1, 1)    # Up direction
 
         glTranslatef(0, 0, -5.0)
         glRotatef(pitch, -1, 0.0, 0.0)
         glRotatef(yaw, 0.0, 1, 0.0)
-        glRotatef(roll + 10, 0.0, 0.0, 1)
+        glRotatef(roll, 0.0, 0.0, 1)
         
         draw_rect()
         draw_points()
