@@ -195,9 +195,9 @@ def main():
         glLoadIdentity()
 
         # Set the camera position and orientation
-        gluLookAt(0, 3, zoom_level,  # Camera position (adjusted by zoom_level)
+        gluLookAt(0, 0.5, zoom_level,  # Camera position (adjusted by zoom_level)
                   0, 0, 0,    # Look at the origin
-                  0.5, 1, 0)    # Up direction
+                  0, 1, 0)    # Up direction
 
         glTranslatef(0, 0, -5.0)
         glRotatef(pitch, -1, 0.0, 0.0)
